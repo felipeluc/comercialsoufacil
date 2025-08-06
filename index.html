@@ -1,61 +1,53 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard Comercial</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- POPUP -->
-  <div id="popupMsg"></div>
-
-  <!-- Login -->
-  <div id="loginScreen" class="login-box">
+  <!-- Tela de Login -->
+  <div id="loginScreen">
     <h2>Login</h2>
     <select id="userSelect">
-      <option value="">Selecione seu nome</option>
-      <option>Marcelo</option>
-      <option>Angela</option>
-      <option>Gabriel</option>
-      <option>Leticia</option>
-      <option>Glaucia</option>
-      <option>Felipe</option>
-      <option>Carol</option>
+      <option value="">Selecione o usuário</option>
+      <option value="Felipe">Felipe</option>
+      <option value="Carol">Carol</option>
+      <option value="Consultor1">Consultor1</option>
+      <option value="Consultor2">Consultor2</option>
     </select>
-    <input type="password" id="password" placeholder="Senha" />
-    <button onclick="login()">Entrar</button>
+    <input type="password" id="password" placeholder="Senha">
+    <button id="btnEntrar">Entrar</button>
   </div>
 
-  <!-- App -->
+  <!-- Sistema Principal -->
   <div id="mainApp" style="display:none">
-    <div class="sidebar">
-      <h3>Menu</h3>
-      <div class="menu-item active" data-target="metas">Análise de Metas</div>
-      <div class="menu-item" data-target="admin" id="adminMenu" style="display:none">Admin</div>
-    </div>
+    <nav>
+      <button class="menu-item active" data-target="analiseMetas">Análise de Metas</button>
+      <button id="adminMenu" class="menu-item" data-target="admin" style="display:none">Admin</button>
+    </nav>
 
-    <div class="main">
-      <!-- Metas -->
-      <div class="section" id="metas">
-        <h2>Dashboard de Metas</h2>
-        <div class="card-grid" id="cardsMetas"></div>
-      </div>
+    <div id="popupMsg" class="popup"></div>
 
-      <!-- Admin -->
-      <div class="section" id="admin" style="display:none">
-        <h2>Área Administrativa</h2>
-        <form class="admin-form">
-          <input id="metaContas" placeholder="Meta de Contas (geral)" />
-          <input id="metaReceita" placeholder="Meta de Receita (geral)" />
-          <input id="metaVendas" placeholder="Meta de Vendas (geral)" />
-          <button type="button" onclick="salvarMetas()">Salvar Metas</button>
-        </form>
+    <!-- Análise de Metas -->
+    <section id="analiseMetas" class="section">
+      <h2>Análise de Metas</h2>
+      <div id="cardsMetas" class="cards-container"></div>
+    </section>
+
+    <!-- Admin -->
+    <section id="admin" class="section" style="display:none">
+      <h2>Administração</h2>
+      <div class="admin-form">
+        <label>Meta Contas: <input type="number" id="metaContas"></label>
+        <label>Meta Receita: <input type="number" id="metaReceita"></label>
+        <label>Meta Vendas: <input type="number" id="metaVendas"></label>
+        <button onclick="salvarMetas()">Salvar Metas</button>
       </div>
-    </div>
+    </section>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
