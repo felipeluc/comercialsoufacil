@@ -1,81 +1,93 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema de Vendas</title>
+  <title>Dashboard Comercial</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- LOGIN -->
-  <div id="loginScreen">
-    <form id="loginForm" class="login-form">
-      <h2>Login</h2>
-      <select id="usuario" required>
-        <option value="">Selecione seu nome</option>
-        <option value="Marcelo">Marcelo</option>
-        <option value="Angela">Angela</option>
-        <option value="Gabriel">Gabriel</option>
-        <option value="Leticia">Leticia</option>
-        <option value="Glaucia">Glaucia</option>
-        <option value="Felipe">Felipe</option>
-        <option value="Carol">Carol</option>
-      </select>
-      <input type="password" id="senha" placeholder="Senha" required />
-      <button type="submit">Entrar</button>
-    </form>
+  <div id="loginContainer" class="login-container">
+    <h2>Login</h2>
+    <select id="userSelect">
+      <option value="">Selecione seu nome</option>
+      <option value="Marcelo">Marcelo</option>
+      <option value="Angela">Angela</option>
+      <option value="Gabriel">Gabriel</option>
+      <option value="Leticia">Leticia</option>
+      <option value="Glaucia">Glaucia</option>
+      <option value="Felipe">Felipe</option>
+      <option value="Carol">Carol</option>
+    </select>
+    <input type="password" id="senhaInput" placeholder="Senha (nome+1234)" />
+    <button onclick="login()">Entrar</button>
   </div>
 
-  <!-- APP -->
-  <div id="mainApp" style="display:none">
-    <div class="sidebar">
+  <div id="app" style="display: none;">
+    <aside class="sidebar">
       <h2>Menu</h2>
-      <button class="menu-item" data-target="dashboard">📊 Análise de Vendas</button>
-      <button class="menu-item" data-target="implantadas">🏢 Empresas Implantadas</button>
-      <button class="menu-item" data-target="ranking">🏆 Ranking</button>
-      <button class="menu-item" id="adminMenu" data-target="adminPanel" style="display:none">🛠️ Painel Admin</button>
-    </div>
+      <button class="menu-item" data-target="analise">Análise de Vendas</button>
+      <button class="menu-item" data-target="implantadas">Empresas Implantadas</button>
+      <button class="menu-item" data-target="ranking">Ranking</button>
+      <button class="menu-item" data-target="consultores">Painel dos Consultores</button>
+      <button class="menu-item admin-only" data-target="admin">Admin</button>
+    </aside>
 
-    <div class="content">
-      <!-- DASHBOARD -->
-      <div class="section" id="dashboard" style="display:block">
+    <main class="main-content">
+      <section id="analise" class="section">
         <h2>Análise de Vendas</h2>
-        <div id="dashboardCards" class="card-container"></div>
-      </div>
+        <canvas id="graficoConsultores"></canvas>
+        <div id="cardsAnalise" class="card-grid"></div>
+        <div id="rankingAnalise" class="card-grid"></div>
+      </section>
 
-      <!-- IMPLANTADAS -->
-      <div class="section" id="implantadas" style="display:none">
+      <section id="implantadas" class="section">
         <h2>Empresas Implantadas</h2>
-        <div id="implantadasCards" class="card-container"></div>
-      </div>
+        <div id="implantadasCards" class="card-grid"></div>
+      </section>
 
-      <!-- RANKING -->
-      <div class="section" id="ranking" style="display:none">
+      <section id="ranking" class="section">
         <h2>Ranking</h2>
-        <div id="rankingQtde" class="ranking-container"></div>
-        <hr />
-        <div id="rankingValor" class="ranking-container"></div>
-      </div>
+        <div id="rankingCards" class="card-grid"></div>
+      </section>
 
-      <!-- ADMIN -->
-      <div class="section" id="adminPanel" style="display:none">
-        <h2>Painel Administrativo</h2>
-        <form id="adminForm" class="admin-form">
-          <select id="adminConsultor" required>
-            <option value="">Consultor</option>
-            <option value="Marcelo">Marcelo</option>
-            <option value="Angela">Angela</option>
-            <option value="Gabriel">Gabriel</option>
-            <option value="Leticia">Leticia</option>
-            <option value="Glaucia">Glaucia</option>
-            <option value="Felipe">Felipe</option>
-            <option value="Carol">Carol</option>
-          </select>
-          <input type="number" id="adminValor" placeholder="Valor da venda" required />
-          <button type="submit">Salvar Venda</button>
-        </form>
-      </div>
-    </div>
+      <section id="consultores" class="section">
+        <h2>Painel dos Consultores</h2>
+        <div id="painelConsultores" class="card-grid"></div>
+      </section>
+
+      <section id="admin" class="section admin-only">
+        <h2>Administração</h2>
+
+        <h3>Metas</h3>
+        <input type="number" id="metaContas" placeholder="Meta de contas" />
+        <input type="number" id="metaReceita" placeholder="Meta de receita" />
+        <input type="number" id="metaVendas" placeholder="Meta de vendas" />
+        <button onclick="salvarMetas()">Salvar Metas</button>
+
+        <h3>Receita por Consultor</h3>
+        <select id="receitaConsultor">
+          <option value="">Selecione o consultor</option>
+          <option value="Leticia">Leticia</option>
+          <option value="Glaucia">Glaucia</option>
+          <option value="Marcelo">Marcelo</option>
+          <option value="Gabriel">Gabriel</option>
+        </select>
+        <input type="number" id="receitaValor" placeholder="Valor gerado" />
+        <button onclick="salvarReceitaConsultor()">Salvar Receita</button>
+
+        <h3>Estados com mais lojas</h3>
+        <input type="text" id="estadoNome" placeholder="Nome do estado" />
+        <input type="number" id="estadoQtd" placeholder="Quantidade de lojas" />
+        <button onclick="salvarEstado()">Salvar Estado</button>
+
+        <h3>Segmentos</h3>
+        <input type="text" id="segmentoNome" placeholder="Segmento" />
+        <input type="number" id="segmentoValor" placeholder="Valor total" />
+        <button onclick="salvarSegmento()">Salvar Segmento</button>
+      </section>
+    </main>
   </div>
 
   <script type="module" src="script.js"></script>
