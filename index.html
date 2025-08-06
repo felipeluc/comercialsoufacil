@@ -1,95 +1,118 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard Comercial</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div id="loginContainer" class="login-container">
-    <h2>Login</h2>
-    <select id="userSelect">
-      <option value="">Selecione seu nome</option>
-      <option value="Marcelo">Marcelo</option>
-      <option value="Angela">Angela</option>
-      <option value="Gabriel">Gabriel</option>
-      <option value="Leticia">Leticia</option>
-      <option value="Glaucia">Glaucia</option>
-      <option value="Felipe">Felipe</option>
-      <option value="Carol">Carol</option>
-    </select>
-    <input type="password" id="senhaInput" placeholder="Senha (nome+1234)" />
-    <button onclick="login()">Entrar</button>
+
+  <!-- === Tela de Login === -->
+  <div id="loginScreen">
+    <form id="loginForm">
+      <h2>Login</h2>
+      <label for="usuarioSelect">Usuário:</label>
+      <select id="usuarioSelect" required></select>
+
+      <label for="senhaInput">Senha:</label>
+      <input type="password" id="senhaInput" required />
+
+      <button type="submit">Entrar</button>
+    </form>
   </div>
 
-  <div id="app" style="display: none;">
-    <aside class="sidebar">
-      <h2>Menu</h2>
-      <button class="menu-item" data-target="analise">Análise de Vendas</button>
+  <!-- === App Principal === -->
+  <div id="mainApp" style="display: none; flex-direction: column;">
+    <!-- Menu -->
+    <nav>
+      <button class="menu-item" data-target="vendas">Análise de Vendas</button>
       <button class="menu-item" data-target="implantadas">Empresas Implantadas</button>
       <button class="menu-item" data-target="ranking">Ranking</button>
-      <button class="menu-item" data-target="consultores">Painel dos Consultores</button>
-      <button class="menu-item admin-only" data-target="admin">Admin</button>
-    </aside>
+      <button class="menu-item" data-target="painelConsultores">Painel Consultores</button>
+      <div id="menuAdmin" style="display: none;">
+        <button class="menu-item" data-target="admin">Administração</button>
+      </div>
+    </nav>
 
-    <main class="main-content">
-      <section id="analise" class="section">
-        <h2>Análise de Vendas</h2>
-        <canvas id="graficoConsultores"></canvas>
-        <div id="cardsAnalise" class="card-grid"></div>
-        <div id="rankingAnalise" class="card-grid"></div>
-      </section>
+    <!-- === Seções === -->
 
-      <section id="implantadas" class="section">
-        <h2>Empresas Implantadas</h2>
-        <div id="implantadasCards" class="card-grid"></div>
-      </section>
+    <section id="vendas" class="section">
+      <h2>Dashboard - Análise de Vendas</h2>
+      <canvas id="graficoConsultores" width="400" height="200"></canvas>
+      <div id="rankingAnalise"></div>
+    </section>
 
-      <section id="ranking" class="section">
-        <h2>Ranking</h2>
-        <div id="rankingCards" class="card-grid"></div>
-      </section>
+    <section id="implantadas" class="section" style="display:none;">
+      <h2>Empresas Implantadas</h2>
+      <p>Total: <span id="totalEmpresas"></span></p>
+      <p>Receita Total: <span id="receitaTotal"></span></p>
+      <div id="receitaConsultor"></div>
+      <h3>Segmentos</h3>
+      <div id="rankingSegmentos"></div>
+      <h3>Estados com mais lojas</h3>
+      <div id="rankingEstados"></div>
+    </section>
 
-      <section id="consultores" class="section">
-        <h2>Painel dos Consultores</h2>
-        <div id="painelConsultores" class="card-grid"></div>
-      </section>
+    <section id="ranking" class="section" style="display:none;">
+      <h2>Ranking</h2>
+      <h3>Por Contas</h3>
+      <div id="rankingContas"></div>
+      <h3>Por Receita</h3>
+      <div id="rankingReceita"></div>
+      <h3>Metas Gerais</h3>
+      <p>Contas: <span id="metaContas"></span></p>
+      <p>Receita: <span id="metaReceita"></span></p>
+      <p>Vendas: <span id="metaVendas"></span></p>
+      <h3>Faltam para bater as metas:</h3>
+      <p>Contas: <span id="faltaMetaContas"></span></p>
+      <p>Receita: <span id="faltaMetaReceita"></span></p>
+      <p>Vendas: <span id="faltaMetaVendas"></span></p>
+    </section>
 
-      <section id="admin" class="section admin-only">
-        <h2>Administração</h2>
+    <section id="painelConsultores" class="section" style="display:none;">
+      <h2>Painel dos Consultores</h2>
+      <div id="consultorCards" class="card-container"></div>
+    </section>
 
-        <h3>Metas</h3>
-        <input type="number" id="metaContas" placeholder="Meta de contas" />
-        <input type="number" id="metaReceita" placeholder="Meta de receita" />
-        <input type="number" id="metaVendas" placeholder="Meta de vendas" />
-        <button onclick="salvarMetas()">Salvar Metas</button>
+    <section id="admin" class="section" style="display:none;">
+      <h2>Administração</h2>
 
-        <h3>Receita por Consultor</h3>
-        <select id="receitaConsultor">
-          <option value="">Selecione o consultor</option>
-          <option value="Leticia">Leticia</option>
-          <option value="Glaucia">Glaucia</option>
-          <option value="Marcelo">Marcelo</option>
-          <option value="Gabriel">Gabriel</option>
-        </select>
-        <input type="number" id="receitaValor" placeholder="Valor gerado" />
-        <button onclick="salvarReceitaConsultor()">Salvar Receita</button>
+      <form id="formAdmin">
+        <h3>Definir Metas Gerais</h3>
+        <label>Meta de Contas:</label>
+        <input type="number" id="metaInputContas" required />
 
-        <h3>Estados com mais lojas</h3>
-        <input type="text" id="estadoNome" placeholder="Nome do estado" />
-        <input type="number" id="estadoQtd" placeholder="Quantidade de lojas" />
-        <button onclick="salvarEstado()">Salvar Estado</button>
+        <label>Meta de Receita:</label>
+        <input type="number" id="metaInputReceita" step="0.01" required />
 
-        <h3>Segmentos</h3>
-        <input type="text" id="segmentoNome" placeholder="Segmento" />
-        <input type="number" id="segmentoValor" placeholder="Valor total" />
-        <button onclick="salvarSegmento()">Salvar Segmento</button>
-      </section>
-    </main>
+        <label>Meta de Vendas:</label>
+        <input type="number" id="metaInputVendas" step="0.01" required />
+
+        <button type="submit">Salvar Metas</button>
+      </form>
+
+      <h3>Definir Receita por Consultor</h3>
+      <div id="inputsReceitaConsultores">
+        <!-- Exemplo:
+        <input class="receita-consultor-input" data-consultor="Leticia" type="number" />
+        -->
+      </div>
+      <button onclick="salvarReceitasConsultor()">Salvar Receitas</button>
+
+      <h3>Segmentos</h3>
+      <input id="inputSegmentos" type="text" placeholder="Supermercado, Farmácia, etc." />
+      <button onclick="salvarSegmentos()">Salvar Segmentos</button>
+
+      <h3>Estados com mais lojas</h3>
+      <input id="inputEstados" type="text" placeholder="SP, RJ, MG, etc." />
+      <button onclick="salvarEstados()">Salvar Estados</button>
+    </section>
   </div>
 
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="script.js"></script>
+
 </body>
 </html>
