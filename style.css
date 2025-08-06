@@ -1,186 +1,191 @@
-/* Reset */
+/* Reset e base */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background: #f4f6f8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f5f6f7;
   color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Login */
 #loginScreen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background: linear-gradient(to right, #007aff, #34c759);
-}
-
-.login-box {
   background: #fff;
   padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
   text-align: center;
 }
 
-.login-box h2 {
-  margin-bottom: 1rem;
-  color: #007aff;
+#loginScreen h2 {
+  margin-bottom: 1.5rem;
 }
 
-.login-box select,
-.login-box input {
+#loginScreen select,
+#loginScreen input,
+#loginScreen button {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.75rem;
   margin: 0.5rem 0;
-  border: 1px solid #ddd;
   border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
 }
 
-.login-box button {
-  width: 100%;
-  padding: 0.8rem;
-  background: #007aff;
-  color: #fff;
-  border: none;
-  border-radius: 12px;
+#loginScreen button {
+  background-color: #007aff;
+  color: white;
   font-weight: bold;
+  border: none;
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
-.login-box button:hover {
-  background: #005bb5;
+#loginScreen button:hover {
+  background-color: #005fce;
 }
 
-/* App Container */
+/* Main App Layout */
 #mainApp {
-  display: flex;
-  height: 100vh;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 220px;
-  background: #fff;
-  border-right: 1px solid #eee;
-  display: flex;
+  display: none;
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto;
   flex-direction: column;
-  padding: 1rem;
+  gap: 2rem;
 }
 
-.sidebar h3 {
-  margin-bottom: 1rem;
-  color: #007aff;
-  font-size: 1.2rem;
+/* Menu Lateral */
+.menu {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .menu-item {
-  margin: 0.5rem 0;
-  padding: 0.8rem;
-  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  background-color: #e0e0e0;
+  border-radius: 12px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background 0.3s ease;
+  font-weight: 500;
 }
 
 .menu-item:hover,
 .menu-item.active {
-  background: #e6f0ff;
-  color: #007aff;
+  background-color: #007aff;
+  color: white;
 }
 
-/* Main Content */
-.main {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-}
-
-/* Section Titles */
-.section h2 {
-  margin-bottom: 1rem;
-  color: #007aff;
-}
-
-/* Cards Grid */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.2rem;
+/* Seções */
+.section {
+  display: none;
+  width: 100%;
 }
 
 /* Cards */
+#cardsMetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
 .card {
-  background: #fff;
-  padding: 1.2rem;
-  border-radius: 16px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-  transition: 0.3s ease;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: transform 0.2s ease;
 }
 
 .card:hover {
   transform: translateY(-4px);
 }
 
-/* Admin Inputs */
+.card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.card p {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #007aff;
+}
+
+/* Admin Formulário */
 .admin-form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .admin-form input {
-  padding: 0.8rem;
+  padding: 0.75rem;
   border: 1px solid #ccc;
   border-radius: 10px;
+  font-size: 1rem;
 }
 
 .admin-form button {
-  background: #34c759;
+  background-color: #28a745;
   color: white;
-  padding: 0.8rem;
+  padding: 0.75rem;
   border: none;
   border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .admin-form button:hover {
-  background: #28a745;
+  background-color: #218838;
 }
 
-/* Pop-up */
+/* Popup */
 #popupMsg {
   position: fixed;
-  top: 20px;
-  right: 20px;
-  background: #34c759;
+  top: 10px;
+  right: 10px;
+  background: #007aff;
   color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
   display: none;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .main {
+/* Responsivo */
+@media (max-width: 600px) {
+  .menu {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
     padding: 1rem;
   }
 
-  .sidebar {
-    width: 100px;
-  }
-
-  .menu-item {
-    font-size: 0.9rem;
+  #loginScreen {
+    padding: 1rem;
   }
 }
