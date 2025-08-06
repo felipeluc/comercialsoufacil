@@ -1,127 +1,186 @@
+/* Reset */
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", sans-serif;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-  background: #f4f8fb;
+  background: #f4f6f8;
   color: #333;
-  display: flex;
-  min-height: 100vh;
 }
 
-.login-container {
-  max-width: 300px;
-  margin: auto;
-  padding: 2rem;
-  background: white;
-  box-shadow: 0 4px 10px rgba(0, 122, 255, 0.1);
-  border-radius: 1rem;
+/* Login */
+#loginScreen {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(to right, #007aff, #34c759);
+}
+
+.login-box {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
   text-align: center;
 }
 
-.sidebar {
-  width: 240px;
-  background: #ffffff;
-  padding: 2rem 1rem;
-  box-shadow: 2px 0 8px rgba(0, 122, 255, 0.1);
-}
-
-.sidebar h2 {
+.login-box h2 {
   margin-bottom: 1rem;
-  font-size: 1.2rem;
   color: #007aff;
 }
 
-.menu-item {
-  display: block;
-  background: none;
+.login-box select,
+.login-box input {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 0.8rem;
+  background: #007aff;
+  color: #fff;
   border: none;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  font-size: 1rem;
-  color: #333;
+  border-radius: 12px;
+  font-weight: bold;
   cursor: pointer;
-  border-radius: 0.5rem;
-  transition: background 0.2s;
+  transition: background 0.3s ease;
 }
 
-.menu-item:hover {
+.login-box button:hover {
+  background: #005bb5;
+}
+
+/* App Container */
+#mainApp {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.sidebar h3 {
+  margin-bottom: 1rem;
+  color: #007aff;
+  font-size: 1.2rem;
+}
+
+.menu-item {
+  margin: 0.5rem 0;
+  padding: 0.8rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.menu-item:hover,
+.menu-item.active {
   background: #e6f0ff;
+  color: #007aff;
 }
 
-.main-content {
+/* Main Content */
+.main {
   flex: 1;
   padding: 2rem;
+  overflow-y: auto;
 }
 
-.section {
-  display: none;
+/* Section Titles */
+.section h2 {
+  margin-bottom: 1rem;
+  color: #007aff;
 }
 
-.section.active {
-  display: block;
-}
-
+/* Cards Grid */
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.2rem;
 }
 
+/* Cards */
 .card {
-  background: white;
-  border-radius: 1.25rem;
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.1);
-  padding: 1.5rem;
-  text-align: center;
-  transition: transform 0.2s;
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  transition: 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-4px);
 }
 
-.card h3 {
-  margin-bottom: 0.5rem;
-  font-size: 1.1rem;
-  color: #007aff;
+/* Admin Inputs */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.card p {
-  font-size: 1rem;
-  margin: 0.25rem 0;
+.admin-form input {
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
 }
 
-input,
-select,
-button {
-  width: 100%;
-  padding: 0.75rem;
-  margin-top: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-}
-
-button {
-  background: #007aff;
+.admin-form button {
+  background: #34c759;
   color: white;
+  padding: 0.8rem;
   border: none;
+  border-radius: 10px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
 }
 
-button:hover {
-  background: #005ecb;
+.admin-form button:hover {
+  background: #28a745;
 }
 
-.admin-only {
+/* Pop-up */
+#popupMsg {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #34c759;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: none;
+  z-index: 1000;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+  }
+
+  .sidebar {
+    width: 100px;
+  }
+
+  .menu-item {
+    font-size: 0.9rem;
+  }
 }
