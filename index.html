@@ -3,84 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard Comercial</title>
+  <title>Sistema Comercial</title>
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Tela de Login -->
-  <div id="login" class="tela-login">
-    <div class="card-login">
-      <h2>Login</h2>
-      <select id="usuario">
-        <option value="">Selecione o usuário</option>
-        <option>Marcelo</option>
-        <option>Angela</option>
-        <option>Gabriel</option>
-        <option>Leticia</option>
-        <option>Glaucia</option>
-        <option>Felipe</option>
-        <option>Carol</option>
-      </select>
-      <input type="password" id="senha" placeholder="Senha" />
-      <button onclick="login()">Entrar</button>
-    </div>
+  <!-- Login -->
+  <div id="loginSection" class="centered">
+    <h2>Login</h2>
+    <select id="usuarioSelect">
+      <option value="Marcelo">Marcelo</option>
+      <option value="Angela">Angela</option>
+      <option value="Gabriel">Gabriel</option>
+      <option value="Leticia">Leticia</option>
+      <option value="Glaucia">Glaucia</option>
+      <option value="Felipe">Felipe</option>
+      <option value="Carol">Carol</option>
+    </select><br><br>
+    <input type="password" id="senhaInput" placeholder="Senha"/><br><br>
+    <button onclick="login()">Entrar</button>
   </div>
 
   <!-- Sistema -->
-  <div id="app" class="hidden">
-    <div class="sidebar">
-      <h2>📊 Comercial</h2>
-      <p id="userLogado" class="user-info"></p>
-      <button class="menu-item" data-target="analise">Análise de Vendas</button>
+  <div id="mainApp" class="hidden">
+    <header>
+      <h1>Bem-vindo(a), <span id="userNome"></span></h1>
+    </header>
+
+    <nav class="menu">
+      <button class="menu-item" data-target="analise">Análise de Venda</button>
       <button class="menu-item" data-target="implantadas">Empresas Implantadas</button>
       <button class="menu-item" data-target="ranking">Ranking</button>
-      <button class="menu-item admin-only" data-target="painelConsultores">Painel Admin</button>
-    </div>
+      <button class="menu-item admin-only" data-target="painelConsultores">Administração</button>
+    </nav>
 
-    <div class="main-content">
-      <!-- Análise de Vendas -->
+    <main>
+      <!-- Análise -->
       <section id="analise" class="section hidden">
-        <h2>Análise de Vendas</h2>
-        <canvas id="graficoConsultores"></canvas>
-        <div id="rankingVendas"></div>
+        <h2>Análise de Venda</h2>
+        <canvas id="graficoConsultores" width="400" height="200"></canvas>
+        <div id="ranking" class="card"></div>
       </section>
 
-      <!-- Empresas Implantadas -->
+      <!-- Implantadas -->
       <section id="implantadas" class="section hidden">
         <h2>Empresas Implantadas</h2>
-        <p><strong>Total Semana:</strong> R$ <span id="totalSemana">0</span></p>
-        <p><strong>Contas Implantadas:</strong> <span id="contasImplantadas">0</span></p>
-        <p><strong>Diferença Semana:</strong> <span id="diferencaSemana">0%</span></p>
-        <div id="rankingFechamentos"></div>
+        <p>Total da semana: R$ <span id="totalSemana"></span></p>
+        <p>Contas implantadas: <span id="contasImplantadas"></span></p>
+        <p>Diferença da semana anterior: <span id="diferencaSemana"></span></p>
+        <div id="rankingFechamentos" class="card"></div>
       </section>
 
       <!-- Ranking -->
       <section id="ranking" class="section hidden">
-        <h2>🏆 Rankings</h2>
-        <h3>📈 Por Quantidade</h3>
-        <div id="rankingQuantidade"></div>
-        <h3>💸 Por Receita</h3>
-        <div id="rankingReceita"></div>
+        <h2>Ranking</h2>
+        <p>Meta de vendas: <span id="metaVendas"></span></p>
+        <p>Meta de contas: <span id="metaContas"></span></p>
+        <p>Meta de receita: <span id="metaReceita"></span></p>
       </section>
 
-      <!-- Painel Admin -->
+      <!-- Administração -->
       <section id="painelConsultores" class="section hidden admin-only">
-        <h2>Admin - Painel de Consultores</h2>
-        <div class="admin-form">
-          <select id="inputConsultor">
-            <option value="">Escolha um consultor</option>
-            <option>Leticia</option>
-            <option>Glaucia</option>
-            <option>Marcelo</option>
-            <option>Gabriel</option>
-          </select>
-          <input type="number" id="inputValor" placeholder="Valor da venda" />
-          <button onclick="salvarVenda()">Salvar Venda</button>
-        </div>
+        <h2>Painel dos Consultores</h2>
         <div class="consultor-cards"></div>
+
+        <h3>Registrar Venda</h3>
+        <select id="inputConsultor">
+          <option value="Leticia">Leticia</option>
+          <option value="Glaucia">Glaucia</option>
+          <option value="Marcelo">Marcelo</option>
+          <option value="Gabriel">Gabriel</option>
+        </select>
+        <input type="number" id="inputValor" placeholder="Valor da Venda"/>
+        <button onclick="salvarVenda()">Salvar Venda</button>
       </section>
-    </div>
+    </main>
   </div>
 
   <script type="module" src="script.js"></script>
