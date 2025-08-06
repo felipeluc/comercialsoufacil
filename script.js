@@ -22,18 +22,26 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // === Helpers ===
-const $ = id => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 function showPopup(msg) {
-  const el = document.getElementById("popupMsg");
+  const el = $("popupMsg");
   el.innerText = msg;
   el.style.display = "block";
-  setTimeout(() => el.style.display = "none", 3000);
+  setTimeout(() => (el.style.display = "none"), 3000);
 }
 
 // === Login ===
-window.login = function () {
+window.addEventListener("load", () => {
+  const loginBtn = $("btnEntrar");
+  if (loginBtn) {
+    loginBtn.addEventListener("click", login);
+  }
+});
+
+function login() {
   const user = $("userSelect").value;
   const pass = $("password").value;
+
   if (!user || pass !== user + "1234") {
     alert("Login inválido");
     return;
@@ -49,13 +57,13 @@ window.login = function () {
   carregarDashboard(user);
 }
 
-// === Menu Navegação ===
-document.querySelectorAll(".menu-item").forEach(btn => {
+// === Navegação entre menus ===
+document.querySelectorAll(".menu-item").forEach((btn) => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".menu-item").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".menu-item").forEach((b) => b.classList.remove("active"));
     btn.classList.add("active");
 
-    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+    document.querySelectorAll(".section").forEach((sec) => (sec.style.display = "none"));
     const alvo = btn.getAttribute("data-target");
     $(alvo).style.display = "block";
   });
@@ -83,7 +91,7 @@ async function carregarDashboard(usuario) {
 
   const container = $("cardsMetas");
   container.innerHTML = "";
-  cards.forEach(c => {
+  cards.forEach((c) => {
     container.innerHTML += `
       <div class="card">
         <h3>${c.titulo}</h3>
@@ -93,15 +101,18 @@ async function carregarDashboard(usuario) {
   });
 }
 
-// === Salvar Metas ===
+// === Admin - Salvar metas ===
 window.salvarMetas = async function () {
   const contas = parseInt($("metaContas").value);
   const receita = parseFloat($("metaReceita").value);
   const vendas = parseFloat($("metaVendas").value);
 
-  await setDoc(doc(db, "metas", "geral"), {
-    contas, receita, vendas
-  });
+  if (isNaN(contas) || isNaN(receita) || isNaN(vendas)) {
+    alert("Preencha todos os campos com valores válidos.");
+    return;
+  }
+
+  await setDoc(doc(db, "metas", "geral"), { contas, receita, vendas });
 
   showPopup("Metas salvas com sucesso.");
   carregarDashboard($("userSelect").value);
