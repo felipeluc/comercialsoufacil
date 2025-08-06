@@ -21,67 +21,58 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// === Utilidades ===
+// === Utilidades Gerais ===
 const $ = (id) => document.getElementById(id);
+
+// === Configurações ===
 const consultores = ["Leticia", "Glaucia", "Marcelo", "Gabriel"];
+const admins = ["Carol", "Felipe"];
 const cores = ["#007AFF", "#FF9500", "#34C759", "#AF52DE"];
+let usuarioLogado = "";
 
-// === Login ===
+// === LOGIN ===
 function login() {
-  const usuario = $("usuario").value;
-  const senha = $("senha").value;
+  const usuario = $("usuarioSelect").value;
+  const senha = $("senhaInput").value;
 
-  if (!usuario || !senha) {
-    alert("Preencha usuário e senha.");
-    return;
-  }
-
-  const senhaCorreta = usuario.toLowerCase() + "1234";
-
-  if (senha !== senhaCorreta) {
+  if (senha !== `${usuario.toLowerCase()}1234`) {
     alert("Senha incorreta.");
     return;
   }
 
-  $("login").classList.add("hidden");
-  $("app").classList.remove("hidden");
-  $("userLogado").innerText = "👤 " + usuario;
+  usuarioLogado = usuario;
 
-  const adminItems = document.querySelectorAll(".admin-only");
-  adminItems.forEach(item => {
-    if (usuario === "Carol" || usuario === "Felipe") {
-      item.classList.remove("hidden");
-    } else {
-      item.classList.add("hidden");
-    }
-  });
+  $("loginSection").classList.add("hidden");
+  $("mainApp").classList.remove("hidden");
+  $("userNome").innerText = usuario;
+
+  // Mostrar menus de admin
+  if (admins.includes(usuario)) {
+    document.querySelectorAll(".admin-only").forEach(el => el.classList.remove("hidden"));
+  } else {
+    document.querySelectorAll(".admin-only").forEach(el => el.classList.add("hidden"));
+  }
 
   mostrarSecao("analise");
 }
-window.login = login;
 
-// === Mostrar Seção ===
-function mostrarSecao(alvo) {
-  document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
-  $(alvo).classList.remove("hidden");
+// === Função: Mostrar seção ===
+function mostrarSecao(id) {
+  document.querySelectorAll(".section").forEach(sec => {
+    sec.classList.add("hidden");
+  });
 
-  if (alvo === "analise") carregarDashboard();
-  if (alvo === "implantadas") carregarImplantadas();
-  if (alvo === "ranking") carregarRanking();
-  if (alvo === "painelConsultores") carregarPainelConsultores();
+  const alvo = document.getElementById(id);
+  if (alvo) alvo.classList.remove("hidden");
+
+  // Carregamentos específicos
+  if (id === "analise") carregarDashboard();
+  if (id === "implantadas") carregarImplantadas();
+  if (id === "ranking") carregarRanking();
+  if (id === "painelConsultores") carregarPainelConsultores();
 }
 
-// === Navegação ===
-window.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".menu-item").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const alvo = btn.getAttribute("data-target");
-      mostrarSecao(alvo);
-    });
-  });
-});
-
-// === Dashboard Principal ===
+// === Função: Carregar Dashboard ===
 async function carregarDashboard() {
   const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
@@ -89,7 +80,18 @@ async function carregarDashboard() {
   let totais = {};
   consultores.forEach(c => totais[c] = 0);
   dados.forEach(d => {
-    if (totais[d.consultor]) totais[d.consultor] += d.valor;
+    if (totais[d.consultor] !== undefined) {
+      totais[d.consultor] += d.valor;
+    }
+  });
+
+  const ranking = Object.entries(totais).sort((a, b) => b[1] - a[1]);
+
+  const rankingDiv = $("ranking");
+  rankingDiv.innerHTML = "";
+  ranking.forEach(([nome, valor], i) => {
+    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
+    rankingDiv.innerHTML += `<div><strong>${emoji} ${nome}</strong>: R$ ${valor.toFixed(2)}</div>`;
   });
 
   const ctx = $("graficoConsultores").getContext("2d");
@@ -104,7 +106,9 @@ async function carregarDashboard() {
       }]
     },
     options: {
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: false }
+      },
       scales: {
         y: {
           beginAtZero: true,
@@ -113,17 +117,9 @@ async function carregarDashboard() {
       }
     }
   });
-
-  const rankingDiv = $("rankingVendas");
-  const ranking = Object.entries(totais).sort((a, b) => b[1] - a[1]);
-  rankingDiv.innerHTML = "";
-  ranking.forEach(([nome, valor], i) => {
-    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
-    rankingDiv.innerHTML += `<div><strong>${emoji} ${nome}</strong>: R$ ${valor.toFixed(2)}</div>`;
-  });
 }
 
-// === Empresas Implantadas ===
+// === Função: Carregar Implantadas ===
 async function carregarImplantadas() {
   const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
@@ -136,22 +132,34 @@ async function carregarImplantadas() {
   dados.forEach(d => {
     total += d.valor;
     contas++;
-    ranking[d.consultor]++;
+    if (ranking[d.consultor]) ranking[d.consultor]++;
+    else ranking[d.consultor] = 1;
   });
 
   $("totalSemana").innerText = total.toFixed(2);
   $("contasImplantadas").innerText = contas;
-  $("diferencaSemana").innerText = "+10%"; // fixo por enquanto
+  $("diferencaSemana").innerText = "+10%"; // Exemplo
 
   const rankingDiv = $("rankingFechamentos");
-  rankingDiv.innerHTML = "";
-  Object.entries(ranking).sort((a, b) => b[1] - a[1]).forEach(([nome, qtde], i) => {
-    const emoji = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
-    rankingDiv.innerHTML += `<div>${emoji} ${nome}: ${qtde} contas</div>`;
-  });
+  rankingDiv.innerHTML = "<h3>Ranking de Fechamentos</h3>";
+  Object.entries(ranking)
+    .sort((a, b) => b[1] - a[1])
+    .forEach(([nome, qtde], i) => {
+      const medalha = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+      rankingDiv.innerHTML += `<div>${medalha} ${nome}: ${qtde} contas</div>`;
+    });
 }
 
-// === Painel por Consultor ===
+// === Função: Ranking Geral ===
+function carregarRanking() {
+  // Aqui você pode carregar metas e mostrar quanto falta para bater as metas
+  // Exemplo fixo:
+  $("metaVendas").innerText = "R$ 50.000,00";
+  $("metaContas").innerText = "100 contas";
+  $("metaReceita").innerText = "R$ 30.000,00";
+}
+
+// === Função: Painéis dos Consultores ===
 async function carregarPainelConsultores() {
   const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
@@ -159,7 +167,7 @@ async function carregarPainelConsultores() {
   const container = document.querySelector(".consultor-cards");
   container.innerHTML = "";
 
-  consultores.forEach(nome => {
+  consultores.forEach((nome, idx) => {
     const vendas = dados.filter(d => d.consultor === nome);
     const total = vendas.reduce((acc, v) => acc + v.valor, 0);
 
@@ -178,50 +186,12 @@ async function carregarPainelConsultores() {
   });
 }
 
-// === Ranking (valores e quantidade) ===
-async function carregarRanking() {
-  const snap = await getDocs(collection(db, "vendasSemana"));
-  const dados = snap.docs.map(doc => doc.data());
-
-  let rankingQuantidade = {};
-  let rankingValor = {};
-
-  consultores.forEach(c => {
-    rankingQuantidade[c] = 0;
-    rankingValor[c] = 0;
-  });
-
-  dados.forEach(d => {
-    rankingQuantidade[d.consultor]++;
-    rankingValor[d.consultor] += d.valor;
-  });
-
-  const contagemDiv = $("rankingQuantidade");
-  const valorDiv = $("rankingReceita");
-
-  contagemDiv.innerHTML = "";
-  valorDiv.innerHTML = "";
-
-  Object.entries(rankingQuantidade).sort((a, b) => b[1] - a[1]).forEach(([nome, qnt], i) => {
-    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
-    contagemDiv.innerHTML += `<div>${emoji} ${nome}: ${qnt} contas</div>`;
-  });
-
-  Object.entries(rankingValor).sort((a, b) => b[1] - a[1]).forEach(([nome, valor], i) => {
-    const emoji = i === 0 ? "💰" : i === 1 ? "💵" : "💸";
-    valorDiv.innerHTML += `<div>${emoji} ${nome}: R$ ${valor.toFixed(2)}</div>`;
-  });
-}
-
-// === Admin - Salvar Venda ===
+// === Função: Salvar Venda (Admin) ===
 async function salvarVenda() {
   const consultor = $("inputConsultor").value;
   const valor = parseFloat($("inputValor").value);
 
-  if (!consultor || isNaN(valor)) {
-    alert("Preencha os dados corretamente.");
-    return;
-  }
+  if (!consultor || isNaN(valor)) return alert("Preencha todos os campos corretamente.");
 
   const novaVenda = {
     consultor,
@@ -232,10 +202,23 @@ async function salvarVenda() {
   const docId = Date.now().toString();
   await setDoc(doc(db, "vendasSemana", docId), novaVenda);
 
-  alert("Venda salva!");
+  alert("Venda salva com sucesso!");
   carregarDashboard();
   carregarImplantadas();
   carregarPainelConsultores();
-  carregarRanking();
 }
+
+// === Iniciar sistema ===
+window.addEventListener("DOMContentLoaded", () => {
+  // Ativa os botões do menu
+  document.querySelectorAll(".menu-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const alvo = btn.getAttribute("data-target");
+      mostrarSecao(alvo);
+    });
+  });
+});
+
+window.login = login;
 window.salvarVenda = salvarVenda;
+window.mostrarSecao = mostrarSecao;
