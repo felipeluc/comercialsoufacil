@@ -1,83 +1,81 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sistema Comercial</title>
+  <title>Sistema de Vendas</title>
   <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Login -->
-  <div id="loginSection" class="centered">
-    <h2>Login</h2>
-    <select id="usuarioSelect">
-      <option value="Marcelo">Marcelo</option>
-      <option value="Angela">Angela</option>
-      <option value="Gabriel">Gabriel</option>
-      <option value="Leticia">Leticia</option>
-      <option value="Glaucia">Glaucia</option>
-      <option value="Felipe">Felipe</option>
-      <option value="Carol">Carol</option>
-    </select><br><br>
-    <input type="password" id="senhaInput" placeholder="Senha"/><br><br>
-    <button onclick="login()">Entrar</button>
+  <!-- LOGIN -->
+  <div id="loginScreen">
+    <form id="loginForm" class="login-form">
+      <h2>Login</h2>
+      <select id="usuario" required>
+        <option value="">Selecione seu nome</option>
+        <option value="Marcelo">Marcelo</option>
+        <option value="Angela">Angela</option>
+        <option value="Gabriel">Gabriel</option>
+        <option value="Leticia">Leticia</option>
+        <option value="Glaucia">Glaucia</option>
+        <option value="Felipe">Felipe</option>
+        <option value="Carol">Carol</option>
+      </select>
+      <input type="password" id="senha" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+    </form>
   </div>
 
-  <!-- Sistema -->
-  <div id="mainApp" class="hidden">
-    <header>
-      <h1>Bem-vindo(a), <span id="userNome"></span></h1>
-    </header>
+  <!-- APP -->
+  <div id="mainApp" style="display:none">
+    <div class="sidebar">
+      <h2>Menu</h2>
+      <button class="menu-item" data-target="dashboard">📊 Análise de Vendas</button>
+      <button class="menu-item" data-target="implantadas">🏢 Empresas Implantadas</button>
+      <button class="menu-item" data-target="ranking">🏆 Ranking</button>
+      <button class="menu-item" id="adminMenu" data-target="adminPanel" style="display:none">🛠️ Painel Admin</button>
+    </div>
 
-    <nav class="menu">
-      <button class="menu-item" data-target="analise">Análise de Venda</button>
-      <button class="menu-item" data-target="implantadas">Empresas Implantadas</button>
-      <button class="menu-item" data-target="ranking">Ranking</button>
-      <button class="menu-item admin-only" data-target="painelConsultores">Administração</button>
-    </nav>
+    <div class="content">
+      <!-- DASHBOARD -->
+      <div class="section" id="dashboard" style="display:block">
+        <h2>Análise de Vendas</h2>
+        <div id="dashboardCards" class="card-container"></div>
+      </div>
 
-    <main>
-      <!-- Análise -->
-      <section id="analise" class="section hidden">
-        <h2>Análise de Venda</h2>
-        <canvas id="graficoConsultores" width="400" height="200"></canvas>
-        <div id="ranking" class="card"></div>
-      </section>
-
-      <!-- Implantadas -->
-      <section id="implantadas" class="section hidden">
+      <!-- IMPLANTADAS -->
+      <div class="section" id="implantadas" style="display:none">
         <h2>Empresas Implantadas</h2>
-        <p>Total da semana: R$ <span id="totalSemana"></span></p>
-        <p>Contas implantadas: <span id="contasImplantadas"></span></p>
-        <p>Diferença da semana anterior: <span id="diferencaSemana"></span></p>
-        <div id="rankingFechamentos" class="card"></div>
-      </section>
+        <div id="implantadasCards" class="card-container"></div>
+      </div>
 
-      <!-- Ranking -->
-      <section id="ranking" class="section hidden">
+      <!-- RANKING -->
+      <div class="section" id="ranking" style="display:none">
         <h2>Ranking</h2>
-        <p>Meta de vendas: <span id="metaVendas"></span></p>
-        <p>Meta de contas: <span id="metaContas"></span></p>
-        <p>Meta de receita: <span id="metaReceita"></span></p>
-      </section>
+        <div id="rankingQtde" class="ranking-container"></div>
+        <hr />
+        <div id="rankingValor" class="ranking-container"></div>
+      </div>
 
-      <!-- Administração -->
-      <section id="painelConsultores" class="section hidden admin-only">
-        <h2>Painel dos Consultores</h2>
-        <div class="consultor-cards"></div>
-
-        <h3>Registrar Venda</h3>
-        <select id="inputConsultor">
-          <option value="Leticia">Leticia</option>
-          <option value="Glaucia">Glaucia</option>
-          <option value="Marcelo">Marcelo</option>
-          <option value="Gabriel">Gabriel</option>
-        </select>
-        <input type="number" id="inputValor" placeholder="Valor da Venda"/>
-        <button onclick="salvarVenda()">Salvar Venda</button>
-      </section>
-    </main>
+      <!-- ADMIN -->
+      <div class="section" id="adminPanel" style="display:none">
+        <h2>Painel Administrativo</h2>
+        <form id="adminForm" class="admin-form">
+          <select id="adminConsultor" required>
+            <option value="">Consultor</option>
+            <option value="Marcelo">Marcelo</option>
+            <option value="Angela">Angela</option>
+            <option value="Gabriel">Gabriel</option>
+            <option value="Leticia">Leticia</option>
+            <option value="Glaucia">Glaucia</option>
+            <option value="Felipe">Felipe</option>
+            <option value="Carol">Carol</option>
+          </select>
+          <input type="number" id="adminValor" placeholder="Valor da venda" required />
+          <button type="submit">Salvar Venda</button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="script.js"></script>
