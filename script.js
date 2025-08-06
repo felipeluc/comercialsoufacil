@@ -21,14 +21,49 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// === Utilidades Gerais ===
+// === Variáveis ===
+const consultores = ["Leticia", "Glaucia", "Marcelo", "Gabriel"];
+const admins = ["Carol", "Felipe"];
+
+// === Utilidade ===
 const $ = (id) => document.getElementById(id);
 
-// === Configurações ===
-const consultores = ["Leticia", "Glaucia", "Marcelo", "Gabriel"];
-const cores = ["#007AFF", "#FF9500", "#34C759", "#AF52DE"];
+// === Login ===
+window.addEventListener("load", () => {
+  $("loginBtn").addEventListener("click", () => {
+    const user = $("userSelect").value;
+    const password = $("passwordInput").value;
 
-// === Função: Carregar Dashboard ===
+    if (password === user + "1234") {
+      $("loginSection").classList.add("hidden");
+      $("mainSection").classList.remove("hidden");
+
+      if (admins.includes(user)) {
+        document.querySelectorAll(".admin-only").forEach(el => el.classList.remove("hidden"));
+      }
+
+      carregarDashboard();
+    } else {
+      alert("Senha incorreta!");
+    }
+  });
+});
+
+// === Navegação ===
+document.querySelectorAll(".menu-item").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+    const alvo = btn.getAttribute("data-target");
+    $(alvo).classList.add("active");
+
+    if (alvo === "vendas") carregarDashboard();
+    if (alvo === "implantadas") carregarImplantadas();
+    if (alvo === "ranking") carregarRanking();
+    if (alvo === "admin") carregarAdmin();
+  });
+});
+
+// === Dashboard: Análise de Vendas ===
 async function carregarDashboard() {
   const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
@@ -41,18 +76,6 @@ async function carregarDashboard() {
     }
   });
 
-  // Ordenar para ranking
-  const ranking = Object.entries(totais).sort((a, b) => b[1] - a[1]);
-
-  // Ranking HTML
-  const rankingDiv = $("ranking");
-  rankingDiv.innerHTML = "";
-  ranking.forEach(([nome, valor], i) => {
-    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
-    rankingDiv.innerHTML += `<div><strong>${emoji} ${nome}</strong>: R$ ${valor.toFixed(2)}</div>`;
-  });
-
-  // Gráfico
   const ctx = $("graficoConsultores").getContext("2d");
   new Chart(ctx, {
     type: "bar",
@@ -61,7 +84,7 @@ async function carregarDashboard() {
       datasets: [{
         label: "Vendas da Semana",
         data: consultores.map(c => totais[c]),
-        backgroundColor: cores
+        backgroundColor: ["#007AFF", "#FF9500", "#34C759", "#AF52DE"]
       }]
     },
     options: {
@@ -71,14 +94,16 @@ async function carregarDashboard() {
       scales: {
         y: {
           beginAtZero: true,
-          ticks: { callback: (v) => `R$ ${v}` }
+          ticks: {
+            callback: (v) => `R$ ${v}`
+          }
         }
       }
     }
   });
 }
 
-// === Função: Carregar Implantadas ===
+// === Implantadas ===
 async function carregarImplantadas() {
   const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
@@ -96,12 +121,12 @@ async function carregarImplantadas() {
     else ranking[d.consultor] = 1;
   });
 
-  $("totalSemana").innerText = total.toFixed(2);
+  $("totalSemana").innerText = `R$ ${total.toFixed(2)}`;
   $("contasImplantadas").innerText = contas;
   $("diferencaSemana").innerText = "+10%"; // Exemplo fixo
 
   const rankingDiv = $("rankingFechamentos");
-  rankingDiv.innerHTML = "<h3>Ranking de Fechamentos</h3>";
+  rankingDiv.innerHTML = "";
   Object.entries(ranking)
     .sort((a, b) => b[1] - a[1])
     .forEach(([nome, qtde], i) => {
@@ -110,34 +135,49 @@ async function carregarImplantadas() {
     });
 }
 
-// === Função: Painéis dos Consultores ===
-async function carregarPainelConsultores() {
+// === Ranking ===
+async function carregarRanking() {
   const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
 
-  const container = document.querySelector(".consultor-cards");
-  container.innerHTML = "";
+  const rankingQtd = {};
+  const rankingValor = {};
 
-  consultores.forEach((nome, idx) => {
-    const vendas = dados.filter(d => d.consultor === nome);
-    const total = vendas.reduce((acc, v) => acc + v.valor, 0);
-
-    const card = document.createElement("div");
-    card.className = "consultor-card";
-
-    card.innerHTML = `
-      <h3>${nome}</h3>
-      <p><strong>Total:</strong> R$ ${total.toFixed(2)}</p>
-      <p><strong>Contas:</strong> ${vendas.length}</p>
-      <p><strong>Meta:</strong> R$ 5000</p>
-      <p><strong>Observações:</strong> 🔍</p>
-    `;
-
-    container.appendChild(card);
+  consultores.forEach(c => {
+    rankingQtd[c] = 0;
+    rankingValor[c] = 0;
   });
+
+  dados.forEach(d => {
+    rankingQtd[d.consultor]++;
+    rankingValor[d.consultor] += d.valor;
+  });
+
+  const qtdDiv = $("rankingContas");
+  const valorDiv = $("rankingReceita");
+  qtdDiv.innerHTML = "";
+  valorDiv.innerHTML = "";
+
+  Object.entries(rankingQtd).sort((a, b) => b[1] - a[1]).forEach(([nome, qtde], i) => {
+    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
+    qtdDiv.innerHTML += `<div>${emoji} ${nome}: ${qtde} contas</div>`;
+  });
+
+  Object.entries(rankingValor).sort((a, b) => b[1] - a[1]).forEach(([nome, val], i) => {
+    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
+    valorDiv.innerHTML += `<div>${emoji} ${nome}: R$ ${val.toFixed(2)}</div>`;
+  });
+
+  const metaVendas = 100;
+  const metaReceita = 50000;
+  const totalContas = dados.length;
+  const totalReceita = dados.reduce((acc, d) => acc + d.valor, 0);
+
+  $("metaContas").innerText = `${metaVendas - totalContas} contas para meta`;
+  $("metaReceita").innerText = `Faltam R$ ${(metaReceita - totalReceita).toFixed(2)}`;
 }
 
-// === Função: Salvar Venda ===
+// === Admin: Salvar Vendas ===
 async function salvarVenda() {
   const consultor = $("inputConsultor").value;
   const valor = parseFloat($("inputValor").value);
@@ -156,24 +196,7 @@ async function salvarVenda() {
   alert("Venda salva com sucesso!");
   carregarDashboard();
   carregarImplantadas();
-  carregarPainelConsultores();
+  carregarRanking();
 }
-
-// === Navegação entre seções ===
-document.querySelectorAll(".menu-item").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
-    const alvo = btn.getAttribute("data-target");
-    $(alvo).style.display = "block";
-
-    if (alvo === "implantadas") carregarImplantadas();
-    if (alvo === "painelConsultores") carregarPainelConsultores();
-  });
-});
-
-// === Inicialização ===
-window.addEventListener("load", () => {
-  carregarDashboard();
-});
 
 window.salvarVenda = salvarVenda;
