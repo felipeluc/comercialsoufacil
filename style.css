@@ -1,144 +1,170 @@
-body {
+/* Reset básico */
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f9f9f9;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", sans-serif;
+}
+
+/* Tela de login centralizada */
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: #f4f6f8;
+}
+
+.centered input,
+.centered select,
+.centered button {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  width: 250px;
+}
+
+.centered button {
+  background-color: #007aff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.centered button:hover {
+  background-color: #005bb5;
+}
+
+/* Área do sistema */
+body {
+  background-color: #f9fbfd;
   color: #333;
 }
 
-.tela-login {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #e8f0ff;
+/* Header */
+header {
+  background-color: #ffffff;
+  padding: 15px 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.card-login {
-  background: white;
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 300px;
-}
-
-.card-login h2 {
-  text-align: center;
-}
-
-.card-login select,
-.card-login input,
-.card-login button {
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.card-login button {
-  background: #007aff;
-  color: white;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.card-login button:hover {
-  background: #005fcc;
-}
-
-#app {
-  display: flex;
-  min-height: 100vh;
-}
-
-.sidebar {
-  width: 240px;
-  background: white;
-  box-shadow: 4px 0 8px rgba(0,0,0,0.05);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.sidebar h2 {
-  margin-top: 0;
+header h1 {
+  font-size: 20px;
   color: #007aff;
 }
 
-.sidebar .menu-item {
-  background: #f0f4ff;
+/* Menu lateral */
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 15px;
+  gap: 10px;
+}
+
+.menu-item {
+  background-color: #f0f4f8;
   border: none;
-  padding: 10px;
+  padding: 10px 20px;
   border-radius: 12px;
-  text-align: left;
-  cursor: pointer;
+  color: #007aff;
   font-weight: bold;
-  transition: 0.3s;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-.sidebar .menu-item:hover {
-  background: #dce8ff;
+.menu-item:hover {
+  background-color: #e0ecff;
 }
 
-.main-content {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
+/* Seções principais */
+main {
+  padding: 20px;
 }
 
 .section {
-  display: none;
-}
-
-.section h2 {
-  color: #007aff;
-  margin-bottom: 1rem;
+  display: block;
+  margin-top: 20px;
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
-.user-info {
-  font-weight: bold;
-  color: #444;
-  margin-top: 0.5rem;
+/* Cards */
+.card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
-.admin-form {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.admin-form input,
-.admin-form select,
-.admin-form button {
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.admin-form button {
-  background: #007aff;
-  color: white;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-}
-
+/* Consultor Cards */
 .consultor-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .consultor-card {
-  background: white;
-  padding: 1rem;
+  background-color: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  padding: 15px;
+  width: 200px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+
+.consultor-card:hover {
+  transform: scale(1.02);
+}
+
+/* Inputs admin */
+#inputConsultor,
+#inputValor {
+  padding: 8px;
+  margin: 5px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 200px;
+}
+
+button {
+  cursor: pointer;
+  background-color: #007aff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #005bb5;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .consultor-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .consultor-card {
+    width: 90%;
+  }
+
+  .menu {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .menu-item {
+    width: 100%;
+  }
 }
