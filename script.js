@@ -230,3 +230,122 @@ $("formAdmin").addEventListener("submit", async (e) => {
   await setDoc(doc(db, "metas", "geral"), metas);
   alert("Metas salvas com sucesso!");
 });
+// === ADMIN: Salvar Receita por Consultor ===
+window.salvarReceitasConsultor = async function () {
+  const inputs = document.querySelectorAll(".receita-consultor-input");
+  for (const input of inputs) {
+    const consultor = input.dataset.consultor;
+    const valor = parseFloat(input.value);
+    if (!isNaN(valor)) {
+      await setDoc(doc(db, "receitasPorConsultor", consultor), { valor });
+    }
+  }
+  alert("Receitas por consultor salvas com sucesso.");
+}
+
+// === ADMIN: Salvar Metas Gerais ===
+window.salvarMetas = async function () {
+  const metaContas = parseInt($("inputMetaContas").value);
+  const metaReceita = parseFloat($("inputMetaReceita").value);
+  const metaVendas = parseFloat($("inputMetaVendas").value);
+
+  await setDoc(doc(db, "metas", "geral"), {
+    contas: metaContas,
+    receita: metaReceita,
+    vendas: metaVendas
+  });
+
+  alert("Metas gerais salvas com sucesso.");
+}
+
+// === ADMIN: Salvar Segmentos ===
+window.salvarSegmentos = async function () {
+  const lista = $("inputSegmentos").value.split(",");
+  await setDoc(doc(db, "rankingSegmentos", "lista"), {
+    segmentos: lista.map(s => s.trim())
+  });
+
+  alert("Segmentos salvos.");
+}
+
+// === ADMIN: Salvar Estados com Mais Lojas ===
+window.salvarEstados = async function () {
+  const estados = $("inputEstados").value.split(",");
+  await setDoc(doc(db, "estadosComMaisLojas", "ranking"), {
+    estados: estados.map(e => e.trim())
+  });
+
+  alert("Estados salvos.");
+}
+
+// === EMPRESAS IMPLANTADAS - Exibição ===
+async function carregarEmpresasImplantadas() {
+  const snap = await getDocs(collection(db, "implantadas"));
+  const dados = snap.docs.map(doc => doc.data());
+
+  let totalEmpresas = dados.length;
+  let receitaTotal = dados.reduce((acc, cur) => acc + cur.valor, 0);
+
+  $("totalEmpresas").innerText = totalEmpresas;
+  $("receitaTotalEmpresas").innerText = `R$ ${receitaTotal.toFixed(2)}`;
+
+  // Receita por consultor
+  const porConsultor = {};
+  consultores.forEach(c => porConsultor[c] = 0);
+  dados.forEach(d => {
+    if (porConsultor[d.consultor]) porConsultor[d.consultor] += d.valor;
+  });
+
+  const divConsultores = $("receitaPorConsultor");
+  divConsultores.innerHTML = "";
+  Object.entries(porConsultor).forEach(([nome, valor]) => {
+    divConsultores.innerHTML += `<div class="card-mini">${nome}: R$ ${valor.toFixed(2)}</div>`;
+  });
+
+  // Segmentos
+  const segSnap = await getDoc(doc(db, "rankingSegmentos", "lista"));
+  const segmentos = segSnap.exists() ? segSnap.data().segmentos : [];
+  $("segmentosRanking").innerHTML = segmentos.map(s => `<div class="card-mini">${s}</div>`).join("");
+
+  // Estados
+  const estSnap = await getDoc(doc(db, "estadosComMaisLojas", "ranking"));
+  const estados = estSnap.exists() ? estSnap.data().estados : [];
+  $("estadosMaisLojas").innerHTML = estados.map(e => `<div class="card-mini">${e}</div>`).join("");
+}
+
+// === RANKING - Cálculo de metas restantes ===
+async function carregarRankingMetas() {
+  const metaSnap = await getDoc(doc(db, "metas", "geral"));
+  if (!metaSnap.exists()) return;
+
+  const metas = metaSnap.data();
+  const vendasSnap = await getDocs(collection(db, "vendasSemana"));
+  const vendas = vendasSnap.docs.map(d => d.data());
+
+  const totalContas = vendas.length;
+  const totalReceita = vendas.reduce((acc, cur) => acc + cur.valor, 0);
+  const totalVendas = totalReceita; // assumindo venda = receita
+
+  $("faltaMetaContas").innerText = Math.max(0, metas.contas - totalContas);
+  $("faltaMetaReceita").innerText = `R$ ${Math.max(0, metas.receita - totalReceita).toFixed(2)}`;
+  $("faltaMetaVendas").innerText = `R$ ${Math.max(0, metas.vendas - totalVendas).toFixed(2)}`;
+}
+
+// === Navegação entre menus com clique ===
+document.querySelectorAll(".menu-item").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+    const alvo = btn.getAttribute("data-target");
+    $(alvo).style.display = "block";
+
+    if (alvo === "vendas") carregarDashboard();
+    if (alvo === "implantadas") carregarEmpresasImplantadas();
+    if (alvo === "ranking") carregarRankingMetas();
+    if (alvo === "painelConsultores") carregarPainelConsultores();
+  });
+});
+
+// === Inicialização ===
+window.addEventListener("load", () => {
+  carregarDashboard();
+});
