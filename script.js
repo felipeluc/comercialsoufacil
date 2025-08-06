@@ -22,42 +22,53 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// === Utilidades Gerais ===
+// === Usuários e Cores ===
+const usuarios = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia", "Felipe", "Carol"];
+const consultores = ["Leticia", "Glaucia", "Marcelo", "Gabriel"];
+const cores = ["#007AFF", "#FF9500", "#34C759", "#AF52DE"];
+
+// === Utilidades ===
 const $ = (id) => document.getElementById(id);
-const consultores = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia", "Felipe", "Carol"];
-let usuarioAtual = "";
+let usuarioLogado = "";
 
 // === Login ===
-window.login = () => {
-  const user = $("userSelect").value;
-  const senha = $("senhaInput").value;
+window.onload = () => {
+  const loginForm = $("loginForm");
+  const userSelect = $("usuarioSelect");
+  usuarios.forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u;
+    opt.textContent = u;
+    userSelect.appendChild(opt);
+  });
 
-  if (senha === user.toLowerCase() + "1234") {
-    usuarioAtual = user;
-    $("loginSection").style.display = "none";
-    $("mainApp").style.display = "flex";
-
-    if (user === "Carol" || user === "Felipe") {
-      $("adminMenu").style.display = "block";
-      $("adminSection").style.display = "block";
+  loginForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nome = userSelect.value;
+    const senha = $("senhaInput").value;
+    if (senha === nome.toLowerCase() + "1234") {
+      usuarioLogado = nome;
+      $("loginScreen").style.display = "none";
+      $("mainApp").style.display = "flex";
+      if (nome === "Felipe" || nome === "Carol") {
+        $("menuAdmin").style.display = "block";
+      }
+      carregarDashboard();
+      carregarImplantadas();
+      carregarRanking();
+      carregarPainelConsultores();
+    } else {
+      alert("Senha incorreta");
     }
-
-    carregarDashboard();
-    carregarImplantadas();
-    carregarRanking();
-    carregarPainelConsultores();
-    carregarAdminDados();
-  } else {
-    alert("Senha incorreta.");
-  }
+  });
 };
 
-// === Navegação entre menus ===
-document.querySelectorAll(".menu-item").forEach(item => {
-  item.addEventListener("click", () => {
+// === Navegação do Menu ===
+document.querySelectorAll(".menu-item").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.target;
     document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
-    const destino = item.getAttribute("data-target");
-    $(destino).style.display = "block";
+    $(target).style.display = "block";
   });
 });
 
@@ -69,19 +80,20 @@ async function carregarDashboard() {
   let totais = {};
   consultores.forEach(c => totais[c] = 0);
   dados.forEach(d => {
-    if (totais[d.consultor] !== undefined) {
-      totais[d.consultor] += d.valor;
-    }
+    if (totais[d.consultor]) totais[d.consultor] += d.valor;
   });
 
+  // Ranking
   const ranking = Object.entries(totais).sort((a, b) => b[1] - a[1]);
-
-  $("rankingContainer").innerHTML = ranking.map(([nome, valor], i) => {
+  const divRanking = $("rankingAnalise");
+  divRanking.innerHTML = "";
+  ranking.forEach(([nome, valor], i) => {
     const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
-    return `<div class="card"><h3>${emoji} ${nome}</h3><p>R$ ${valor.toFixed(2)}</p></div>`;
-  }).join("");
+    divRanking.innerHTML += `<div class="card"><strong>${emoji} ${nome}</strong><br>R$ ${valor.toFixed(2)}</div>`;
+  });
 
-  const ctx = $("graficoVendas").getContext("2d");
+  // Gráfico
+  const ctx = $("graficoConsultores").getContext("2d");
   new Chart(ctx, {
     type: "bar",
     data: {
@@ -89,17 +101,15 @@ async function carregarDashboard() {
       datasets: [{
         label: "Vendas da Semana",
         data: consultores.map(c => totais[c]),
-        backgroundColor: "#007AFF"
+        backgroundColor: cores
       }]
     },
     options: {
-      plugins: {
-        legend: { display: false }
-      },
+      plugins: { legend: { display: false } },
       scales: {
         y: {
           beginAtZero: true,
-          ticks: { callback: v => `R$ ${v}` }
+          ticks: { callback: (v) => `R$ ${v}` }
         }
       }
     }
@@ -111,31 +121,41 @@ async function carregarImplantadas() {
   const snap = await getDocs(collection(db, "implantadas"));
   const dados = snap.docs.map(doc => doc.data());
 
-  let total = dados.length;
-  let receita = dados.reduce((acc, curr) => acc + (curr.valor || 0), 0);
+  let total = 0;
+  let receita = 0;
   let porConsultor = {};
+  let estados = {};
+  let segmentos = {};
+
   consultores.forEach(c => porConsultor[c] = 0);
+
   dados.forEach(d => {
-    if (porConsultor[d.consultor] !== undefined) {
-      porConsultor[d.consultor] += d.valor || 0;
-    }
+    total++;
+    receita += d.receita;
+    if (porConsultor[d.consultor]) porConsultor[d.consultor] += d.receita;
+    estados[d.estado] = (estados[d.estado] || 0) + 1;
+    segmentos[d.segmento] = (segmentos[d.segmento] || 0) + 1;
   });
 
   $("totalEmpresas").innerText = total;
   $("receitaTotal").innerText = `R$ ${receita.toFixed(2)}`;
 
-  $("receitaPorConsultor").innerHTML = Object.entries(porConsultor).map(([nome, valor]) => {
-    return `<div class="card"><h4>${nome}</h4><p>R$ ${valor.toFixed(2)}</p></div>`;
-  }).join("");
+  // Receita por consultor
+  const divReceita = $("receitaConsultor");
+  divReceita.innerHTML = "";
+  Object.entries(porConsultor).forEach(([nome, valor]) => {
+    divReceita.innerHTML += `<div class="card">${nome}: R$ ${valor.toFixed(2)}</div>`;
+  });
 
-  const estadosSnap = await getDocs(collection(db, "estadosComMaisLojas"));
-  const segmentosSnap = await getDocs(collection(db, "rankingSegmentos"));
+  // Estados com mais lojas
+  const topEstados = Object.entries(estados).sort((a, b) => b[1] - a[1]);
+  const divEstados = $("rankingEstados");
+  divEstados.innerHTML = topEstados.map(([uf, qtd]) => `<div class="card">${uf}: ${qtd} lojas</div>`).join("");
 
-  $("estadosMaisLojas").innerHTML = estadosSnap.docs.map(doc =>
-    `<div class="card">${doc.data().estado}: ${doc.data().quantidade}</div>`).join("");
-
-  $("segmentosRanking").innerHTML = segmentosSnap.docs.map(doc =>
-    `<div class="card">${doc.data().segmento}: ${doc.data().quantidade}</div>`).join("");
+  // Segmentos
+  const topSegmentos = Object.entries(segmentos).sort((a, b) => b[1] - a[1]);
+  const divSeg = $("rankingSegmentos");
+  divSeg.innerHTML = topSegmentos.map(([seg, qtd]) => `<div class="card">${seg}: ${qtd}</div>`).join("");
 }
 
 // === Ranking ===
@@ -143,92 +163,70 @@ async function carregarRanking() {
   const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
 
-  let porContas = {}, porValor = {};
+  let contasPorConsultor = {};
+  let receitaPorConsultor = {};
   consultores.forEach(c => {
-    porContas[c] = 0;
-    porValor[c] = 0;
+    contasPorConsultor[c] = 0;
+    receitaPorConsultor[c] = 0;
   });
 
   dados.forEach(d => {
-    if (porContas[d.consultor] !== undefined) {
-      porContas[d.consultor]++;
-      porValor[d.consultor] += d.valor;
-    }
+    contasPorConsultor[d.consultor]++;
+    receitaPorConsultor[d.consultor] += d.valor;
   });
 
-  $("rankingContas").innerHTML = Object.entries(porContas)
-    .sort((a, b) => b[1] - a[1])
-    .map(([nome, qtd], i) => {
-      const medalha = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
-      return `<div class="card">${medalha} ${nome}: ${qtd} contas</div>`;
-    }).join("");
+  const rankingContas = Object.entries(contasPorConsultor).sort((a, b) => b[1] - a[1]);
+  const rankingReceita = Object.entries(receitaPorConsultor).sort((a, b) => b[1] - a[1]);
 
-  $("rankingReceita").innerHTML = Object.entries(porValor)
-    .sort((a, b) => b[1] - a[1])
-    .map(([nome, valor], i) => {
-      const medalha = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
-      return `<div class="card">${medalha} ${nome}: R$ ${valor.toFixed(2)}</div>`;
-    }).join("");
+  $("rankingContas").innerHTML = rankingContas.map(([nome, qtd], i) =>
+    `<div class="card">${i === 0 ? "🏆" : "🎖️"} ${nome}: ${qtd} contas</div>`).join("");
 
-  const metasSnap = await getDoc(doc(db, "metas", "geral"));
-  const metas = metasSnap.exists() ? metasSnap.data() : { contas: 50, receita: 50000, vendas: 30000 };
+  $("rankingReceita").innerHTML = rankingReceita.map(([nome, val], i) =>
+    `<div class="card">${i === 0 ? "🏆" : "🎖️"} ${nome}: R$ ${val.toFixed(2)}</div>`).join("");
 
-  const totalContas = Object.values(porContas).reduce((a, b) => a + b, 0);
-  const totalReceita = Object.values(porValor).reduce((a, b) => a + b, 0);
+  // Metas
+  const metaSnap = await getDoc(doc(db, "metas", "geral"));
+  if (metaSnap.exists()) {
+    const meta = metaSnap.data();
+    const totalContas = dados.length;
+    const totalReceita = dados.reduce((acc, d) => acc + d.valor, 0);
 
-  $("metaContas").innerText = metas.contas - totalContas;
-  $("metaReceita").innerText = `R$ ${(metas.receita - totalReceita).toFixed(2)}`;
-  $("metaVendas").innerText = `R$ ${(metas.vendas - totalReceita).toFixed(2)}`;
+    $("metaContas").innerText = `${totalContas} / ${meta.contas}`;
+    $("metaReceita").innerText = `R$ ${totalReceita.toFixed(2)} / R$ ${meta.receita}`;
+    $("metaVendas").innerText = `${totalContas} / ${meta.vendas}`;
+  }
 }
 
 // === Painel dos Consultores ===
 async function carregarPainelConsultores() {
   const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
+  const container = $("consultorCards");
+  container.innerHTML = "";
 
-  $("painelConsultores").innerHTML = consultores.map(nome => {
+  consultores.forEach(nome => {
     const vendas = dados.filter(d => d.consultor === nome);
-    const total = vendas.reduce((acc, d) => acc + d.valor, 0);
-    return `
+    const total = vendas.reduce((acc, v) => acc + v.valor, 0);
+
+    container.innerHTML += `
       <div class="card">
         <h3>${nome}</h3>
         <p><strong>Total:</strong> R$ ${total.toFixed(2)}</p>
         <p><strong>Contas:</strong> ${vendas.length}</p>
         <p><strong>Meta:</strong> R$ 5000</p>
-      </div>`;
-  }).join("");
+      </div>
+    `;
+  });
 }
 
-// === Admin - Salvar dados ===
-async function salvarAdminDados() {
+// === Admin - Apenas Carol e Felipe ===
+$("formAdmin").addEventListener("submit", async (e) => {
+  e.preventDefault();
   const metas = {
     contas: parseInt($("metaInputContas").value),
     receita: parseFloat($("metaInputReceita").value),
-    vendas: parseFloat($("metaInputVendas").value)
+    vendas: parseInt($("metaInputVendas").value)
   };
   await setDoc(doc(db, "metas", "geral"), metas);
-
-  const estado = $("inputEstado").value;
-  const estadoQtd = parseInt($("inputEstadoQtd").value);
-  await addDoc(collection(db, "estadosComMaisLojas"), { estado, quantidade: estadoQtd });
-
-  const segmento = $("inputSegmento").value;
-  const segmentoQtd = parseInt($("inputSegmentoQtd").value);
-  await addDoc(collection(db, "rankingSegmentos"), { segmento, quantidade: segmentoQtd });
-
-  alert("Dados salvos com sucesso!");
-  carregarImplantadas();
-  carregarRanking();
-}
-
-async function carregarAdminDados() {
-  const metasSnap = await getDoc(doc(db, "metas", "geral"));
-  if (metasSnap.exists()) {
-    const metas = metasSnap.data();
-    $("metaInputContas").value = metas.contas;
-    $("metaInputReceita").value = metas.receita;
-    $("metaInputVendas").value = metas.vendas;
-  }
-}
-
-window.salvarAdminDados = salvarAdminDados;
+  alert("Metas salvas com sucesso!");
+});
