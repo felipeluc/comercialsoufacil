@@ -1,229 +1,61 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard Comercial</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      margin: 0;
-      background: #f2f2f7;
-      color: #333;
-    }
-    header {
-      background: #007aff;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    #loginScreen, #mainApp {
-      display: none;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    #loginScreen.active, #mainApp.active {
-      display: flex;
-    }
-    .card {
-      background: white;
-      border-radius: 1rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      padding: 1rem;
-      margin: 1rem;
-      flex: 1;
-      min-width: 280px;
-      max-width: 320px;
-    }
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 2rem;
-    }
-    nav {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      background: #fff;
-      padding: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    nav button {
-      background: #e5e5ea;
-      border: none;
-      border-radius: 1rem;
-      padding: 0.5rem 1rem;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .popup {
-      position: fixed;
-      top: 1rem;
-      right: 1rem;
-      background: #34c759;
-      color: white;
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
-      display: none;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>Dashboard Comercial</header>
 
-  <div id="loginScreen" class="active">
-    <form id="loginForm">
-      <h2>Login</h2>
-      <select id="usuarioSelect"></select><br/><br/>
-      <input type="password" id="senhaInput" placeholder="Senha" required /><br/><br/>
-      <button type="submit">Entrar</button>
-    </form>
+  <!-- POPUP -->
+  <div id="popupMsg"></div>
+
+  <!-- Login -->
+  <div id="loginScreen" class="login-box">
+    <h2>Login</h2>
+    <select id="userSelect">
+      <option value="">Selecione seu nome</option>
+      <option>Marcelo</option>
+      <option>Angela</option>
+      <option>Gabriel</option>
+      <option>Leticia</option>
+      <option>Glaucia</option>
+      <option>Felipe</option>
+      <option>Carol</option>
+    </select>
+    <input type="password" id="password" placeholder="Senha" />
+    <button onclick="login()">Entrar</button>
   </div>
 
-  <div id="mainApp">
-    <div style="width: 100%;">
-      <nav>
-        <button onclick="abrirSecao('analise')">Análise de Meta</button>
-        <button onclick="abrirSecao('admin')" id="btnAdmin" style="display: none">Admin</button>
-      </nav>
-      <div id="popup" class="popup">Salvo com sucesso!</div>
+  <!-- App -->
+  <div id="mainApp" style="display:none">
+    <div class="sidebar">
+      <h3>Menu</h3>
+      <div class="menu-item active" data-target="metas">Análise de Metas</div>
+      <div class="menu-item" data-target="admin" id="adminMenu" style="display:none">Admin</div>
+    </div>
 
-      <div id="analise" class="grid"></div>
-      <div id="admin" class="grid" style="display: none">
-        <div class="card">
-          <h3>Metas Gerais</h3>
-          <input type="number" id="metaContas" placeholder="Meta de Contas" /><br/>
-          <input type="number" id="metaReceita" placeholder="Meta de Receita" /><br/>
-          <input type="number" id="metaVendas" placeholder="Meta de Vendas" /><br/>
-          <button onclick="salvarMetas()">Salvar Metas</button>
-        </div>
-        <div class="card">
-          <h3>Receita por Consultor</h3>
-          <div id="inputsConsultores"></div>
-          <button onclick="salvarConsultores()">Salvar Consultores</button>
-        </div>
+    <div class="main">
+      <!-- Metas -->
+      <div class="section" id="metas">
+        <h2>Dashboard de Metas</h2>
+        <div class="card-grid" id="cardsMetas"></div>
+      </div>
+
+      <!-- Admin -->
+      <div class="section" id="admin" style="display:none">
+        <h2>Área Administrativa</h2>
+        <form class="admin-form">
+          <input id="metaContas" placeholder="Meta de Contas (geral)" />
+          <input id="metaReceita" placeholder="Meta de Receita (geral)" />
+          <input id="metaVendas" placeholder="Meta de Vendas (geral)" />
+          <button type="button" onclick="salvarMetas()">Salvar Metas</button>
+        </form>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      setDoc,
-      getDoc,
-      getDocs
-    } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAns0NBLW8JTmLFRuOSLz16tAXrKuox9rU",
-      authDomain: "comercial-92085.firebaseapp.com",
-      projectId: "comercial-92085",
-      storageBucket: "comercial-92085.appspot.com",
-      messagingSenderId: "1086266528954",
-      appId: "1:1086266528954:web:91dfc7975e79c5cc141e83"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const usuarios = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia", "Felipe", "Carol"];
-    const consultores = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia"];
-    const $(id) = (id) => document.getElementById(id);
-    let usuarioLogado = "";
-    let jaSalvo = false;
-
-    usuarios.forEach(u => {
-      const opt = document.createElement("option");
-      opt.value = u;
-      opt.textContent = u;
-      $("usuarioSelect").appendChild(opt);
-    });
-
-    $("loginForm").addEventListener("submit", e => {
-      e.preventDefault();
-      const nome = $("usuarioSelect").value;
-      const senha = $("senhaInput").value;
-      if (senha === nome.toLowerCase() + "1234") {
-        usuarioLogado = nome;
-        $("loginScreen").classList.remove("active");
-        $("mainApp").classList.add("active");
-        if (nome === "Felipe" || nome === "Carol") {
-          $("btnAdmin").style.display = "inline-block";
-        }
-        carregarAnalise();
-      } else {
-        alert("Senha incorreta");
-      }
-    });
-
-    function abrirSecao(secao) {
-      ["analise", "admin"].forEach(id => $(id).style.display = "none");
-      $(secao).style.display = "flex";
-    }
-
-    async function carregarAnalise() {
-      const metaSnap = await getDoc(doc(db, "metas", "geral"));
-      const metas = metaSnap.exists() ? metaSnap.data() : { contas: 0, receita: 0, vendas: 0 };
-      const vendasSnap = await getDocs(collection(db, "vendasSemana"));
-      const vendas = vendasSnap.docs.map(doc => doc.data());
-
-      const totalContas = vendas.length;
-      const totalReceita = vendas.reduce((acc, cur) => acc + cur.valor, 0);
-
-      const grid = $("analise");
-      grid.innerHTML = "";
-      grid.innerHTML += `<div class="card"><h3>Meta Geral</h3><p>Contas: ${totalContas} / ${metas.contas}</p><p>Receita: R$ ${totalReceita.toFixed(2)} / R$ ${metas.receita}</p></div>`;
-
-      for (const nome of consultores) {
-        const vendasC = vendas.filter(v => v.consultor === nome);
-        const total = vendasC.reduce((acc, cur) => acc + cur.valor, 0);
-        grid.innerHTML += `<div class="card"><h3>${nome}</h3><p>Contas: ${vendasC.length}</p><p>Receita: R$ ${total.toFixed(2)}</p><p>Faltam Contas: ${Math.max(0, metas.contas - vendasC.length)}</p><p>Faltam Receita: R$ ${Math.max(0, metas.receita - total).toFixed(2)}</p></div>`;
-      }
-    }
-
-    async function salvarMetas() {
-      if (jaSalvo) return alert("Já salvo. Recarregue a página para atualizar.");
-      const metas = {
-        contas: parseInt($("metaContas").value),
-        receita: parseFloat($("metaReceita").value),
-        vendas: parseFloat($("metaVendas").value)
-      };
-      await setDoc(doc(db, "metas", "geral"), metas);
-      jaSalvo = true;
-      mostrarPopup();
-    }
-
-    async function salvarConsultores() {
-      if (jaSalvo) return alert("Já salvo. Recarregue a página para atualizar.");
-      const inputs = document.querySelectorAll(".input-consultor");
-      for (const input of inputs) {
-        const nome = input.dataset.nome;
-        const valor = parseFloat(input.value);
-        if (!isNaN(valor)) {
-          await setDoc(doc(db, "receitasPorConsultor", nome), { valor });
-        }
-      }
-      jaSalvo = true;
-      mostrarPopup();
-    }
-
-    function mostrarPopup() {
-      const popup = $("popup");
-      popup.style.display = "block";
-      setTimeout(() => popup.style.display = "none", 3000);
-    }
-
-    // Admin inputs
-    consultores.forEach(nome => {
-      const div = document.createElement("div");
-      div.innerHTML = `<label>${nome}: <input class="input-consultor" data-nome="${nome}" type="number" /></label><br/>`;
-      $("inputsConsultores").appendChild(div);
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
