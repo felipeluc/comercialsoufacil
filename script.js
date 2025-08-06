@@ -200,3 +200,50 @@ async function salvarVenda() {
 }
 
 window.salvarVenda = salvarVenda;
+// === Login ===
+function login() {
+  const usuario = document.getElementById("usuario").value;
+  const senha = document.getElementById("senha").value;
+
+  if (!usuario || !senha) {
+    alert("Preencha usuário e senha.");
+    return;
+  }
+
+  const senhaCorreta = usuario.toLowerCase() + "1234";
+
+  if (senha !== senhaCorreta) {
+    alert("Senha incorreta.");
+    return;
+  }
+
+  // Ocultar login, mostrar app
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  document.getElementById("userLogado").innerText = "👤 " + usuario;
+
+  // Exibir Admin se for Carol ou Felipe
+  const adminSection = document.querySelector(".admin-only");
+  if (usuario === "Carol" || usuario === "Felipe") {
+    adminSection.classList.remove("hidden");
+  } else {
+    adminSection.classList.add("hidden");
+  }
+
+  // Ativar primeira seção por padrão
+  mostrarSecao("analise");
+}
+
+// === Navegação entre menus ===
+document.querySelectorAll(".menu-item").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const alvo = btn.getAttribute("data-target");
+    mostrarSecao(alvo);
+  });
+});
+
+// === Função para alternar seções ===
+function mostrarSecao(id) {
+  document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+}
