@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Comercial</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Painel Comercial 📈</h1>
+    <nav>
+      <button class="menu-item" data-target="dashboard">📊 Dashboard</button>
+      <button class="menu-item" data-target="implantadas">🏢 Implantadas</button>
+      <button class="menu-item" data-target="painelConsultores">👥 Consultores</button>
+      <button class="menu-item" data-target="admin">🛠️ Admin</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- === DASHBOARD === -->
+    <section id="dashboard" class="section">
+      <h2>Resumo da Semana</h2>
+      <canvas id="graficoConsultores" height="100"></canvas>
+      <div id="ranking" class="ranking"></div>
+    </section>
+
+    <!-- === EMPRESAS IMPLANTADAS === -->
+    <section id="implantadas" class="section" style="display: none;">
+      <h2>Empresas Implantadas</h2>
+      <div id="implantadasResumo">
+        <p><strong>Total da Semana:</strong> R$ <span id="totalSemana">0</span></p>
+        <p><strong>Contas Implantadas:</strong> <span id="contasImplantadas">0</span></p>
+        <p><strong>Diferença Semana Anterior:</strong> <span id="diferencaSemana">0%</span></p>
+      </div>
+      <div id="rankingFechamentos"></div>
+    </section>
+
+    <!-- === PAINEL INDIVIDUAL DOS CONSULTORES === -->
+    <section id="painelConsultores" class="section" style="display: none;">
+      <h2>Painel de Consultores</h2>
+      <div class="consultor-cards">
+        <!-- Gerado dinamicamente -->
+      </div>
+    </section>
+
+    <!-- === ADMIN === -->
+    <section id="admin" class="section" style="display: none;">
+      <h2>Admin: Inserir Venda</h2>
+      <label>Consultor:
+        <select id="inputConsultor">
+          <option value="">-- Selecione --</option>
+          <option value="Leticia">Leticia</option>
+          <option value="Glaucia">Glaucia</option>
+          <option value="Marcelo">Marcelo</option>
+          <option value="Gabriel">Gabriel</option>
+        </select>
+      </label>
+      <label>Valor da Venda:
+        <input type="number" id="inputValor" placeholder="Ex: 1500">
+      </label>
+      <button onclick="salvarVenda()">Salvar</button>
+    </section>
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
