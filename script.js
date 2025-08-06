@@ -1,12 +1,7 @@
-// === Firebase Configuração ===
+// Firebase Config
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  getDocs
+  getFirestore, collection, doc, getDoc, setDoc, getDocs
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -21,151 +16,231 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// === Utilidades ===
+// Utilitários
 const $ = (id) => document.getElementById(id);
-const consultores = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia", "Felipe", "Carol"];
+const consultores = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia"];
 const admins = ["Carol", "Felipe"];
-let usuarioLogado = "";
+const allUsers = [...consultores, ...admins];
+const cores = ["#007AFF", "#FF9500", "#34C759", "#AF52DE", "#5856D6", "#5AC8FA"];
 
-// === LOGIN ===
-window.onload = () => {
-  $("loginForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const nome = $("usuario").value;
-    const senha = $("senha").value;
+// Login
+window.addEventListener("load", () => {
+  const loginBtn = $("btnLogin");
+  if (loginBtn) {
+    loginBtn.addEventListener("click", async () => {
+      const user = $("selectUser").value;
+      const senha = $("inputSenha").value;
 
-    if (senha === nome.toLowerCase() + "1234") {
-      usuarioLogado = nome;
-      $("loginScreen").style.display = "none";
-      $("mainApp").style.display = "flex";
-      if (admins.includes(nome)) $("adminMenu").style.display = "block";
-      carregarTudo();
-    } else {
-      alert("Senha incorreta.");
-    }
-  });
-};
+      if (senha !== user + "1234") return alert("Senha incorreta.");
 
-// === NAVEGAÇÃO ENTRE MENUS ===
+      $("loginBox").style.display = "none";
+      $("dashboard").style.display = "flex";
+
+      if (admins.includes(user)) {
+        $("menuAdmin").style.display = "block";
+        $("adminSection").style.display = "none";
+      }
+
+      carregarDashboard();
+    });
+  }
+});
+
+// Navegação
 document.querySelectorAll(".menu-item").forEach(btn => {
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
     const alvo = btn.getAttribute("data-target");
+
+    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
     $(alvo).style.display = "block";
 
-    if (alvo === "dashboard") carregarDashboard();
-    if (alvo === "implantadas") carregarImplantadas();
-    if (alvo === "ranking") carregarRanking();
-    if (alvo === "adminPanel") carregarAdminPanel();
+    switch (alvo) {
+      case "vendasSection": carregarDashboard(); break;
+      case "implantadasSection": carregarImplantadas(); break;
+      case "rankingSection": carregarRanking(); break;
+      case "painelSection": carregarPainelConsultores(); break;
+      case "adminSection": carregarAdmin(); break;
+    }
   });
 });
 
-// === CARREGAR TODAS AS SEÇÕES ===
-function carregarTudo() {
-  carregarDashboard();
-  carregarImplantadas();
-  carregarRanking();
-}
-
-// === DASHBOARD: Análise de Vendas ===
+// Dashboard
 async function carregarDashboard() {
-  const snap = await getDocs(collection(db, "vendas"));
+  const snap = await getDocs(collection(db, "vendasSemana"));
   const dados = snap.docs.map(doc => doc.data());
 
-  const container = $("dashboardCards");
-  container.innerHTML = "";
+  let totais = {};
+  consultores.forEach(c => totais[c] = 0);
+  dados.forEach(d => {
+    if (totais[d.consultor]) {
+      totais[d.consultor] += d.valor;
+    }
+  });
 
-  consultores.forEach(nome => {
-    const vendas = dados.filter(v => v.consultor === nome);
-    const total = vendas.reduce((sum, v) => sum + v.valor, 0);
-    const card = `
+  // Gráfico
+  const ctx = $("graficoConsultores").getContext("2d");
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: consultores,
+      datasets: [{
+        label: "Vendas",
+        data: consultores.map(c => totais[c]),
+        backgroundColor: cores
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { callback: (v) => `R$ ${v}` }
+        }
+      }
+    }
+  });
+
+  // Ranking
+  const ranking = Object.entries(totais).sort((a, b) => b[1] - a[1]);
+  const rankingDiv = $("rankingVendas");
+  rankingDiv.innerHTML = "";
+
+  ranking.forEach(([nome, valor], i) => {
+    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
+    rankingDiv.innerHTML += `
       <div class="card">
-        <h3>${nome}</h3>
-        <p><strong>Receita:</strong> R$ ${total.toFixed(2)}</p>
-        <p><strong>Contas:</strong> ${vendas.length}</p>
-      </div>`;
-    container.innerHTML += card;
+        <h3>${emoji} ${nome}</h3>
+        <p>R$ ${valor.toFixed(2)}</p>
+      </div>
+    `;
   });
 }
 
-// === EMPRESAS IMPLANTADAS ===
+// Implantadas
 async function carregarImplantadas() {
-  const snap = await getDocs(collection(db, "vendas"));
+  const snap = await getDocs(collection(db, "implantadas"));
   const dados = snap.docs.map(doc => doc.data());
 
-  const container = $("implantadasCards");
-  container.innerHTML = "";
-
-  consultores.forEach(nome => {
-    const vendas = dados.filter(v => v.consultor === nome);
-    const total = vendas.reduce((sum, v) => sum + v.valor, 0);
-    const card = `
-      <div class="card">
-        <h3>${nome}</h3>
-        <p><strong>Empresas:</strong> ${vendas.length}</p>
-        <p><strong>Receita:</strong> R$ ${total.toFixed(2)}</p>
-      </div>`;
-    container.innerHTML += card;
-  });
-}
-
-// === RANKING ===
-async function carregarRanking() {
-  const snap = await getDocs(collection(db, "vendas"));
-  const dados = snap.docs.map(doc => doc.data());
-
-  let rankingQtde = {};
-  let rankingValor = {};
-  consultores.forEach(c => {
-    rankingQtde[c] = 0;
-    rankingValor[c] = 0;
-  });
+  let total = 0;
+  let receita = 0;
+  let porConsultor = {};
+  let porEstado = {};
+  let porSegmento = {};
 
   dados.forEach(d => {
-    rankingQtde[d.consultor]++;
-    rankingValor[d.consultor] += d.valor;
+    total++;
+    receita += d.valor;
+
+    porConsultor[d.consultor] = (porConsultor[d.consultor] || 0) + d.valor;
+    porEstado[d.estado] = (porEstado[d.estado] || 0) + 1;
+    porSegmento[d.segmento] = (porSegmento[d.segmento] || 0) + 1;
   });
 
-  // Ranking de quantidade
-  const containerQ = $("rankingQtde");
-  containerQ.innerHTML = "<h3>Fechamentos por Quantidade</h3>";
-  Object.entries(rankingQtde).sort((a, b) => b[1] - a[1]).forEach(([nome, qtde], i) => {
-    const medalha = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
-    containerQ.innerHTML += `<div>${medalha} <strong>${nome}</strong>: ${qtde} contas</div>`;
+  $("totalEmpresas").innerText = total;
+  $("receitaTotal").innerText = `R$ ${receita.toFixed(2)}`;
+
+  const consultorDiv = $("receitaConsultores");
+  consultorDiv.innerHTML = "";
+  Object.entries(porConsultor).forEach(([nome, valor]) => {
+    consultorDiv.innerHTML += `<div class="card"><h3>${nome}</h3><p>R$ ${valor.toFixed(2)}</p></div>`;
   });
 
-  // Ranking de valor
-  const containerV = $("rankingValor");
-  containerV.innerHTML = "<h3>Fechamentos por Receita</h3>";
-  Object.entries(rankingValor).sort((a, b) => b[1] - a[1]).forEach(([nome, valor], i) => {
-    const medalha = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
-    containerV.innerHTML += `<div>${medalha} <strong>${nome}</strong>: R$ ${valor.toFixed(2)}</div>`;
+  const estadoDiv = $("maisEstados");
+  estadoDiv.innerHTML = "";
+  Object.entries(porEstado).sort((a, b) => b[1] - a[1]).forEach(([estado, qtd]) => {
+    estadoDiv.innerHTML += `<div class="card"><h3>${estado}</h3><p>${qtd} lojas</p></div>`;
+  });
+
+  const segmentoDiv = $("rankingSegmentos");
+  segmentoDiv.innerHTML = "";
+  Object.entries(porSegmento).sort((a, b) => b[1] - a[1]).forEach(([seg, qtd]) => {
+    segmentoDiv.innerHTML += `<div class="card"><h3>${seg}</h3><p>${qtd}</p></div>`;
   });
 }
 
-// === ADMIN: Painel para Cadastro de Vendas ===
-async function carregarAdminPanel() {
-  $("adminForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const consultor = $("adminConsultor").value;
-    const valor = parseFloat($("adminValor").value);
+// Ranking
+async function carregarRanking() {
+  const metasSnap = await getDoc(doc(db, "metas", "geral"));
+  const metas = metasSnap.exists() ? metasSnap.data() : { contas: 0, receita: 0, vendas: 0 };
 
-    if (!consultor || isNaN(valor)) {
-      alert("Preencha corretamente.");
-      return;
-    }
+  const vendasSnap = await getDocs(collection(db, "vendasSemana"));
+  const vendas = vendasSnap.docs.map(doc => doc.data());
 
-    const novaVenda = {
-      consultor,
-      valor,
-      data: new Date().toISOString()
-    };
+  let totalVendas = vendas.length;
+  let totalReceita = vendas.reduce((acc, cur) => acc + cur.valor, 0);
 
-    const id = Date.now().toString();
-    await setDoc(doc(db, "vendas", id), novaVenda);
+  $("metaContas").innerText = `${totalVendas} / ${metas.contas}`;
+  $("metaReceita").innerText = `R$ ${totalReceita.toFixed(2)} / R$ ${metas.receita}`;
+  $("metaVendas").innerText = `R$ ${totalReceita.toFixed(2)} / R$ ${metas.vendas}`;
 
-    alert("Venda salva!");
-    $("adminValor").value = "";
-    carregarTudo();
+  // Ranking contas
+  let rankingContas = {};
+  vendas.forEach(v => rankingContas[v.consultor] = (rankingContas[v.consultor] || 0) + 1);
+  const rankingQtdDiv = $("rankingQtd");
+  rankingQtdDiv.innerHTML = "";
+  Object.entries(rankingContas).sort((a, b) => b[1] - a[1]).forEach(([nome, qtd], i) => {
+    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
+    rankingQtdDiv.innerHTML += `<div class="card"><h3>${emoji} ${nome}</h3><p>${qtd} contas</p></div>`;
+  });
+
+  // Ranking receita
+  let rankingReceita = {};
+  vendas.forEach(v => rankingReceita[v.consultor] = (rankingReceita[v.consultor] || 0) + v.valor);
+  const rankingValorDiv = $("rankingReceita");
+  rankingValorDiv.innerHTML = "";
+  Object.entries(rankingReceita).sort((a, b) => b[1] - a[1]).forEach(([nome, val], i) => {
+    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
+    rankingValorDiv.innerHTML += `<div class="card"><h3>${emoji} ${nome}</h3><p>R$ ${val.toFixed(2)}</p></div>`;
+  });
+}
+
+// Painel dos Consultores
+async function carregarPainelConsultores() {
+  const snap = await getDocs(collection(db, "vendasSemana"));
+  const dados = snap.docs.map(doc => doc.data());
+
+  const container = $("painelCards");
+  container.innerHTML = "";
+
+  consultores.forEach(nome => {
+    const vendas = dados.filter(d => d.consultor === nome);
+    const total = vendas.reduce((acc, cur) => acc + cur.valor, 0);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <h3>${nome}</h3>
+      <p>Total: R$ ${total.toFixed(2)}</p>
+      <p>Contas: ${vendas.length}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Admin
+async function carregarAdmin() {
+  $("btnSalvarMetas").addEventListener("click", async () => {
+    const contas = parseInt($("metaContasInput").value);
+    const receita = parseFloat($("metaReceitaInput").value);
+    const vendas = parseFloat($("metaVendasInput").value);
+
+    await setDoc(doc(db, "metas", "geral"), { contas, receita, vendas });
+    alert("Metas salvas.");
+  });
+
+  $("btnSalvarEstado").addEventListener("click", async () => {
+    const estado = $("inputEstado").value;
+    const total = parseInt($("inputTotalEstado").value);
+    const id = `${estado}_${Date.now()}`;
+    await setDoc(doc(db, "estadosComMaisLojas", id), { estado, total });
+    alert("Estado salvo.");
+  });
+
+  $("btnSalvarSegmento").addEventListener("click", async () => {
+    const segmento = $("inputSegmento").value;
+    const qtd = parseInt($("inputQtdSegmento").value);
+    const id = `${segmento}_${Date.now()}`;
+    await setDoc(doc(db, "rankingSegmentos", id), { segmento, qtd });
+    alert("Segmento salvo.");
   });
 }
