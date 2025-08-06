@@ -1,4 +1,4 @@
-// === Firebase Configuração ===
+// === Firebase Config ===
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
 import {
   getFirestore,
@@ -10,132 +10,99 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_DOMINIO.firebaseapp.com",
-  projectId: "SEU_PROJETO_ID",
-  storageBucket: "SEU_BUCKET.appspot.com",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SUA_APP_ID"
+  apiKey: "AIzaSyAns0NBLW8JTmLFRuOSLz16tAXrKuox9rU",
+  authDomain: "comercial-92085.firebaseapp.com",
+  projectId: "comercial-92085",
+  storageBucket: "comercial-92085.appspot.com",
+  messagingSenderId: "1086266528954",
+  appId: "1:1086266528954:web:91dfc7975e79c5cc141e83"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const usuarios = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia", "Felipe", "Carol"];
-const admins = ["Carol", "Felipe"];
-const consultores = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia"];
-
-let usuarioLogado = "";
-let dadosJaSalvos = false;
+// === Helpers ===
+const $ = id => document.getElementById(id);
+function showPopup(msg) {
+  const el = document.getElementById("popupMsg");
+  el.innerText = msg;
+  el.style.display = "block";
+  setTimeout(() => el.style.display = "none", 3000);
+}
 
 // === Login ===
-window.addEventListener("DOMContentLoaded", () => {
-  const userSelect = document.getElementById("usuarioSelect");
-  usuarios.forEach(u => {
-    const opt = document.createElement("option");
-    opt.value = u;
-    opt.textContent = u;
-    userSelect.appendChild(opt);
-  });
+window.login = function () {
+  const user = $("userSelect").value;
+  const pass = $("password").value;
+  if (!user || pass !== user + "1234") {
+    alert("Login inválido");
+    return;
+  }
 
-  document.getElementById("loginForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const nome = userSelect.value;
-    const senha = document.getElementById("senhaInput").value;
+  $("loginScreen").style.display = "none";
+  $("mainApp").style.display = "flex";
 
-    if (senha === nome.toLowerCase() + "1234") {
-      usuarioLogado = nome;
-      document.getElementById("loginScreen").style.display = "none";
-      document.getElementById("mainApp").style.display = "block";
+  if (user === "Felipe" || user === "Carol") {
+    $("adminMenu").style.display = "block";
+  }
 
-      if (admins.includes(nome)) {
-        document.getElementById("menuAdmin").style.display = "block";
-      }
+  carregarDashboard(user);
+}
 
-      carregarAnalise();
-    } else {
-      alert("Senha incorreta");
-    }
-  });
-});
-
-// === Navegação ===
+// === Menu Navegação ===
 document.querySelectorAll(".menu-item").forEach(btn => {
   btn.addEventListener("click", () => {
-    const target = btn.dataset.target;
+    document.querySelectorAll(".menu-item").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
     document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
-    document.getElementById(target).style.display = "block";
+    const alvo = btn.getAttribute("data-target");
+    $(alvo).style.display = "block";
   });
 });
 
-// === Análise de Meta ===
-async function carregarAnalise() {
+// === Dashboard ===
+async function carregarDashboard(usuario) {
   const metasSnap = await getDoc(doc(db, "metas", "geral"));
-  const metas = metasSnap.exists() ? metasSnap.data() : { contas: 0, receita: 0 };
+  const metas = metasSnap.exists() ? metasSnap.data() : { contas: 0, receita: 0, vendas: 0 };
 
-  const vendasSnap = await getDocs(collection(db, "vendasSemana"));
-  const vendas = vendasSnap.docs.map(doc => doc.data());
+  const snap = await getDoc(doc(db, "vendasSemana", usuario));
+  const dados = snap.exists() ? snap.data() : { contas: 0, receita: 0, vendas: 0 };
 
-  let totaisPorConsultor = {};
-  consultores.forEach(c => totaisPorConsultor[c] = { contas: 0, receita: 0 });
+  const cards = [
+    { titulo: "Contas Realizadas", valor: dados.contas },
+    { titulo: "Receita Gerada", valor: `R$ ${dados.receita.toFixed(2)}` },
+    { titulo: "Vendas", valor: `R$ ${dados.vendas.toFixed(2)}` },
+    { titulo: "Meta de Contas", valor: metas.contas },
+    { titulo: "Meta de Receita", valor: `R$ ${metas.receita.toFixed(2)}` },
+    { titulo: "Meta de Vendas", valor: `R$ ${metas.vendas.toFixed(2)}` },
+    { titulo: "Contas Restantes", valor: Math.max(0, metas.contas - dados.contas) },
+    { titulo: "Receita Restante", valor: `R$ ${Math.max(0, metas.receita - dados.receita).toFixed(2)}` },
+    { titulo: "Vendas Restantes", valor: `R$ ${Math.max(0, metas.vendas - dados.vendas).toFixed(2)}` }
+  ];
 
-  vendas.forEach(v => {
-    if (totaisPorConsultor[v.consultor]) {
-      totaisPorConsultor[v.consultor].contas++;
-      totaisPorConsultor[v.consultor].receita += v.valor;
-    }
-  });
-
-  const container = document.getElementById("analiseContainer");
+  const container = $("cardsMetas");
   container.innerHTML = "";
-
-  consultores.forEach(c => {
-    const dados = totaisPorConsultor[c];
-    const faltaContas = Math.max(0, metas.contas - dados.contas);
-    const faltaReceita = Math.max(0, metas.receita - dados.receita);
-
+  cards.forEach(c => {
     container.innerHTML += `
       <div class="card">
-        <h3>${c}</h3>
-        <p>Contas: ${dados.contas}</p>
-        <p>Receita: R$ ${dados.receita.toFixed(2)}</p>
-        <p>Faltam Contas: ${faltaContas}</p>
-        <p>Faltam Receita: R$ ${faltaReceita.toFixed(2)}</p>
+        <h3>${c.titulo}</h3>
+        <p>${c.valor}</p>
       </div>
     `;
   });
-
-  // Metas gerais
-  const totalContas = vendas.length;
-  const totalReceita = vendas.reduce((acc, v) => acc + v.valor, 0);
-
-  document.getElementById("metaGeral").innerHTML = `
-    <div class="card destaque">
-      <h3>Meta Geral</h3>
-      <p>Contas: ${totalContas} / ${metas.contas}</p>
-      <p>Receita: R$ ${totalReceita.toFixed(2)} / R$ ${metas.receita}</p>
-    </div>
-  `;
 }
 
-// === Admin ===
-document.getElementById("adminForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (dadosJaSalvos) return alert("Os dados já foram salvos. Recarregue a página para atualizar.");
+// === Salvar Metas ===
+window.salvarMetas = async function () {
+  const contas = parseInt($("metaContas").value);
+  const receita = parseFloat($("metaReceita").value);
+  const vendas = parseFloat($("metaVendas").value);
 
-  const contas = parseInt(document.getElementById("metaContasInput").value);
-  const receita = parseFloat(document.getElementById("metaReceitaInput").value);
+  await setDoc(doc(db, "metas", "geral"), {
+    contas, receita, vendas
+  });
 
-  await setDoc(doc(db, "metas", "geral"), { contas, receita });
-
-  dadosJaSalvos = true;
-  mostrarPopup("Metas salvas com sucesso!");
-});
-
-function mostrarPopup(msg) {
-  const popup = document.createElement("div");
-  popup.className = "popup";
-  popup.textContent = msg;
-  document.body.appendChild(popup);
-  setTimeout(() => popup.remove(), 3000);
-}
+  showPopup("Metas salvas com sucesso.");
+  carregarDashboard($("userSelect").value);
+};
