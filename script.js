@@ -6,35 +6,31 @@ import {
   doc,
   getDoc,
   setDoc,
-  getDocs,
-  addDoc
+  getDocs
 } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAns0NBLW8JTmLFRuOSLz16tAXrKuox9rU",
-  authDomain: "comercial-92085.firebaseapp.com",
-  projectId: "comercial-92085",
-  storageBucket: "comercial-92085.appspot.com",
-  messagingSenderId: "1086266528954",
-  appId: "1:1086266528954:web:91dfc7975e79c5cc141e83"
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_DOMINIO.firebaseapp.com",
+  projectId: "SEU_PROJETO_ID",
+  storageBucket: "SEU_BUCKET.appspot.com",
+  messagingSenderId: "SEU_SENDER_ID",
+  appId: "SUA_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// === Usuários e Cores ===
 const usuarios = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia", "Felipe", "Carol"];
-const consultores = ["Leticia", "Glaucia", "Marcelo", "Gabriel"];
-const cores = ["#007AFF", "#FF9500", "#34C759", "#AF52DE"];
+const admins = ["Carol", "Felipe"];
+const consultores = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia"];
 
-// === Utilidades ===
-const $ = (id) => document.getElementById(id);
 let usuarioLogado = "";
+let dadosJaSalvos = false;
 
 // === Login ===
-window.onload = () => {
-  const loginForm = $("loginForm");
-  const userSelect = $("usuarioSelect");
+window.addEventListener("DOMContentLoaded", () => {
+  const userSelect = document.getElementById("usuarioSelect");
   usuarios.forEach(u => {
     const opt = document.createElement("option");
     opt.value = u;
@@ -42,310 +38,104 @@ window.onload = () => {
     userSelect.appendChild(opt);
   });
 
-  loginForm.addEventListener("submit", (e) => {
+  document.getElementById("loginForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const nome = userSelect.value;
-    const senha = $("senhaInput").value;
+    const senha = document.getElementById("senhaInput").value;
+
     if (senha === nome.toLowerCase() + "1234") {
       usuarioLogado = nome;
-      $("loginScreen").style.display = "none";
-      $("mainApp").style.display = "flex";
-      if (nome === "Felipe" || nome === "Carol") {
-        $("menuAdmin").style.display = "block";
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("mainApp").style.display = "block";
+
+      if (admins.includes(nome)) {
+        document.getElementById("menuAdmin").style.display = "block";
       }
-      carregarDashboard();
-      carregarImplantadas();
-      carregarRanking();
-      carregarPainelConsultores();
+
+      carregarAnalise();
     } else {
       alert("Senha incorreta");
     }
   });
-};
+});
 
-// === Navegação do Menu ===
+// === Navegação ===
 document.querySelectorAll(".menu-item").forEach(btn => {
   btn.addEventListener("click", () => {
     const target = btn.dataset.target;
     document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
-    $(target).style.display = "block";
+    document.getElementById(target).style.display = "block";
   });
 });
 
-// === Dashboard - Análise de Vendas ===
-async function carregarDashboard() {
-  const snap = await getDocs(collection(db, "vendasSemana"));
-  const dados = snap.docs.map(doc => doc.data());
+// === Análise de Meta ===
+async function carregarAnalise() {
+  const metasSnap = await getDoc(doc(db, "metas", "geral"));
+  const metas = metasSnap.exists() ? metasSnap.data() : { contas: 0, receita: 0 };
 
-  let totais = {};
-  consultores.forEach(c => totais[c] = 0);
-  dados.forEach(d => {
-    if (totais[d.consultor]) totais[d.consultor] += d.valor;
-  });
+  const vendasSnap = await getDocs(collection(db, "vendasSemana"));
+  const vendas = vendasSnap.docs.map(doc => doc.data());
 
-  // Ranking
-  const ranking = Object.entries(totais).sort((a, b) => b[1] - a[1]);
-  const divRanking = $("rankingAnalise");
-  divRanking.innerHTML = "";
-  ranking.forEach(([nome, valor], i) => {
-    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
-    divRanking.innerHTML += `<div class="card"><strong>${emoji} ${nome}</strong><br>R$ ${valor.toFixed(2)}</div>`;
-  });
+  let totaisPorConsultor = {};
+  consultores.forEach(c => totaisPorConsultor[c] = { contas: 0, receita: 0 });
 
-  // Gráfico
-  const ctx = $("graficoConsultores").getContext("2d");
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: consultores,
-      datasets: [{
-        label: "Vendas da Semana",
-        data: consultores.map(c => totais[c]),
-        backgroundColor: cores
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { callback: (v) => `R$ ${v}` }
-        }
-      }
+  vendas.forEach(v => {
+    if (totaisPorConsultor[v.consultor]) {
+      totaisPorConsultor[v.consultor].contas++;
+      totaisPorConsultor[v.consultor].receita += v.valor;
     }
   });
-}
 
-// === Empresas Implantadas ===
-async function carregarImplantadas() {
-  const snap = await getDocs(collection(db, "implantadas"));
-  const dados = snap.docs.map(doc => doc.data());
-
-  let total = 0;
-  let receita = 0;
-  let porConsultor = {};
-  let estados = {};
-  let segmentos = {};
-
-  consultores.forEach(c => porConsultor[c] = 0);
-
-  dados.forEach(d => {
-    total++;
-    receita += d.receita;
-    if (porConsultor[d.consultor]) porConsultor[d.consultor] += d.receita;
-    estados[d.estado] = (estados[d.estado] || 0) + 1;
-    segmentos[d.segmento] = (segmentos[d.segmento] || 0) + 1;
-  });
-
-  $("totalEmpresas").innerText = total;
-  $("receitaTotal").innerText = `R$ ${receita.toFixed(2)}`;
-
-  // Receita por consultor
-  const divReceita = $("receitaConsultor");
-  divReceita.innerHTML = "";
-  Object.entries(porConsultor).forEach(([nome, valor]) => {
-    divReceita.innerHTML += `<div class="card">${nome}: R$ ${valor.toFixed(2)}</div>`;
-  });
-
-  // Estados com mais lojas
-  const topEstados = Object.entries(estados).sort((a, b) => b[1] - a[1]);
-  const divEstados = $("rankingEstados");
-  divEstados.innerHTML = topEstados.map(([uf, qtd]) => `<div class="card">${uf}: ${qtd} lojas</div>`).join("");
-
-  // Segmentos
-  const topSegmentos = Object.entries(segmentos).sort((a, b) => b[1] - a[1]);
-  const divSeg = $("rankingSegmentos");
-  divSeg.innerHTML = topSegmentos.map(([seg, qtd]) => `<div class="card">${seg}: ${qtd}</div>`).join("");
-}
-
-// === Ranking ===
-async function carregarRanking() {
-  const snap = await getDocs(collection(db, "vendasSemana"));
-  const dados = snap.docs.map(doc => doc.data());
-
-  let contasPorConsultor = {};
-  let receitaPorConsultor = {};
-  consultores.forEach(c => {
-    contasPorConsultor[c] = 0;
-    receitaPorConsultor[c] = 0;
-  });
-
-  dados.forEach(d => {
-    contasPorConsultor[d.consultor]++;
-    receitaPorConsultor[d.consultor] += d.valor;
-  });
-
-  const rankingContas = Object.entries(contasPorConsultor).sort((a, b) => b[1] - a[1]);
-  const rankingReceita = Object.entries(receitaPorConsultor).sort((a, b) => b[1] - a[1]);
-
-  $("rankingContas").innerHTML = rankingContas.map(([nome, qtd], i) =>
-    `<div class="card">${i === 0 ? "🏆" : "🎖️"} ${nome}: ${qtd} contas</div>`).join("");
-
-  $("rankingReceita").innerHTML = rankingReceita.map(([nome, val], i) =>
-    `<div class="card">${i === 0 ? "🏆" : "🎖️"} ${nome}: R$ ${val.toFixed(2)}</div>`).join("");
-
-  // Metas
-  const metaSnap = await getDoc(doc(db, "metas", "geral"));
-  if (metaSnap.exists()) {
-    const meta = metaSnap.data();
-    const totalContas = dados.length;
-    const totalReceita = dados.reduce((acc, d) => acc + d.valor, 0);
-
-    $("metaContas").innerText = `${totalContas} / ${meta.contas}`;
-    $("metaReceita").innerText = `R$ ${totalReceita.toFixed(2)} / R$ ${meta.receita}`;
-    $("metaVendas").innerText = `${totalContas} / ${meta.vendas}`;
-  }
-}
-
-// === Painel dos Consultores ===
-async function carregarPainelConsultores() {
-  const snap = await getDocs(collection(db, "vendasSemana"));
-  const dados = snap.docs.map(doc => doc.data());
-  const container = $("consultorCards");
+  const container = document.getElementById("analiseContainer");
   container.innerHTML = "";
 
-  consultores.forEach(nome => {
-    const vendas = dados.filter(d => d.consultor === nome);
-    const total = vendas.reduce((acc, v) => acc + v.valor, 0);
+  consultores.forEach(c => {
+    const dados = totaisPorConsultor[c];
+    const faltaContas = Math.max(0, metas.contas - dados.contas);
+    const faltaReceita = Math.max(0, metas.receita - dados.receita);
 
     container.innerHTML += `
       <div class="card">
-        <h3>${nome}</h3>
-        <p><strong>Total:</strong> R$ ${total.toFixed(2)}</p>
-        <p><strong>Contas:</strong> ${vendas.length}</p>
-        <p><strong>Meta:</strong> R$ 5000</p>
+        <h3>${c}</h3>
+        <p>Contas: ${dados.contas}</p>
+        <p>Receita: R$ ${dados.receita.toFixed(2)}</p>
+        <p>Faltam Contas: ${faltaContas}</p>
+        <p>Faltam Receita: R$ ${faltaReceita.toFixed(2)}</p>
       </div>
     `;
   });
-}
 
-// === Admin - Apenas Carol e Felipe ===
-$("formAdmin").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const metas = {
-    contas: parseInt($("metaInputContas").value),
-    receita: parseFloat($("metaInputReceita").value),
-    vendas: parseInt($("metaInputVendas").value)
-  };
-  await setDoc(doc(db, "metas", "geral"), metas);
-  alert("Metas salvas com sucesso!");
-});
-// === ADMIN: Salvar Receita por Consultor ===
-window.salvarReceitasConsultor = async function () {
-  const inputs = document.querySelectorAll(".receita-consultor-input");
-  for (const input of inputs) {
-    const consultor = input.dataset.consultor;
-    const valor = parseFloat(input.value);
-    if (!isNaN(valor)) {
-      await setDoc(doc(db, "receitasPorConsultor", consultor), { valor });
-    }
-  }
-  alert("Receitas por consultor salvas com sucesso.");
-}
-
-// === ADMIN: Salvar Metas Gerais ===
-window.salvarMetas = async function () {
-  const metaContas = parseInt($("inputMetaContas").value);
-  const metaReceita = parseFloat($("inputMetaReceita").value);
-  const metaVendas = parseFloat($("inputMetaVendas").value);
-
-  await setDoc(doc(db, "metas", "geral"), {
-    contas: metaContas,
-    receita: metaReceita,
-    vendas: metaVendas
-  });
-
-  alert("Metas gerais salvas com sucesso.");
-}
-
-// === ADMIN: Salvar Segmentos ===
-window.salvarSegmentos = async function () {
-  const lista = $("inputSegmentos").value.split(",");
-  await setDoc(doc(db, "rankingSegmentos", "lista"), {
-    segmentos: lista.map(s => s.trim())
-  });
-
-  alert("Segmentos salvos.");
-}
-
-// === ADMIN: Salvar Estados com Mais Lojas ===
-window.salvarEstados = async function () {
-  const estados = $("inputEstados").value.split(",");
-  await setDoc(doc(db, "estadosComMaisLojas", "ranking"), {
-    estados: estados.map(e => e.trim())
-  });
-
-  alert("Estados salvos.");
-}
-
-// === EMPRESAS IMPLANTADAS - Exibição ===
-async function carregarEmpresasImplantadas() {
-  const snap = await getDocs(collection(db, "implantadas"));
-  const dados = snap.docs.map(doc => doc.data());
-
-  let totalEmpresas = dados.length;
-  let receitaTotal = dados.reduce((acc, cur) => acc + cur.valor, 0);
-
-  $("totalEmpresas").innerText = totalEmpresas;
-  $("receitaTotalEmpresas").innerText = `R$ ${receitaTotal.toFixed(2)}`;
-
-  // Receita por consultor
-  const porConsultor = {};
-  consultores.forEach(c => porConsultor[c] = 0);
-  dados.forEach(d => {
-    if (porConsultor[d.consultor]) porConsultor[d.consultor] += d.valor;
-  });
-
-  const divConsultores = $("receitaPorConsultor");
-  divConsultores.innerHTML = "";
-  Object.entries(porConsultor).forEach(([nome, valor]) => {
-    divConsultores.innerHTML += `<div class="card-mini">${nome}: R$ ${valor.toFixed(2)}</div>`;
-  });
-
-  // Segmentos
-  const segSnap = await getDoc(doc(db, "rankingSegmentos", "lista"));
-  const segmentos = segSnap.exists() ? segSnap.data().segmentos : [];
-  $("segmentosRanking").innerHTML = segmentos.map(s => `<div class="card-mini">${s}</div>`).join("");
-
-  // Estados
-  const estSnap = await getDoc(doc(db, "estadosComMaisLojas", "ranking"));
-  const estados = estSnap.exists() ? estSnap.data().estados : [];
-  $("estadosMaisLojas").innerHTML = estados.map(e => `<div class="card-mini">${e}</div>`).join("");
-}
-
-// === RANKING - Cálculo de metas restantes ===
-async function carregarRankingMetas() {
-  const metaSnap = await getDoc(doc(db, "metas", "geral"));
-  if (!metaSnap.exists()) return;
-
-  const metas = metaSnap.data();
-  const vendasSnap = await getDocs(collection(db, "vendasSemana"));
-  const vendas = vendasSnap.docs.map(d => d.data());
-
+  // Metas gerais
   const totalContas = vendas.length;
-  const totalReceita = vendas.reduce((acc, cur) => acc + cur.valor, 0);
-  const totalVendas = totalReceita; // assumindo venda = receita
+  const totalReceita = vendas.reduce((acc, v) => acc + v.valor, 0);
 
-  $("faltaMetaContas").innerText = Math.max(0, metas.contas - totalContas);
-  $("faltaMetaReceita").innerText = `R$ ${Math.max(0, metas.receita - totalReceita).toFixed(2)}`;
-  $("faltaMetaVendas").innerText = `R$ ${Math.max(0, metas.vendas - totalVendas).toFixed(2)}`;
+  document.getElementById("metaGeral").innerHTML = `
+    <div class="card destaque">
+      <h3>Meta Geral</h3>
+      <p>Contas: ${totalContas} / ${metas.contas}</p>
+      <p>Receita: R$ ${totalReceita.toFixed(2)} / R$ ${metas.receita}</p>
+    </div>
+  `;
 }
 
-// === Navegação entre menus com clique ===
-document.querySelectorAll(".menu-item").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
-    const alvo = btn.getAttribute("data-target");
-    $(alvo).style.display = "block";
+// === Admin ===
+document.getElementById("adminForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (dadosJaSalvos) return alert("Os dados já foram salvos. Recarregue a página para atualizar.");
 
-    if (alvo === "vendas") carregarDashboard();
-    if (alvo === "implantadas") carregarEmpresasImplantadas();
-    if (alvo === "ranking") carregarRankingMetas();
-    if (alvo === "painelConsultores") carregarPainelConsultores();
-  });
+  const contas = parseInt(document.getElementById("metaContasInput").value);
+  const receita = parseFloat(document.getElementById("metaReceitaInput").value);
+
+  await setDoc(doc(db, "metas", "geral"), { contas, receita });
+
+  dadosJaSalvos = true;
+  mostrarPopup("Metas salvas com sucesso!");
 });
 
-// === Inicialização ===
-window.addEventListener("load", () => {
-  carregarDashboard();
-});
+function mostrarPopup(msg) {
+  const popup = document.createElement("div");
+  popup.className = "popup";
+  popup.textContent = msg;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 3000);
+}
