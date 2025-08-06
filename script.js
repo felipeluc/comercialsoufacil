@@ -21,204 +21,151 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// === Utilidades Gerais ===
+// === Utilidades ===
 const $ = (id) => document.getElementById(id);
-
-// === Configurações ===
-const consultores = ["Leticia", "Glaucia", "Marcelo", "Gabriel"];
+const consultores = ["Marcelo", "Angela", "Gabriel", "Leticia", "Glaucia", "Felipe", "Carol"];
 const admins = ["Carol", "Felipe"];
-const cores = ["#007AFF", "#FF9500", "#34C759", "#AF52DE"];
 let usuarioLogado = "";
 
 // === LOGIN ===
-function login() {
-  const usuario = $("usuarioSelect").value;
-  const senha = $("senhaInput").value;
+window.onload = () => {
+  $("loginForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const nome = $("usuario").value;
+    const senha = $("senha").value;
 
-  if (senha !== `${usuario.toLowerCase()}1234`) {
-    alert("Senha incorreta.");
-    return;
-  }
-
-  usuarioLogado = usuario;
-
-  $("loginSection").classList.add("hidden");
-  $("mainApp").classList.remove("hidden");
-  $("userNome").innerText = usuario;
-
-  // Mostrar menus de admin
-  if (admins.includes(usuario)) {
-    document.querySelectorAll(".admin-only").forEach(el => el.classList.remove("hidden"));
-  } else {
-    document.querySelectorAll(".admin-only").forEach(el => el.classList.add("hidden"));
-  }
-
-  mostrarSecao("analise");
-}
-
-// === Função: Mostrar seção ===
-function mostrarSecao(id) {
-  document.querySelectorAll(".section").forEach(sec => {
-    sec.classList.add("hidden");
-  });
-
-  const alvo = document.getElementById(id);
-  if (alvo) alvo.classList.remove("hidden");
-
-  // Carregamentos específicos
-  if (id === "analise") carregarDashboard();
-  if (id === "implantadas") carregarImplantadas();
-  if (id === "ranking") carregarRanking();
-  if (id === "painelConsultores") carregarPainelConsultores();
-}
-
-// === Função: Carregar Dashboard ===
-async function carregarDashboard() {
-  const snap = await getDocs(collection(db, "vendasSemana"));
-  const dados = snap.docs.map(doc => doc.data());
-
-  let totais = {};
-  consultores.forEach(c => totais[c] = 0);
-  dados.forEach(d => {
-    if (totais[d.consultor] !== undefined) {
-      totais[d.consultor] += d.valor;
+    if (senha === nome.toLowerCase() + "1234") {
+      usuarioLogado = nome;
+      $("loginScreen").style.display = "none";
+      $("mainApp").style.display = "flex";
+      if (admins.includes(nome)) $("adminMenu").style.display = "block";
+      carregarTudo();
+    } else {
+      alert("Senha incorreta.");
     }
   });
+};
 
-  const ranking = Object.entries(totais).sort((a, b) => b[1] - a[1]);
+// === NAVEGAÇÃO ENTRE MENUS ===
+document.querySelectorAll(".menu-item").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
+    const alvo = btn.getAttribute("data-target");
+    $(alvo).style.display = "block";
 
-  const rankingDiv = $("ranking");
-  rankingDiv.innerHTML = "";
-  ranking.forEach(([nome, valor], i) => {
-    const emoji = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
-    rankingDiv.innerHTML += `<div><strong>${emoji} ${nome}</strong>: R$ ${valor.toFixed(2)}</div>`;
-  });
-
-  const ctx = $("graficoConsultores").getContext("2d");
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: consultores,
-      datasets: [{
-        label: "Vendas da Semana",
-        data: consultores.map(c => totais[c]),
-        backgroundColor: cores
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { callback: (v) => `R$ ${v}` }
-        }
-      }
-    }
-  });
-}
-
-// === Função: Carregar Implantadas ===
-async function carregarImplantadas() {
-  const snap = await getDocs(collection(db, "vendasSemana"));
-  const dados = snap.docs.map(doc => doc.data());
-
-  let total = 0;
-  let contas = 0;
-  let ranking = {};
-  consultores.forEach(c => ranking[c] = 0);
-
-  dados.forEach(d => {
-    total += d.valor;
-    contas++;
-    if (ranking[d.consultor]) ranking[d.consultor]++;
-    else ranking[d.consultor] = 1;
-  });
-
-  $("totalSemana").innerText = total.toFixed(2);
-  $("contasImplantadas").innerText = contas;
-  $("diferencaSemana").innerText = "+10%"; // Exemplo
-
-  const rankingDiv = $("rankingFechamentos");
-  rankingDiv.innerHTML = "<h3>Ranking de Fechamentos</h3>";
-  Object.entries(ranking)
-    .sort((a, b) => b[1] - a[1])
-    .forEach(([nome, qtde], i) => {
-      const medalha = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
-      rankingDiv.innerHTML += `<div>${medalha} ${nome}: ${qtde} contas</div>`;
-    });
-}
-
-// === Função: Ranking Geral ===
-function carregarRanking() {
-  // Aqui você pode carregar metas e mostrar quanto falta para bater as metas
-  // Exemplo fixo:
-  $("metaVendas").innerText = "R$ 50.000,00";
-  $("metaContas").innerText = "100 contas";
-  $("metaReceita").innerText = "R$ 30.000,00";
-}
-
-// === Função: Painéis dos Consultores ===
-async function carregarPainelConsultores() {
-  const snap = await getDocs(collection(db, "vendasSemana"));
-  const dados = snap.docs.map(doc => doc.data());
-
-  const container = document.querySelector(".consultor-cards");
-  container.innerHTML = "";
-
-  consultores.forEach((nome, idx) => {
-    const vendas = dados.filter(d => d.consultor === nome);
-    const total = vendas.reduce((acc, v) => acc + v.valor, 0);
-
-    const card = document.createElement("div");
-    card.className = "consultor-card";
-
-    card.innerHTML = `
-      <h3>${nome}</h3>
-      <p><strong>Total:</strong> R$ ${total.toFixed(2)}</p>
-      <p><strong>Contas:</strong> ${vendas.length}</p>
-      <p><strong>Meta:</strong> R$ 5000</p>
-      <p><strong>Observações:</strong> 🔍</p>
-    `;
-
-    container.appendChild(card);
-  });
-}
-
-// === Função: Salvar Venda (Admin) ===
-async function salvarVenda() {
-  const consultor = $("inputConsultor").value;
-  const valor = parseFloat($("inputValor").value);
-
-  if (!consultor || isNaN(valor)) return alert("Preencha todos os campos corretamente.");
-
-  const novaVenda = {
-    consultor,
-    valor,
-    data: new Date().toISOString()
-  };
-
-  const docId = Date.now().toString();
-  await setDoc(doc(db, "vendasSemana", docId), novaVenda);
-
-  alert("Venda salva com sucesso!");
-  carregarDashboard();
-  carregarImplantadas();
-  carregarPainelConsultores();
-}
-
-// === Iniciar sistema ===
-window.addEventListener("DOMContentLoaded", () => {
-  // Ativa os botões do menu
-  document.querySelectorAll(".menu-item").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const alvo = btn.getAttribute("data-target");
-      mostrarSecao(alvo);
-    });
+    if (alvo === "dashboard") carregarDashboard();
+    if (alvo === "implantadas") carregarImplantadas();
+    if (alvo === "ranking") carregarRanking();
+    if (alvo === "adminPanel") carregarAdminPanel();
   });
 });
 
-window.login = login;
-window.salvarVenda = salvarVenda;
-window.mostrarSecao = mostrarSecao;
+// === CARREGAR TODAS AS SEÇÕES ===
+function carregarTudo() {
+  carregarDashboard();
+  carregarImplantadas();
+  carregarRanking();
+}
+
+// === DASHBOARD: Análise de Vendas ===
+async function carregarDashboard() {
+  const snap = await getDocs(collection(db, "vendas"));
+  const dados = snap.docs.map(doc => doc.data());
+
+  const container = $("dashboardCards");
+  container.innerHTML = "";
+
+  consultores.forEach(nome => {
+    const vendas = dados.filter(v => v.consultor === nome);
+    const total = vendas.reduce((sum, v) => sum + v.valor, 0);
+    const card = `
+      <div class="card">
+        <h3>${nome}</h3>
+        <p><strong>Receita:</strong> R$ ${total.toFixed(2)}</p>
+        <p><strong>Contas:</strong> ${vendas.length}</p>
+      </div>`;
+    container.innerHTML += card;
+  });
+}
+
+// === EMPRESAS IMPLANTADAS ===
+async function carregarImplantadas() {
+  const snap = await getDocs(collection(db, "vendas"));
+  const dados = snap.docs.map(doc => doc.data());
+
+  const container = $("implantadasCards");
+  container.innerHTML = "";
+
+  consultores.forEach(nome => {
+    const vendas = dados.filter(v => v.consultor === nome);
+    const total = vendas.reduce((sum, v) => sum + v.valor, 0);
+    const card = `
+      <div class="card">
+        <h3>${nome}</h3>
+        <p><strong>Empresas:</strong> ${vendas.length}</p>
+        <p><strong>Receita:</strong> R$ ${total.toFixed(2)}</p>
+      </div>`;
+    container.innerHTML += card;
+  });
+}
+
+// === RANKING ===
+async function carregarRanking() {
+  const snap = await getDocs(collection(db, "vendas"));
+  const dados = snap.docs.map(doc => doc.data());
+
+  let rankingQtde = {};
+  let rankingValor = {};
+  consultores.forEach(c => {
+    rankingQtde[c] = 0;
+    rankingValor[c] = 0;
+  });
+
+  dados.forEach(d => {
+    rankingQtde[d.consultor]++;
+    rankingValor[d.consultor] += d.valor;
+  });
+
+  // Ranking de quantidade
+  const containerQ = $("rankingQtde");
+  containerQ.innerHTML = "<h3>Fechamentos por Quantidade</h3>";
+  Object.entries(rankingQtde).sort((a, b) => b[1] - a[1]).forEach(([nome, qtde], i) => {
+    const medalha = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
+    containerQ.innerHTML += `<div>${medalha} <strong>${nome}</strong>: ${qtde} contas</div>`;
+  });
+
+  // Ranking de valor
+  const containerV = $("rankingValor");
+  containerV.innerHTML = "<h3>Fechamentos por Receita</h3>";
+  Object.entries(rankingValor).sort((a, b) => b[1] - a[1]).forEach(([nome, valor], i) => {
+    const medalha = i === 0 ? "🏆" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🎖️";
+    containerV.innerHTML += `<div>${medalha} <strong>${nome}</strong>: R$ ${valor.toFixed(2)}</div>`;
+  });
+}
+
+// === ADMIN: Painel para Cadastro de Vendas ===
+async function carregarAdminPanel() {
+  $("adminForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const consultor = $("adminConsultor").value;
+    const valor = parseFloat($("adminValor").value);
+
+    if (!consultor || isNaN(valor)) {
+      alert("Preencha corretamente.");
+      return;
+    }
+
+    const novaVenda = {
+      consultor,
+      valor,
+      data: new Date().toISOString()
+    };
+
+    const id = Date.now().toString();
+    await setDoc(doc(db, "vendas", id), novaVenda);
+
+    alert("Venda salva!");
+    $("adminValor").value = "";
+    carregarTudo();
+  });
+}
