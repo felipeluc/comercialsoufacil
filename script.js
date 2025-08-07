@@ -9,15 +9,17 @@ const metasConsultores = {
 // ==== METAS GERAIS ====
 const metasGerais = {
   contas: 28,
-  receita: 22000
+  receita: 22000,
+  vendas: 1500000,           // ← Edite a meta de VENDAS aqui
+  rentabilidade: 870000     // ← Edite a meta de RENTABILIDADE aqui
 };
 
 // ==== DADOS DOS CONSULTORES ====
 const consultores = [
-  { nome: "Leticia", contas: 4, receita: 3700 },
-  { nome: "Marcelo", contas: 3, receita: 1500 },
-  { nome: "Gabriel", contas: 1, receita: 455 },
-  { nome: "Glaucia", contas: 1, receita: 500 }
+  { nome: "Leticia", contas: 4, receita: 3700, vendas: 29552, rentabilidade: 0000 },
+  { nome: "Marcelo", contas: 3, receita: 1500, vendas: 9678, rentabilidade: 0000 },
+  { nome: "Gabriel", contas: 1, receita: 455, vendas: 23973, rentabilidade: 0000 },
+  { nome: "Glaucia", contas: 1, receita: 500, vendas: 13555, rentabilidade: 0000 }
 ];
 
 // ==== LOGIN ====
@@ -38,30 +40,57 @@ window.login = function () {
 
 // ==== DASHBOARD COMERCIAL ====
 function gerarDashboard() {
-  const container = document.getElementById("cardsContainer");
-  container.innerHTML = "";
+  const implantacaoContainer = document.getElementById("cardsImplantacao");
+  const faturamentoContainer = document.getElementById("cardsFaturamento");
+
+  implantacaoContainer.innerHTML = "";
+  faturamentoContainer.innerHTML = "";
 
   const totalContas = consultores.reduce((sum, c) => sum + c.contas, 0);
   const totalReceita = consultores.reduce((sum, c) => sum + c.receita, 0);
+  const totalVendas = consultores.reduce((sum, c) => sum + c.vendas, 0);
+  const totalRentabilidade = consultores.reduce((sum, c) => sum + c.rentabilidade, 0);
 
-  const progressoContas = Math.min((totalContas / metasGerais.contas) * 100, 100);
-  const progressoReceita = Math.min((totalReceita / metasGerais.receita) * 100, 100);
-
-  const cards = [
+  const cardsImplantacao = [
     {
       titulo: "Contas Realizadas",
       valor: `${totalContas} / ${metasGerais.contas}`,
-      progresso: progressoContas
+      progresso: Math.min((totalContas / metasGerais.contas) * 100, 100)
     },
     {
       titulo: "Receita Realizada",
       valor: `R$ ${totalReceita.toFixed(2)} / R$ ${metasGerais.receita}`,
-      progresso: progressoReceita
+      progresso: Math.min((totalReceita / metasGerais.receita) * 100, 100)
     }
   ];
 
-  cards.forEach(c => {
-    container.innerHTML += `
+  const cardsFaturamento = [
+    {
+      titulo: "Vendas",
+      valor: `R$ ${totalVendas.toFixed(2)} / R$ ${metasGerais.vendas}`,
+      progresso: Math.min((totalVendas / metasGerais.vendas) * 100, 100)
+    },
+    {
+      titulo: "Rentabilidade",
+      valor: `R$ ${totalRentabilidade.toFixed(2)} / R$ ${metasGerais.rentabilidade}`,
+      progresso: Math.min((totalRentabilidade / metasGerais.rentabilidade) * 100, 100)
+    }
+  ];
+
+  cardsImplantacao.forEach(c => {
+    implantacaoContainer.innerHTML += `
+      <div class="card">
+        <h3>${c.titulo}</h3>
+        <p>${c.valor}</p>
+        <div class="progress-bar">
+          <div class="progress" style="width: ${c.progresso}%;"></div>
+        </div>
+      </div>
+    `;
+  });
+
+  cardsFaturamento.forEach(c => {
+    faturamentoContainer.innerHTML += `
       <div class="card">
         <h3>${c.titulo}</h3>
         <p>${c.valor}</p>
