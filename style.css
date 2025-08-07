@@ -1,191 +1,101 @@
-/* Reset e base */
-* {
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f5f6f7;
   color: #333;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
-/* Login */
-#loginScreen {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 400px;
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.hidden {
+  display: none;
+}
+
+.login-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
   text-align: center;
 }
 
-#loginScreen h2 {
-  margin-bottom: 1.5rem;
-}
-
-#loginScreen select,
-#loginScreen input,
-#loginScreen button {
+.login-box input,
+.login-box select {
   width: 100%;
-  padding: 0.75rem;
-  margin: 0.5rem 0;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
 }
 
-#loginScreen button {
+.login-box button {
+  padding: 10px 20px;
   background-color: #007aff;
-  color: white;
-  font-weight: bold;
   border: none;
+  color: white;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
-#loginScreen button:hover {
-  background-color: #005fce;
-}
-
-/* Main App Layout */
-#mainApp {
-  display: none;
-  width: 100%;
-  max-width: 1200px;
-  margin: 2rem auto;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-/* Menu Lateral */
-.menu {
+nav {
   display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
+  gap: 10px;
+  background-color: white;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .menu-item {
-  padding: 0.75rem 1.5rem;
-  background-color: #e0e0e0;
-  border-radius: 12px;
+  background: none;
+  border: none;
+  font-size: 16px;
   cursor: pointer;
-  transition: background 0.3s ease;
-  font-weight: 500;
 }
 
-.menu-item:hover,
 .menu-item.active {
-  background-color: #007aff;
-  color: white;
+  font-weight: bold;
+  border-bottom: 2px solid #007aff;
 }
 
-/* Seções */
 .section {
-  display: none;
-  width: 100%;
+  padding: 30px;
 }
 
-/* Cards */
-#cardsMetas {
+.cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
+  gap: 20px;
+  margin-top: 20px;
 }
 
 .card {
   background: white;
-  padding: 1.5rem;
-  border-radius: 20px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  text-align: center;
-  transition: transform 0.2s ease;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.card h3 {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-.card p {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #007aff;
-}
-
-/* Admin Formulário */
-.admin-form {
+.rankings {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 500px;
-  margin: 0 auto;
+  gap: 40px;
+  margin-top: 30px;
 }
 
-.admin-form input {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 1rem;
+.rankings ul {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  list-style: none;
+  margin: 0;
 }
 
-.admin-form button {
-  background-color: #28a745;
-  color: white;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.admin-form button:hover {
-  background-color: #218838;
-}
-
-/* Popup */
-#popupMsg {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background: #007aff;
-  color: white;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  display: none;
-  font-weight: bold;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-  .menu {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .card {
-    padding: 1rem;
-  }
-
-  #loginScreen {
-    padding: 1rem;
-  }
+.rankings li {
+  padding: 5px 0;
 }
