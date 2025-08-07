@@ -1,15 +1,23 @@
+// ==== METAS POR CONSULTOR ====
+const metasConsultores = {
+  Leticia: { contas: 7, receita: 5500 },
+  Marcelo: { contas: 7, receita: 5500 },
+  Gabriel: { contas: 7, receita: 5500 },
+  Glaucia: { contas: 7, receita: 5500 }
+};
+
 // ==== METAS GERAIS ====
 const metasGerais = {
-  contas: 30,
-  receita: 20000
+  contas: 28,
+  receita: 22000
 };
 
 // ==== DADOS DOS CONSULTORES ====
 const consultores = [
-  { nome: "Leticia", contas: 7, receita: 5500 },
-  { nome: "Marcelo", contas: 10, receita: 8000 },
-  { nome: "Gabriel", contas: 5, receita: 4000 },
-  { nome: "Glaucia", contas: 8, receita: 6000 }
+  { nome: "Leticia", contas: 3, receita: 3200 },
+  { nome: "Marcelo", contas: 3, receita: 1500 },
+  { nome: "Gabriel", contas: 1, receita: 455 },
+  { nome: "Glaucia", contas: 1, receita: 500 }
 ];
 
 // ==== LOGIN ====
@@ -63,6 +71,7 @@ function gerarDashboard() {
       </div>
     `;
   });
+
   gerarRanking();
 }
 
@@ -78,22 +87,25 @@ function gerarRanking() {
   containerReceita.innerHTML = "";
 
   rankingContas.forEach((c, i) => {
-    const progresso = Math.min((c.contas / metasGerais.contas) * 100, 100);
-    containerContas.innerHTML += criarCardConsultor(c, progresso, i + 1, "contas");
+    const metaContas = metasConsultores[c.nome]?.contas || metasGerais.contas;
+    const progresso = Math.min((c.contas / metaContas) * 100, 100);
+    containerContas.innerHTML += criarCardConsultor(c, progresso, i + 1, "contas", metaContas);
   });
 
   rankingReceita.forEach((c, i) => {
-    const progresso = Math.min((c.receita / metasGerais.receita) * 100, 100);
-    containerReceita.innerHTML += criarCardConsultor(c, progresso, i + 1, "receita");
+    const metaReceita = metasConsultores[c.nome]?.receita || metasGerais.receita;
+    const progresso = Math.min((c.receita / metaReceita) * 100, 100);
+    containerReceita.innerHTML += criarCardConsultor(c, progresso, i + 1, "receita", metaReceita);
   });
 }
 
 // ==== CARD DE CONSULTOR ====
-function criarCardConsultor(c, progresso, posicao, tipo) {
+function criarCardConsultor(c, progresso, posicao, tipo, meta) {
   const emoji = posicao === 1 ? "🏆" : posicao === 2 ? "🥈" : posicao === 3 ? "🥉" : "🎖️";
-  const meta = tipo === "contas" ? metasGerais.contas : metasGerais.receita;
   const valor = tipo === "contas" ? `${c.contas} contas` : `R$ ${c.receita.toFixed(2)}`;
-  const falta = tipo === "contas" ? `${Math.max(0, meta - c.contas)} contas` : `R$ ${Math.max(0, meta - c.receita).toFixed(2)}`;
+  const falta = tipo === "contas"
+    ? `${Math.max(0, meta - c.contas)} contas`
+    : `R$ ${Math.max(0, meta - c.receita).toFixed(2)}`;
 
   return `
     <div class="consultor-card">
