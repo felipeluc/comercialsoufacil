@@ -1,17 +1,18 @@
-// === CONFIGURAÇÕES DE METAS ===
+// ==== METAS GERAIS ====
 const metasGerais = {
   contas: 30,
-  receita: 27500
+  receita: 20000
 };
 
+// ==== DADOS DOS CONSULTORES ====
 const consultores = [
   { nome: "Leticia", contas: 7, receita: 5500 },
-  { nome: "Glaucia", contas: 4, receita: 4200 },
-  { nome: "Marcelo", contas: 10, receita: 12500 },
-  { nome: "Gabriel", contas: 6, receita: 4800 }
+  { nome: "Marcelo", contas: 10, receita: 8000 },
+  { nome: "Gabriel", contas: 5, receita: 4000 },
+  { nome: "Glaucia", contas: 8, receita: 6000 }
 ];
 
-// === LOGIN ===
+// ==== LOGIN ====
 window.login = function () {
   const user = document.getElementById("userSelect").value;
   const pass = document.getElementById("password").value;
@@ -25,80 +26,83 @@ window.login = function () {
   document.getElementById("mainApp").style.display = "block";
 
   gerarDashboard();
-  gerarRanking();
 };
 
-// === DASHBOARD COMERCIAL ===
+// ==== DASHBOARD COMERCIAL ====
 function gerarDashboard() {
-  const dashboardContainer = document.getElementById("dashboardCards");
-  dashboardContainer.innerHTML = "";
+  const container = document.getElementById("cardsContainer");
+  container.innerHTML = "";
 
   const totalContas = consultores.reduce((sum, c) => sum + c.contas, 0);
   const totalReceita = consultores.reduce((sum, c) => sum + c.receita, 0);
 
-  const progressoContas = Math.min(100, (totalContas / metasGerais.contas) * 100);
-  const progressoReceita = Math.min(100, (totalReceita / metasGerais.receita) * 100);
+  const progressoContas = Math.min((totalContas / metasGerais.contas) * 100, 100);
+  const progressoReceita = Math.min((totalReceita / metasGerais.receita) * 100, 100);
 
   const cards = [
     {
       titulo: "Contas Realizadas",
-      valor: totalContas,
-      progresso: progressoContas
-    },
-    {
-      titulo: "Faltam para Meta (Contas)",
-      valor: metasGerais.contas - totalContas,
+      valor: `${totalContas} / ${metasGerais.contas}`,
       progresso: progressoContas
     },
     {
       titulo: "Receita Realizada",
-      valor: `R$ ${totalReceita.toFixed(2)}`,
-      progresso: progressoReceita
-    },
-    {
-      titulo: "Faltam para Meta (Receita)",
-      valor: `R$ ${(metasGerais.receita - totalReceita).toFixed(2)}`,
+      valor: `R$ ${totalReceita.toFixed(2)} / R$ ${metasGerais.receita}`,
       progresso: progressoReceita
     }
   ];
 
-  cards.forEach(card => {
-    dashboardContainer.innerHTML += `
+  cards.forEach(c => {
+    container.innerHTML += `
       <div class="card">
-        <h3>${card.titulo}</h3>
-        <p>${card.valor}</p>
+        <h3>${c.titulo}</h3>
+        <p>${c.valor}</p>
         <div class="progress-bar">
-          <div class="progress" style="width: ${card.progresso}%;"></div>
+          <div class="progress" style="width: ${c.progresso}%;"></div>
         </div>
       </div>
     `;
+  });
+  gerarRanking();
+}
+
+// ==== RANKING POR CONTAS E RECEITA ====
+function gerarRanking() {
+  const rankingContas = [...consultores].sort((a, b) => b.contas - a.contas);
+  const rankingReceita = [...consultores].sort((a, b) => b.receita - a.receita);
+
+  const containerContas = document.getElementById("rankingContas");
+  const containerReceita = document.getElementById("rankingReceita");
+
+  containerContas.innerHTML = "";
+  containerReceita.innerHTML = "";
+
+  rankingContas.forEach((c, i) => {
+    const progresso = Math.min((c.contas / metasGerais.contas) * 100, 100);
+    containerContas.innerHTML += criarCardConsultor(c, progresso, i + 1, "contas");
+  });
+
+  rankingReceita.forEach((c, i) => {
+    const progresso = Math.min((c.receita / metasGerais.receita) * 100, 100);
+    containerReceita.innerHTML += criarCardConsultor(c, progresso, i + 1, "receita");
   });
 }
 
-// === RANKING DE CONSULTORES ===
-function gerarRanking() {
-  const rankingContainer = document.getElementById("rankingCards");
-  rankingContainer.innerHTML = "";
+// ==== CARD DE CONSULTOR ====
+function criarCardConsultor(c, progresso, posicao, tipo) {
+  const emoji = posicao === 1 ? "🏆" : posicao === 2 ? "🥈" : posicao === 3 ? "🥉" : "🎖️";
+  const meta = tipo === "contas" ? metasGerais.contas : metasGerais.receita;
+  const valor = tipo === "contas" ? `${c.contas} contas` : `R$ ${c.receita.toFixed(2)}`;
+  const falta = tipo === "contas" ? `${Math.max(0, meta - c.contas)} contas` : `R$ ${Math.max(0, meta - c.receita).toFixed(2)}`;
 
-  const ranking = [...consultores].sort((a, b) => b.receita - a.receita);
-
-  ranking.forEach((c, index) => {
-    const progressoContas = Math.min(100, (c.contas / metasGerais.contas) * 100);
-    const progressoReceita = Math.min(100, (c.receita / metasGerais.receita) * 100);
-    const medalha = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🏅";
-
-    rankingContainer.innerHTML += `
-      <div class="card consultor-card">
-        <h3>${medalha} ${c.nome} (posição ${index + 1})</h3>
-        <p><strong>Contas:</strong> ${c.contas}</p>
-        <div class="progress-bar small">
-          <div class="progress" style="width: ${progressoContas}%;"></div>
-        </div>
-        <p><strong>Receita:</strong> R$ ${c.receita.toFixed(2)}</p>
-        <div class="progress-bar small">
-          <div class="progress" style="width: ${progressoReceita}%;"></div>
-        </div>
+  return `
+    <div class="consultor-card">
+      <h4>${emoji} ${c.nome} (Posição ${posicao})</h4>
+      <p><strong>${valor}</strong></p>
+      <p class="falta">Faltam: ${falta}</p>
+      <div class="progress-bar">
+        <div class="progress" style="width: ${progresso}%;"></div>
       </div>
-    `;
-  });
+    </div>
+  `;
 }
