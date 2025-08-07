@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Comercial</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -27,13 +27,22 @@
     </nav>
 
     <section id="dashboard" class="section">
-      <h1>Dashboard Comercial</h1>
-      <div class="dashboard-layout">
-        <div id="cardsContainer" class="cards-column"></div>
+      <div class="grid-layout">
+        <!-- Dashboard Comercial -->
+        <div class="left-column">
+          <h1>Dashboard Comercial</h1>
+          <div id="cardsContainer" class="cards-column"></div>
+        </div>
 
-        <div class="rankings-column">
-          <h2>Ranking de Consultores</h2>
-          <div id="consultoresCards" class="consultores-grid"></div>
+        <!-- Ranking de Consultores -->
+        <div class="right-column">
+          <h1>Ranking de Consultores</h1>
+          <div class="ranking-section">
+            <h3>Por Contas</h3>
+            <div id="rankingContas" class="ranking-cards"></div>
+            <h3>Por Receita</h3>
+            <div id="rankingReceita" class="ranking-cards"></div>
+          </div>
         </div>
       </div>
     </section>
