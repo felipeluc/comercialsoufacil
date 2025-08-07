@@ -4,9 +4,10 @@ const metas = {
 };
 
 const consultores = [
-  { nome: "Leticia", contas: 3, receita: 3200 },
-  { nome: "Glaucia", contas: 1, receita: 500 },
-  { nome: "Lucas", contas: 25, receita: 15000 }
+  { nome: "Leticia", contas: 7, receita: 5500, metaContas: 10, metaReceita: 7000 },
+  { nome: "Gabriel", contas: 12, receita: 11000, metaContas: 12, metaReceita: 12000 },
+  { nome: "Marcelo", contas: 8, receita: 6500, metaContas: 10, metaReceita: 8000 },
+  { nome: "Glaucia", contas: 3, receita: 4000, metaContas: 8, metaReceita: 6000 }
 ];
 
 // ==== LOGIN ====
@@ -33,35 +34,93 @@ function gerarDashboard() {
   const totalContas = consultores.reduce((sum, c) => sum + c.contas, 0);
   const totalReceita = consultores.reduce((sum, c) => sum + c.receita, 0);
 
-  const cards = [
-    { titulo: "Contas Realizadas", valor: totalContas },
-    { titulo: "Meta de Contas", valor: metas.contas },
-    { titulo: "Faltam para Meta (Contas)", valor: Math.max(0, metas.contas - totalContas) },
-    { titulo: "Receita Realizada", valor: `R$ ${totalReceita.toFixed(2)}` },
-    { titulo: "Meta de Receita", valor: `R$ ${metas.receita.toFixed(2)}` },
-    { titulo: "Faltam para Meta (Receita)", valor: `R$ ${Math.max(0, metas.receita - totalReceita).toFixed(2)}` }
-  ];
+  const faltamContas = Math.max(0, metas.contas - totalContas);
+  const faltamReceita = Math.max(0, metas.receita - totalReceita);
 
-  cards.forEach(c => {
-    cardsContainer.innerHTML += `
-      <div class="card">
-        <h3>${c.titulo}</h3>
-        <p>${c.valor}</p>
-      </div>
-    `;
-  });
+  const progressoContas = Math.min(100, (totalContas / metas.contas) * 100);
+  const progressoReceita = Math.min(100, (totalReceita / metas.receita) * 100);
+
+  cardsContainer.innerHTML += `
+    <div class="card">
+      <h3>Contas Realizadas</h3>
+      <p>${totalContas}</p>
+      <div class="progress-bar"><div style="width:${progressoContas}%;"></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Meta de Contas</h3>
+      <p>${metas.contas}</p>
+    </div>
+
+    <div class="card warning">
+      <h3>Faltam para Meta (Contas)</h3>
+      <p>${faltamContas}</p>
+      <div class="progress-bar"><div style="width:${100 - progressoContas}%; background:#ff4d4d;"></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Receita Realizada</h3>
+      <p>R$ ${totalReceita.toFixed(2)}</p>
+      <div class="progress-bar"><div style="width:${progressoReceita}%;"></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Meta de Receita</h3>
+      <p>R$ ${metas.receita.toFixed(2)}</p>
+    </div>
+
+    <div class="card warning">
+      <h3>Faltam para Meta (Receita)</h3>
+      <p>R$ ${faltamReceita.toFixed(2)}</p>
+      <div class="progress-bar"><div style="width:${100 - progressoReceita}%; background:#ff4d4d;"></div></div>
+    </div>
+  `;
 
   gerarRankings();
 }
 
 // ==== RANKINGS ====
 function gerarRankings() {
-  const contasList = [...consultores].sort((a, b) => b.contas - a.contas);
-  const receitaList = [...consultores].sort((a, b) => b.receita - a.receita);
-
   const ulContas = document.getElementById("rankingContas");
   const ulReceita = document.getElementById("rankingReceita");
 
-  ulContas.innerHTML = contasList.map(c => `<li>${c.nome}: ${c.contas} contas</li>`).join("");
-  ulReceita.innerHTML = receitaList.map(c => `<li>${c.nome}: R$ ${c.receita.toFixed(2)}</li>`).join("");
+  const contasRank = [...consultores].sort((a, b) => b.contas - a.contas);
+  const receitaRank = [...consultores].sort((a, b) => b.receita - a.receita);
+
+  ulContas.innerHTML = "";
+  ulReceita.innerHTML = "";
+
+  contasRank.forEach((c, index) => {
+    const porcentagemContas = Math.min(100, (c.contas / c.metaContas) * 100);
+    const medalha = getEmoji(index);
+
+    ulContas.innerHTML += `
+      <li class="consultor-card">
+        <h4>${medalha} ${c.nome} (${index + 1}º lugar)</h4>
+        <p>Contas: ${c.contas}</p>
+        <p>Meta: ${c.metaContas}</p>
+        <p>Falta: ${Math.max(0, c.metaContas - c.contas)}</p>
+        <div class="progress-bar"><div style="width:${porcentagemContas}%;"></div></div>
+      </li>
+    `;
+  });
+
+  receitaRank.forEach((c, index) => {
+    const porcentagemReceita = Math.min(100, (c.receita / c.metaReceita) * 100);
+    const medalha = getEmoji(index);
+
+    ulReceita.innerHTML += `
+      <li class="consultor-card">
+        <h4>${medalha} ${c.nome} (${index + 1}º lugar)</h4>
+        <p>Receita: R$ ${c.receita.toFixed(2)}</p>
+        <p>Meta: R$ ${c.metaReceita.toFixed(2)}</p>
+        <p>Falta: R$ ${Math.max(0, c.metaReceita - c.receita).toFixed(2)}</p>
+        <div class="progress-bar"><div style="width:${porcentagemReceita}%;"></div></div>
+      </li>
+    `;
+  });
+}
+
+function getEmoji(index) {
+  return ["🏆", "🥇", "🥈", "🥉"][index] || "";
 }
