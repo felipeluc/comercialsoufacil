@@ -14,7 +14,7 @@ const metasGerais = {
 
 // ==== DADOS DOS CONSULTORES ====
 const consultores = [
-  { nome: "Leticia", contas: 3, receita: 3200 },
+  { nome: "Leticia", contas: 4, receita: 3700 },
   { nome: "Marcelo", contas: 3, receita: 1500 },
   { nome: "Gabriel", contas: 1, receita: 455 },
   { nome: "Glaucia", contas: 1, receita: 500 }
