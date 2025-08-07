@@ -28,22 +28,36 @@
 
     <section id="dashboard" class="section">
       <div class="grid-layout">
-        <!-- Dashboard Comercial -->
+        
+        <!-- Dashboard Comercial - lado esquerdo -->
         <div class="left-column">
           <h1>Dashboard Comercial</h1>
-          <div id="cardsContainer" class="cards-column"></div>
+          <div id="cardsContainer" class="cards-column">
+            <!-- Cards das metas aparecem aqui via JS -->
+          </div>
         </div>
 
-        <!-- Ranking de Consultores -->
+        <!-- Ranking de Consultores - lado direito -->
         <div class="right-column">
           <h1>Ranking de Consultores</h1>
           <div class="ranking-section">
-            <h3>Por Contas</h3>
-            <div id="rankingContas" class="ranking-cards"></div>
-            <h3>Por Receita</h3>
-            <div id="rankingReceita" class="ranking-cards"></div>
+            <!-- Por Contas -->
+            <div>
+              <h3>📊 Por Contas</h3>
+              <div id="rankingContas" class="ranking-cards">
+                <!-- Cards via JS -->
+              </div>
+            </div>
+            <!-- Por Receita -->
+            <div>
+              <h3>💰 Por Receita</h3>
+              <div id="rankingReceita" class="ranking-cards">
+                <!-- Cards via JS -->
+              </div>
+            </div>
           </div>
         </div>
+
       </div>
     </section>
   </div>
