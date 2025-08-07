@@ -1,3 +1,4 @@
+/* Reset e base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,14 +6,12 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  background-color: #f5f5f7;
-  color: #1c1c1e;
-  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #f9f9f9;
+  color: #333;
 }
 
-/* LOGIN */
-
+/* Login */
 .centered {
   display: flex;
   justify-content: center;
@@ -26,166 +25,159 @@ body {
 
 .login-box {
   background: white;
-  padding: 30px;
+  padding: 40px;
   border-radius: 16px;
-  box-shadow: 0 12px 25px rgba(0,0,0,0.05);
-  width: 100%;
-  max-width: 350px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   text-align: center;
-}
-
-.login-box h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: 600;
 }
 
 .login-box input,
 .login-box select {
   width: 100%;
   padding: 12px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  background-color: #f9f9f9;
+  margin: 12px 0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
 }
 
 .login-box button {
-  width: 100%;
-  padding: 12px;
+  padding: 12px 20px;
   background-color: #007aff;
-  color: white;
   border: none;
-  border-radius: 12px;
+  color: white;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 16px;
-  transition: background 0.3s ease;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
 }
 
 .login-box button:hover {
-  background-color: #005ecb;
+  background-color: #005fd1;
 }
 
-/* NAV */
+/* Navegação */
 nav {
-  display: flex;
-  background-color: white;
-  padding: 12px 20px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-  justify-content: center;
+  background: white;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .menu-item {
   background: none;
   border: none;
   font-size: 16px;
-  margin: 0 10px;
   cursor: pointer;
-  color: #007aff;
-  font-weight: 500;
 }
 
 .menu-item.active {
+  font-weight: bold;
   border-bottom: 2px solid #007aff;
 }
 
-/* SECTIONS */
-.section {
+/* Layout de colunas lado a lado */
+.grid-layout {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-between;
+  gap: 30px;
+  padding: 30px;
 }
 
-/* TITLES */
-.section h1 {
-  width: 100%;
-  font-size: 24px;
-  margin-bottom: 10px;
-  font-weight: 700;
-  text-align: center;
-  color: #000;
-}
-
-#dashboardTitle,
-#rankingTitle {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-/* CONTAINERS */
-#dashboardCards,
-#rankingCards {
+.left-column,
+.right-column {
   flex: 1;
   min-width: 300px;
-  max-width: 48%;
+}
+
+/* Títulos */
+.left-column h1,
+.right-column h1 {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+/* Cards do Dashboard */
+.cards-column {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* CARDS */
 .card {
-  background-color: white;
+  background: white;
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .card h3 {
+  margin-bottom: 10px;
   font-size: 18px;
-  margin-bottom: 10px;
-  font-weight: 600;
 }
 
-.card p {
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-/* CARDS ESPECIAIS */
-.consultor-card {
-  border-left: 4px solid #007aff;
-}
-
-/* PROGRESS BAR */
+/* Barra de progresso */
 .progress-bar {
-  width: 100%;
+  background: #eee;
+  border-radius: 20px;
   height: 10px;
-  background-color: #e5e5ea;
-  border-radius: 6px;
+  margin-top: 10px;
   overflow: hidden;
-  margin-bottom: 5px;
-}
-
-.progress-bar.small {
-  height: 6px;
 }
 
 .progress {
   height: 100%;
-  background-color: #34c759;
+  background: #34c759;
+  width: 0%;
   transition: width 0.5s ease;
 }
 
-/* RESPONSIVO */
-@media screen and (max-width: 768px) {
-  #dashboardCards,
-  #rankingCards {
-    max-width: 100%;
+/* Ranking */
+.ranking-section {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.ranking-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Card individual de consultor */
+.consultor-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border-left: 5px solid #007aff;
+}
+
+.consultor-card h4 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.consultor-card p {
+  margin: 4px 0;
+}
+
+.consultor-card .falta {
+  color: #d00;
+  font-weight: 500;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .grid-layout {
+    flex-direction: column;
   }
 
-  .section {
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+
+  .ranking-cards {
     flex-direction: column;
   }
 }
