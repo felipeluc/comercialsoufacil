@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Comercial</title>
   <link rel="stylesheet" href="style.css" />
+  <script>
+    // Bloquear botão direito com senha
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+      const senha = prompt("Área protegida. Digite a senha:");
+      if (senha !== "felipe23") {
+        alert("Acesso negado.");
+      }
+    });
+  </script>
 </head>
 <body>
   <div id="loginContainer" class="centered">
@@ -28,17 +38,28 @@
 
     <section id="dashboard" class="section">
       <div class="grid-layout">
-        
+
         <!-- Dashboard Comercial - lado esquerdo -->
         <div class="left-column">
           <h1>Dashboard Comercial</h1>
-          <div id="cardsContainer" class="cards-column">
-            <!-- Cards das metas aparecem aqui via JS -->
+
+          <div class="ranking-section" style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <!-- Por Implantação -->
+            <div style="flex: 1">
+              <h3>🚀 Por Implantação</h3>
+              <div id="cardsImplantacao" class="cards-column"></div>
+            </div>
+
+            <!-- Por Faturamento -->
+            <div style="flex: 1">
+              <h3>💵 Por Faturamento</h3>
+              <div id="cardsFaturamento" class="cards-column"></div>
+            </div>
           </div>
 
-          <!-- Card com imagem de comunicado logo abaixo dos cards -->
-          <div class="consultor-card comunicado-card">
-            <img src="comunicado.jpg" alt="Comunicado" class="comunicado-img">
+          <!-- Card com imagem de comunicado -->
+          <div class="card comunicado-card" style="margin-top: 20px; width: 250px; height: 250px; overflow: hidden;">
+            <img src="comunicado.gif" alt="Comunicado" class="comunicado-img" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
         </div>
 
