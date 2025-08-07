@@ -18,7 +18,7 @@ const metasGerais = {
 const consultores = [
   { nome: "Leticia", contas: 5, receita: 4700, vendas: 29552, rentabilidade: 0000 },
   { nome: "Marcelo", contas: 3, receita: 1500, vendas: 9678, rentabilidade: 0000 },
-  { nome: "Gabriel", contas: 1, receita: 455, vendas: 23973, rentabilidade: 0000 },
+  { nome: "Gabriel", contas: 2, receita: 955, vendas: 23973, rentabilidade: 0000 },
   { nome: "Glaucia", contas: 1, receita: 500, vendas: 13555, rentabilidade: 0000 }
 ];
 
