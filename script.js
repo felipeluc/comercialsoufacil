@@ -1,11 +1,11 @@
 const metas = {
-  contas: 100,
-  receita: 50000
+  contas: 30,
+  receita: 27500
 };
 
 const consultores = [
-  { nome: "Felipe", contas: 20, receita: 12000 },
-  { nome: "Carol", contas: 35, receita: 18000 },
+  { nome: "Leticia", contas: 3, receita: 3200 },
+  { nome: "Glaucia", contas: 1, receita: 500 },
   { nome: "Lucas", contas: 25, receita: 15000 }
 ];
 
