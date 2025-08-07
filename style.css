@@ -137,6 +137,10 @@ nav {
   flex-wrap: wrap;
 }
 
+.ranking-section h3 {
+  margin-bottom: 10px;
+}
+
 .ranking-cards {
   display: flex;
   flex-direction: column;
