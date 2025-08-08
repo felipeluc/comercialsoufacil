@@ -16,15 +16,15 @@ const metasGerais = {
 
 // ==== DADOS DOS CONSULTORES ====
 const consultores = [
-  { nome: "Leticia", contas: 5, receita: 4700, vendas: 29552, rentabilidade: 0 },
-  { nome: "Marcelo", contas: 3, receita: 1500, vendas: 9678, rentabilidade: 0 },
-  { nome: "Gabriel", contas: 1, receita: 455, vendas: 23973, rentabilidade: 0 },
-  { nome: "Glaucia", contas: 1, receita: 500, vendas: 13555, rentabilidade: 0 }
+  { nome: "Leticia", contas: 5, receita: 4700, vendas: 53046, rentabilidade: 0 },
+  { nome: "Marcelo", contas: 3, receita: 1500, vendas: 27736, rentabilidade: 0 },
+  { nome: "Gabriel", contas: 1, receita: 455, vendas: 49146, rentabilidade: 0 },
+  { nome: "Glaucia", contas: 1, receita: 500, vendas: 26298, rentabilidade: 0 }
 ];
 
 // ==== DADOS VENDAS MENSAL ====
-const vendasMesPassado = 90000;
-const vendasMesAtual = 120000;
+const vendasMesPassado = 282952;
+const vendasMesAtual = 156227;
 
 // ==== LOGIN ====
 window.login = function () {
