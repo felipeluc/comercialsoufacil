@@ -19,7 +19,7 @@ const consultores = [
   { nome: "Leticia", contas: 9, receita: 6400, vendas: 182268, rentabilidade: 110670 },
   { nome: "Marcelo", contas: 7, receita: 3999, vendas: 74757, rentabilidade: 46985 },
   { nome: "Gabriel", contas: 4, receita: 2255, vendas: 133182, rentabilidade: 80332 },
-  { nome: "Glaucia", contas: 11, receita: 2200, vendas: 52363, rentabilidade: 26632 }
+  { nome: "Glaucia", contas: 3, receita: 2200, vendas: 52363, rentabilidade: 26632 }
 ];
 
 // ==== DADOS VENDAS MENSAL ====
