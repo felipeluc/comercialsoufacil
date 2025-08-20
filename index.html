@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Comercial - Premium</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+      const senha = prompt("Área protegida. Digite a senha:");
+      if (senha !== "felipe23") {
+        alert("Acesso negado.");
+      }
+    });
+  </script>
+</head>
+<body>
+  <!-- Partículas de fundo -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <div id="loginContainer" class="centered">
+    <div class="login-box">
+      <div class="login-header">
+        <div class="logo-container">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h2>Bem-vindo</h2>
+        <p>Acesse seu dashboard comercial</p>
+      </div>
+      
+      <div class="login-form">
+        <div class="input-group">
+          <i class="fas fa-user"></i>
+          <select id="userSelect">
+            <option value="">Selecione seu usuário</option>
+            <option value="Felipe">Felipe</option>
+            <option value="Carol">Carol</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        
+        <div class="input-group">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" placeholder="Digite sua senha" />
+        </div>
+        
+        <button onclick="login()" class="login-btn">
+          <span>Entrar</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+      
+      <div class="login-footer">
+        <p>Esqueceu sua senha? <a href="#">Clique aqui</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="mainApp" class="hidden">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <i class="fas fa-chart-line"></i>
+        <span>Dashboard Pro</span>
+      </div>
+      <div class="nav-menu">
+        <button class="menu-item active" data-target="dashboard">
+          <i class="fas fa-tachometer-alt"></i>
+          <span>Análise de Metas</span>
+        </button>
+      </div>
+      <div class="nav-user">
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+      </div>
+    </nav>
+
+    <section id="dashboard" class="section">
+      <div class="dashboard-header">
+        <h1>Dashboard Comercial</h1>
+        <div class="header-stats">
+          <div class="stat-item">
+            <i class="fas fa-calendar"></i>
+            <span id="currentDate"></span>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-clock"></i>
+            <span id="currentTime"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-layout">
+        <!-- Dashboard Comercial - lado esquerdo -->
+        <div class="left-column">
+          <div class="section-header">
+            <h2><i class="fas fa-rocket"></i> Performance Comercial</h2>
+            <div class="section-actions">
+              <button class="action-btn"><i class="fas fa-download"></i></button>
+              <button class="action-btn"><i class="fas fa-refresh"></i></button>
+            </div>
+          </div>
+          
+          <div class="ranking-section">
+            <!-- Por Implantação -->
+            <div class="ranking-column">
+              <div class="column-header">
+                <h3><i class="fas fa-rocket"></i> Por Implantação</h3>
+                <div class="progress-indicator">
+                  <div class="progress-ring">
+                    <div class="progress-fill"></div>
+                  </div>
+                </div>
+              </div>
+              <div id="cardsImplantacao" class="cards-column"></div>
+            </div>
+
+            <!-- Por Faturamento -->
+            <div class="ranking-column">
+              <div class="column-header">
+                <h3><i class="fas fa-dollar-sign"></i> Por Faturamento</h3>
+                <div class="progress-indicator">
+                  <div class="progress-ring">
+                    <div class="progress-fill"></div>
+                  </div>
+                </div>
+              </div>
+              <div id="cardsFaturamento" class="cards-column"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ranking de Consultores - lado direito -->
+        <div class="right-column">
+          <div class="section-header">
+            <h2><i class="fas fa-trophy"></i> Ranking de Consultores</h2>
+            <div class="section-actions">
+              <button class="action-btn"><i class="fas fa-filter"></i></button>
+              <button class="action-btn"><i class="fas fa-sort"></i></button>
+            </div>
+          </div>
+          
+          <div class="ranking-section">
+            <div class="ranking-column">
+              <div class="column-header">
+                <h3><i class="fas fa-chart-bar"></i> Por Contas</h3>
+                <span class="badge">Top 10</span>
+              </div>
+              <div id="rankingContas" class="ranking-cards"></div>
+            </div>
+            
+            <div class="ranking-column">
+              <div class="column-header">
+                <h3><i class="fas fa-money-bill-wave"></i> Por Receita</h3>
+                <span class="badge">Top 10</span>
+              </div>
+              <div id="rankingReceita" class="ranking-cards"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Atualizar data e hora
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR');
+      document.getElementById('currentTime').textContent = now.toLocaleTimeString('pt-BR');
+    }
+    
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+
+    // Função de login (placeholder)
+    function login() {
+      const user = document.getElementById('userSelect').value;
+      const password = document.getElementById('password').value;
+      
+      if (user && password) {
+        document.getElementById('loginContainer').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+      } else {
+        alert('Por favor, selecione um usuário e digite a senha.');
+      }
+    }
+  </script>
+</body>
+</html>
+
