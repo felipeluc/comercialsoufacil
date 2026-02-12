@@ -1,13 +1,39 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Clube de Benefícios SouFácil Card</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Comercial iOS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dashboard Comercial</h1>
+            <p id="current-date"></p>
+        </header>
+
+        <section class="summary-section">
+            <div class="section-header">
+                <h2>Consultores Externos</h2>
+            </div>
+            <div class="external-cards" id="external-consultants-container">
+                <!-- Cards dos externos serão inseridos via JS -->
+            </div>
+        </section>
+
+        <section class="internal-section">
+            <div class="section-header">
+                <h2>Metas Consultores Internos</h2>
+            </div>
+            <div class="internal-cards" id="internal-consultants-container">
+                <!-- Cards dos internos serão inseridos via JS -->
+            </div>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
 </html>
