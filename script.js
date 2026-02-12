@@ -10,7 +10,7 @@ const CONFIG = {
  */
 const consultoresInternos = [
     { nome: "Gabriel", valorAdesao: 0, qtdContas: 0 },
-    { nome: "Michael", valorAdesao: 4049, qtdContas: 3 }, // Assinado: 3, Contas: 5 (Vou usar 'Assinado' como base de fechamento)
+    { nome: "Michael", valorAdesao: 5000, qtdContas: 6 }, // Assinado: 3, Contas: 5 (Vou usar 'Assinado' como base de fechamento)
     { nome: "Glaucia", valorAdesao: 0, qtdContas: 0 },
     { nome: "Angela", valorAdesao: 0, qtdContas: 0 }
 ];
