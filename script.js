@@ -1,22 +1,26 @@
-/**
- * DADOS DO DASHBOARD
- * Você pode atualizar os valores abaixo para refletir os resultados reais.
- */
-const DASHBOARD_DATA = {
-    config: {
-        metaAdesao: 5000,
-        metaContas: 5,
-        comissaoPercentual: 0.15
-    },
-    consultoresInternos: [
-        { nome: "Maria Luiza", adesao: 5200, contas: 6 },
-        { nome: "Michael", adesao: 3500, contas: 3 },
-        { nome: "Beatriz", adesao: 5000, contas: 5 }
-    ],
-    consultoresExternos: [
-        { nome: "Nivaldo", adesao: 12500, contas: 12 },
-        { nome: "Marco", adesao: 8900, contas: 8 }
-    ]
+// Configurações e Dados do Dashboard
+const CONFIG = {
+    metaValor: 5000,
+    metaContas: 5,
+    comissaoPercentual: 0.15
+};
+
+// Dados dos Consultores - VOCÊ PODE ATUALIZAR ESTES VALORES DIRETAMENTE AQUI
+const consultoresInternos = [
+    { id: 1, nome: "Maria Luiza", valorAdesao: 5200, qtdContas: 6 },
+    { id: 2, nome: "Michael", valorAdesao: 3500, qtdContas: 3 },
+    { id: 3, nome: "Beatriz", valorAdesao: 4800, qtdContas: 5 }
+];
+
+const consultoresExternos = [
+    { id: 4, nome: "Nivaldo", valorAdesao: 7000, qtdContas: 8 },
+    { id: 5, nome: "Marco", valorAdesao: 4200, qtdContas: 4 }
+];
+
+// Ícones SVG
+const icons = {
+    user: `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`,
+    external: `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`
 };
 
 // Formatação de Moeda
@@ -24,108 +28,94 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 };
 
-// Renderizar Data Atual
-const renderDate = () => {
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString('pt-BR', options);
+// Função para calcular progresso
+const calculateProgress = (current, target) => {
+    return Math.min((current / target) * 100, 100);
 };
 
-// Criar Card de Consultor Externo
-const createExternalCard = (consultor) => {
-    return `
-        <div class="card">
-            <div class="card-header">
-                <h3>${consultor.nome}</h3>
-                <span class="badge badge-external">Externo</span>
-            </div>
-            <div class="external-stats">
-                <div class="stat-item">
-                    <span class="stat-value">${formatCurrency(consultor.adesao)}</span>
-                    <span class="stat-label">Adesão</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value">${consultor.contas}</span>
-                    <span class="stat-label">Contas</span>
-                </div>
+// Renderizar Consultores na Lista Superior
+function renderConsultantLists() {
+    const internosList = document.getElementById('internos-list');
+    const externosList = document.getElementById('externos-list');
+
+    internosList.innerHTML = consultoresInternos.map(c => `
+        <div class="consultant-item">
+            <div class="icon-circle">${icons.user}</div>
+            <div class="consultant-info">
+                <span class="name">${c.nome}</span>
+                <span class="stats">${formatCurrency(c.valorAdesao)} • ${c.qtdContas} contas</span>
             </div>
         </div>
-    `;
-};
+    `).join('');
 
-// Criar Card de Consultor Interno com Metas
-const createInternalCard = (consultor, config) => {
-    const percAdesao = Math.min((consultor.adesao / config.metaAdesao) * 100, 100);
-    const percContas = Math.min((consultor.contas / config.metaContas) * 100, 100);
-    
-    const bateuMeta = consultor.adesao >= config.metaAdesao && consultor.contas >= config.metaContas;
-    const comissao = bateuMeta ? consultor.adesao * config.comissaoPercentual : 0;
-
-    const faltaAdesao = Math.max(config.metaAdesao - consultor.adesao, 0);
-    const faltaContas = Math.max(config.metaContas - consultor.contas, 0);
-
-    return `
-        <div class="card">
-            <div class="card-header">
-                <h3>${consultor.nome}</h3>
-                <span class="badge badge-internal">Interno</span>
-            </div>
-            
-            <div class="progress-group">
-                <div class="progress-label">
-                    <span>Adesão: ${formatCurrency(consultor.adesao)}</span>
-                    <span>${percAdesao.toFixed(0)}%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-fill fill-money" style="width: ${percAdesao}%"></div>
-                </div>
-                <p class="locked" style="margin-top:4px; font-size:11px;">
-                    ${faltaAdesao > 0 ? `Falta ${formatCurrency(faltaAdesao)}` : 'Meta atingida!'}
-                </p>
-            </div>
-
-            <div class="progress-group">
-                <div class="progress-label">
-                    <span>Contas: ${consultor.contas}</span>
-                    <span>${percContas.toFixed(0)}%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-fill fill-accounts" style="width: ${percContas}%"></div>
-                </div>
-                <p class="locked" style="margin-top:4px; font-size:11px;">
-                    ${faltaContas > 0 ? `Faltam ${faltaContas} contas` : 'Meta atingida!'}
-                </p>
-            </div>
-
-            <div class="commission-box">
-                <span class="commission-label">Comissão (15%)</span>
-                <span class="commission-value">
-                    ${bateuMeta ? formatCurrency(comissao) : '<span class="locked">Meta pendente</span>'}
-                </span>
+    externosList.innerHTML = consultoresExternos.map(c => `
+        <div class="consultant-item">
+            <div class="icon-circle">${icons.external}</div>
+            <div class="consultant-info">
+                <span class="name">${c.nome}</span>
+                <span class="stats">${formatCurrency(c.valorAdesao)} • ${c.qtdContas} contas</span>
             </div>
         </div>
-    `;
-};
+    `).join('');
+}
 
-// Inicializar Dashboard
-const initDashboard = () => {
-    renderDate();
+// Renderizar Cards de Metas
+function renderGoalCards() {
+    const goalsGrid = document.getElementById('goals-grid');
     
-    const externalContainer = document.getElementById('external-consultants-container');
-    const internalContainer = document.getElementById('internal-consultants-container');
+    goalsGrid.innerHTML = consultoresInternos.map(c => {
+        const progressoValor = calculateProgress(c.valorAdesao, CONFIG.metaValor);
+        const progressoContas = calculateProgress(c.qtdContas, CONFIG.metaContas);
+        
+        const bateuMeta = c.valorAdesao >= CONFIG.metaValor && c.qtdContas >= CONFIG.metaContas;
+        const comissao = bateuMeta ? c.valorAdesao * CONFIG.comissaoPercentual : 0;
+        
+        const faltaValor = Math.max(CONFIG.metaValor - c.valorAdesao, 0);
+        const faltaContas = Math.max(CONFIG.metaContas - c.qtdContas, 0);
 
-    // Limpar containers antes de renderizar
-    externalContainer.innerHTML = '';
-    internalContainer.innerHTML = '';
+        return `
+            <div class="goal-card">
+                <div class="card-header">
+                    <span class="name">${c.nome}</span>
+                    <span class="commission-badge ${bateuMeta ? 'visible' : ''}">
+                        Comissão: ${formatCurrency(comissao)}
+                    </span>
+                </div>
+                
+                <div class="progress-group">
+                    <!-- Progresso R$ -->
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Adesão: ${formatCurrency(c.valorAdesao)}</span>
+                            <span class="remaining">${faltaValor > 0 ? 'Falta ' + formatCurrency(faltaValor) : 'Meta batida!'}</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill ${progressoValor >= 100 ? 'complete' : ''}" style="width: ${progressoValor}%"></div>
+                        </div>
+                    </div>
 
-    // Renderizar Externos
-    DASHBOARD_DATA.consultoresExternos.forEach(c => {
-        externalContainer.innerHTML += createExternalCard(c);
-    });
+                    <!-- Progresso Contas -->
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Contas: ${c.qtdContas}</span>
+                            <span class="remaining">${faltaContas > 0 ? 'Faltam ' + faltaContas : 'Meta batida!'}</span>
+                        </div>
+                        <div class="bar-bg">
+                            <div class="bar-fill ${progressoContas >= 100 ? 'complete' : ''}" style="width: ${progressoContas}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
-    // Renderizar Internos
-    DASHBOARD_DATA.consultoresInternos.forEach(c => {
-        internalContainer.innerHTML += createInternalCard(c, DASHBOARD_DATA.config);
-    });
-};
-
-document.addEventListener('DOMContentLoaded', initDashboard);
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    // Definir data atual
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR', dateOptions);
+    
+    renderConsultantLists();
+    renderGoalCards();
+});
