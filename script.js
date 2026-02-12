@@ -6,17 +6,38 @@ const CONFIG = {
 };
 
 /**
- * DADOS ATUALIZADOS
+ * DADOS DOS CONSULTORES
  */
 const consultoresInternos = [
-    { nome: "Beatriz", valorAdesao: 0, qtdContas: 0 },
-    { nome: "Michael", valorAdesao: 4899, qtdContas: 6 },
-    { nome: "Maria", valorAdesao: 0, qtdContas: 0 },
+    { nome: "Gabriel", valorAdesao: 0, qtdContas: 0 },
+    { nome: "Michael", valorAdesao: 4049, qtdContas: 5 },
+    { nome: "Glaucia", valorAdesao: 0, qtdContas: 0 },
+    { nome: "Angela", valorAdesao: 0, qtdContas: 0 }
 ];
 
 const consultoresExternos = [
     { nome: "Nivaldo", valorAdesao: 5000, qtdContas: 3 },
-    { nome: "Marco", valorAdesao: 1700, qtdContas: 5 }
+    { nome: "Marco", valorAdesao: 1700, qtdContas: 6 }
+];
+
+/**
+ * LISTA DE CONTRATOS FECHADOS (Conforme imagem enviada)
+ */
+const contratosFechados = [
+    { empresa: "BM SHOP CELL", valor: 999, vendedor: "Michael - Interno" },
+    { empresa: "MAIS CASE CELULARES", valor: 0, vendedor: "Marco - Externo" },
+    { empresa: "ELETROMYX", valor: 3000, vendedor: "Nivaldo - Externo" },
+    { empresa: "CASA DO PISO", valor: 1000, vendedor: "Nivaldo - Externo" },
+    { empresa: "BAIANO MOVEIS", valor: 1000, vendedor: "Nivaldo - Externo" },
+    { empresa: "CONTINENTAL VARIEDADES", valor: 0, vendedor: "Marco - Externo" },
+    { empresa: "ELETROCELL CELULARES", valor: 0, vendedor: "Marco - Externo" },
+    { empresa: "PIMENTA CELL", valor: 0, vendedor: "Marco - Externo" },
+    { empresa: "MAISA CLOSET", valor: 550, vendedor: "Michael - Interno" },
+    { empresa: "GO CELL CELULARES", valor: 700, vendedor: "Marco - Externo" },
+    { empresa: "CICERO COLCHÕES", valor: 1150, vendedor: "Michael - Interno" },
+    { empresa: "JR BIKES", valor: 1000, vendedor: "Marco - Externo" },
+    { empresa: "VALENTE MOVEIS IRITUIA", valor: 675, vendedor: "Michael - Interno" },
+    { empresa: "VALENTE MOVEIS CAPITAO POCO", valor: 675, vendedor: "Michael - Interno" }
 ];
 
 // Ícones SVG
@@ -37,20 +58,36 @@ function renderDashboard() {
     const internosList = document.getElementById('internos-list');
     const externosList = document.getElementById('externos-list');
     const goalsGrid = document.getElementById('goals-grid');
+    const contratosTable = document.getElementById('contratos-body');
 
     // Listas Laterais
     internosList.innerHTML = consultoresInternos.map(c => `
         <div class="list-item">
-            <span class="name">${c.nome}</span>
+            <div class="item-info">
+                <span class="name">${c.nome}</span>
+                <span class="sub-value">${c.qtdContas} contas</span>
+            </div>
             <span class="value">${formatCurrency(c.valorAdesao)}</span>
         </div>
     `).join('');
 
     externosList.innerHTML = consultoresExternos.map(c => `
         <div class="list-item">
-            <span class="name">${c.nome}</span>
+            <div class="item-info">
+                <span class="name">${c.nome}</span>
+                <span class="sub-value">${c.qtdContas} contas</span>
+            </div>
             <span class="value">${formatCurrency(c.valorAdesao)}</span>
         </div>
+    `).join('');
+
+    // Tabela de Contratos
+    contratosTable.innerHTML = contratosFechados.map(c => `
+        <tr>
+            <td>${c.empresa}</td>
+            <td>${formatCurrency(c.valor)}</td>
+            <td><span class="vendedor-tag">${c.vendedor}</span></td>
+        </tr>
     `).join('');
 
     // Cards de Metas
@@ -65,7 +102,7 @@ function renderDashboard() {
                 <div class="card-header">
                     <span class="card-name">${c.nome}</span>
                     <div class="badge ${bateuMeta ? 'success' : ''}">
-                        ${bateuMeta ? 'Comissão: ' + formatCurrency(comissao) : 'Em progresso'}
+                        ${bateuMeta ? formatCurrency(comissao) : 'Em progresso'}
                     </div>
                 </div>
                 <div class="progress-section">
@@ -82,7 +119,7 @@ function renderDashboard() {
         `;
     }).join('');
 
-    // Totais Separados
+    // Totais
     const totalInternoAdesao = consultoresInternos.reduce((acc, c) => acc + c.valorAdesao, 0);
     const totalInternoContas = consultoresInternos.reduce((acc, c) => acc + c.qtdContas, 0);
     const totalExternoAdesao = consultoresExternos.reduce((acc, c) => acc + c.valorAdesao, 0);
