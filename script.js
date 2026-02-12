@@ -9,10 +9,9 @@ const CONFIG = {
  * DADOS ATUALIZADOS
  */
 const consultoresInternos = [
-    { nome: "Gabriel", valorAdesao: 0, qtdContas: 0 },
-    { nome: "Michael", valorAdesao: 4049, qtdContas: 3 },
-    { nome: "Glaucia", valorAdesao: 0, qtdContas: 0 },
-    { nome: "Angela", valorAdesao: 0, qtdContas: 0 }
+    { nome: "Maria", valorAdesao: 0, qtdContas: 0 },
+    { nome: "Michael", valorAdesao: 4899, qtdContas: 6 },
+    { nome: "Beatriz", valorAdesao: 0, qtdContas: 0 },
 ];
 
 const consultoresExternos = [
