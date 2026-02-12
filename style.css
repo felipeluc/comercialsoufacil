@@ -1,0 +1,186 @@
+:root {
+    --ios-bg: #F2F2F7;
+    --ios-card-bg: rgba(255, 255, 255, 0.8);
+    --ios-blue: #007AFF;
+    --ios-green: #34C759;
+    --ios-gray: #8E8E93;
+    --ios-text: #000000;
+    --ios-text-secondary: #3C3C43;
+    --blur-bg: blur(20px) saturate(180%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--ios-bg);
+    color: var(--ios-text);
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+header {
+    margin-bottom: 30px;
+    padding-left: 10px;
+}
+
+header h1 {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+header p {
+    color: var(--ios-gray);
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.section-header {
+    margin: 25px 0 15px 10px;
+}
+
+.section-header h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--ios-text-secondary);
+}
+
+/* Cards Layout */
+.external-cards, .internal-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Card Style */
+.card {
+    background: var(--ios-card-bg);
+    backdrop-filter: var(--blur-bg);
+    -webkit-backdrop-filter: var(--blur-bg);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.card:active {
+    transform: scale(0.98);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.card-header h3 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-external { background: #E5E5EA; color: #3C3C43; }
+.badge-internal { background: #E1F0FF; color: #007AFF; }
+
+/* Progress Bars */
+.progress-group {
+    margin-bottom: 15px;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: var(--ios-text-secondary);
+}
+
+.progress-bar-bg {
+    height: 8px;
+    background: #E5E5EA;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease-out;
+}
+
+.fill-money { background: var(--ios-blue); }
+.fill-accounts { background: var(--ios-green); }
+
+/* Commission Card */
+.commission-box {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.commission-label {
+    font-size: 14px;
+    color: var(--ios-gray);
+}
+
+.commission-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ios-green);
+}
+
+.locked {
+    color: var(--ios-gray);
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* External Specific */
+.external-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-item {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    display: block;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--ios-gray);
+    text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+    .external-cards, .internal-cards {
+        grid-template-columns: 1fr;
+    }
+}
