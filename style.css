@@ -216,19 +216,20 @@ body {
 
 .cards-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(4, 1fr); /* 4 colunas para os 4 consultores internos */
+    gap: 16px;
     flex: 1;
+    align-items: stretch;
 }
 
 .goal-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 24px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     transition: transform 0.3s ease;
 }
 
@@ -241,7 +242,7 @@ body {
     margin-bottom: 20px;
 }
 
-.card-name { font-size: 20px; font-weight: 700; }
+.card-name { font-size: 18px; font-weight: 700; }
 
 .badge {
     font-size: 12px;
