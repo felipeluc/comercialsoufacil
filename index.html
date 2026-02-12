@@ -3,54 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Comercial | Caçadores de Contratos</title>
+    <title>Dashboard Premium | Caçadores de Contratos</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="ios-container">
         <!-- Header / Banner -->
         <header class="banner-card">
-            <img src="banner.png" alt="Caçadores de Contratos" class="banner-img">
+            <!-- Usando o nome exato que o usuário mencionou para garantir o carregamento -->
+            <img src="Captura de tela 2026-02-05 113326.png" alt="Caçadores de Contratos" class="banner-img" onerror="this.src='https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80'">
             <div class="banner-overlay">
-                <h1>Caçadores de Contratos</h1>
                 <p id="current-date"></p>
+                <h1>Caçadores de Contratos</h1>
             </div>
         </header>
 
         <main>
             <!-- Seção de Consultores -->
-            <section class="consultants-section">
+            <section class="section-container">
                 <div class="section-header">
                     <h2>Consultores</h2>
                 </div>
                 
-                <div class="consultants-grid">
-                    <div class="category-block">
-                        <h3>Internos</h3>
-                        <div id="internos-list" class="consultants-list">
-                            <!-- JS vai popular aqui -->
+                <div class="consultants-container">
+                    <div class="consultants-grid">
+                        <div class="category-block">
+                            <h3>Internos</h3>
+                            <div id="internos-list" class="consultants-list">
+                                <!-- JS vai popular aqui -->
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="divider"></div>
-                    
-                    <div class="category-block">
-                        <h3>Externos</h3>
-                        <div id="externos-list" class="consultants-list">
-                            <!-- JS vai popular aqui -->
+                        
+                        <div class="divider"></div>
+                        
+                        <div class="category-block">
+                            <h3>Externos</h3>
+                            <div id="externos-list" class="consultants-list">
+                                <!-- JS vai popular aqui -->
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Seção de Metas (Apenas Internos) -->
-            <section class="goals-section">
-                <div class="section-header">
-                    <h2>Metas e Comissões</h2>
-                    <span class="meta-info">Meta: R$ 5.000,00 e 5 Contas</span>
+            <section class="section-container" style="margin-top: 40px;">
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Metas de Performance</h2>
+                    <div style="font-size: 14px; color: var(--ios-text-secondary); background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--ios-border);">
+                        Meta: R$ 5.000 + 5 Contas
+                    </div>
                 </div>
                 
                 <div id="goals-grid" class="goals-grid">
