@@ -5,7 +5,9 @@ const CONFIG = {
     comissaoPercentual: 0.15
 };
 
-// Dados dos Consultores - VOCÊ PODE ATUALIZAR ESTES VALORES DIRETAMENTE AQUI
+/**
+ * ATUALIZE OS DADOS ABAIXO PARA REFLETIR OS RESULTADOS ATUAIS
+ */
 const consultoresInternos = [
     { id: 1, nome: "Maria Luiza", valorAdesao: 5200, qtdContas: 6 },
     { id: 2, nome: "Michael", valorAdesao: 3500, qtdContas: 3 },
@@ -17,10 +19,10 @@ const consultoresExternos = [
     { id: 5, nome: "Marco", valorAdesao: 4200, qtdContas: 4 }
 ];
 
-// Ícones SVG
+// Ícones SVG Premium
 const icons = {
-    user: `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`,
-    external: `<svg width="20" height="20" viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>`
+    user: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`,
+    external: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 };
 
 // Formatação de Moeda
@@ -33,7 +35,7 @@ const calculateProgress = (current, target) => {
     return Math.min((current / target) * 100, 100);
 };
 
-// Renderizar Consultores na Lista Superior
+// Renderizar Consultores
 function renderConsultantLists() {
     const internosList = document.getElementById('internos-list');
     const externosList = document.getElementById('externos-list');
@@ -75,46 +77,54 @@ function renderGoalCards() {
 
         return `
             <div class="goal-card">
-                <div class="card-header">
+                <div class="card-top">
                     <span class="name">${c.nome}</span>
-                    <span class="commission-badge ${bateuMeta ? 'visible' : ''}">
-                        Comissão: ${formatCurrency(comissao)}
-                    </span>
+                    <div class="commission-badge ${bateuMeta ? 'visible' : ''}">
+                        + ${formatCurrency(comissao)}
+                    </div>
                 </div>
                 
-                <div class="progress-group">
-                    <!-- Progresso R$ -->
+                <div class="progress-container">
+                    <!-- Adesão -->
                     <div class="progress-item">
                         <div class="progress-label">
-                            <span>Adesão: ${formatCurrency(c.valorAdesao)}</span>
-                            <span class="remaining">${faltaValor > 0 ? 'Falta ' + formatCurrency(faltaValor) : 'Meta batida!'}</span>
+                            <span class="label-main">Adesão: ${formatCurrency(c.valorAdesao)}</span>
+                            <span class="label-sub">${faltaValor > 0 ? 'Falta ' + formatCurrency(faltaValor) : 'Meta batida'}</span>
                         </div>
                         <div class="bar-bg">
-                            <div class="bar-fill ${progressoValor >= 100 ? 'complete' : ''}" style="width: ${progressoValor}%"></div>
+                            <div class="bar-fill ${progressoValor >= 100 ? 'complete' : ''}" data-width="${progressoValor}"></div>
                         </div>
                     </div>
 
-                    <!-- Progresso Contas -->
+                    <!-- Contas -->
                     <div class="progress-item">
                         <div class="progress-label">
-                            <span>Contas: ${c.qtdContas}</span>
-                            <span class="remaining">${faltaContas > 0 ? 'Faltam ' + faltaContas : 'Meta batida!'}</span>
+                            <span class="label-main">Contas: ${c.qtdContas} / ${CONFIG.metaContas}</span>
+                            <span class="label-sub">${faltaContas > 0 ? 'Faltam ' + faltaContas : 'Meta batida'}</span>
                         </div>
                         <div class="bar-bg">
-                            <div class="bar-fill ${progressoContas >= 100 ? 'complete' : ''}" style="width: ${progressoContas}%"></div>
+                            <div class="bar-fill ${progressoContas >= 100 ? 'complete' : ''}" data-width="${progressoContas}"></div>
                         </div>
                     </div>
                 </div>
             </div>
         `;
     }).join('');
+
+    // Animar as barras após o render
+    setTimeout(() => {
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            bar.style.width = bar.getAttribute('data-width') + '%';
+        });
+    }, 100);
 }
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    // Definir data atual
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR', dateOptions);
+    // Definir data atual com estilo iOS
+    const now = new Date();
+    const dateOptions = { weekday: 'long', day: 'numeric', month: 'long' };
+    document.getElementById('current-date').textContent = now.toLocaleDateString('pt-BR', dateOptions);
     
     renderConsultantLists();
     renderGoalCards();
