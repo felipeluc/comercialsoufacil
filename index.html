@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Dashboard | Caçadores de Contratos</title>
+    <title>TV Dashboard Premium | Caçadores de Contratos</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -12,18 +12,29 @@
         <!-- Barra Superior -->
         <header class="top-bar">
             <div class="header-left">
-                <img src="Captura de tela 2026-02-05 113326.png" class="mini-banner" alt="Logo">
+                <div class="banner-wrapper">
+                    <img src="Captura de tela 2026-02-05 113326.png" class="mini-banner" alt="Logo">
+                </div>
                 <div class="header-text">
                     <h1>Caçadores de Contratos</h1>
                     <span id="current-date"></span>
                 </div>
             </div>
+            
             <div class="header-right">
-                <div class="summary-pill">
-                    <span class="label">Total Mês:</span>
-                    <span id="total-adesao" class="value">R$ 0,00</span>
-                    <span class="divider">|</span>
-                    <span id="total-contas" class="value">0</span> <span class="label">Contas</span>
+                <div class="summary-group">
+                    <div class="summary-pill internal">
+                        <span class="pill-label">INTERNOS:</span>
+                        <span id="total-interno-adesao" class="pill-value">R$ 0,00</span>
+                        <span class="pill-divider">|</span>
+                        <span id="total-interno-contas" class="pill-value">0</span> <span class="pill-unit">Contas</span>
+                    </div>
+                    <div class="summary-pill external">
+                        <span class="pill-label">EXTERNOS:</span>
+                        <span id="total-externo-adesao" class="pill-value">R$ 0,00</span>
+                        <span class="pill-divider">|</span>
+                        <span id="total-externo-contas" class="pill-value">0</span> <span class="pill-unit">Contas</span>
+                    </div>
                 </div>
                 <button id="theme-toggle" onclick="toggleTheme()" class="icon-btn"></button>
             </div>
@@ -46,7 +57,7 @@
             <main class="dashboard-grid">
                 <div class="section-title">
                     <h2>Acompanhamento de Metas (Internos)</h2>
-                    <span class="meta-badge">Meta: R$ 5.000 + 5 Contas</span>
+                    <div class="meta-info-badge">Meta: R$ 5.000 + 5 Contas</div>
                 </div>
                 <div id="goals-grid" class="cards-container"></div>
             </main>
