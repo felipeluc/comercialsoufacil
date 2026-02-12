@@ -1,18 +1,18 @@
 :root {
-    /* Dark Theme (Default) */
+    /* Dark Theme */
     --bg: #000000;
-    --card-bg: rgba(28, 28, 30, 0.8);
+    --card-bg: rgba(28, 28, 30, 0.85);
     --text-main: #FFFFFF;
     --text-dim: #AEAEB2;
     --accent: #0A84FF;
     --success: #30D158;
     --border: rgba(255, 255, 255, 0.1);
-    --blur: blur(20px);
+    --blur: blur(30px);
 }
 
 [data-theme="light"] {
     --bg: #F2F2F7;
-    --card-bg: rgba(255, 255, 255, 0.8);
+    --card-bg: rgba(255, 255, 255, 0.85);
     --text-main: #000000;
     --text-dim: #8E8E93;
     --accent: #007AFF;
@@ -24,24 +24,24 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'SF Pro Display', sans-serif;
+    font-family: 'SF Pro Display', -apple-system, sans-serif;
 }
 
 body {
     background-color: var(--bg);
     color: var(--text-main);
-    overflow: hidden; /* Mantém tudo em uma tela */
+    overflow: hidden;
     height: 100vh;
     width: 100vw;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.4s ease;
 }
 
 .tv-layout {
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    gap: 20px;
+    padding: 24px;
+    gap: 24px;
 }
 
 /* Top Bar */
@@ -51,29 +51,37 @@ body {
     align-items: center;
     background: var(--card-bg);
     backdrop-filter: var(--blur);
-    padding: 15px 25px;
-    border-radius: 20px;
+    padding: 16px 28px;
+    border-radius: 24px;
     border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
 
 .header-left {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
 }
 
-.mini-banner {
-    height: 50px;
-    width: 80px;
-    object-fit: cover;
-    border-radius: 10px;
+.banner-wrapper {
+    position: relative;
+    height: 70px; /* Aumentado conforme solicitado */
+    width: 120px; /* Aumentado conforme solicitado */
+    border-radius: 14px;
+    overflow: hidden;
     border: 1px solid var(--border);
 }
 
+.mini-banner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .header-text h1 {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 700;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.8px;
 }
 
 .header-text span {
@@ -81,85 +89,108 @@ body {
     color: var(--text-dim);
 }
 
+/* Totais Separados */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.summary-group {
+    display: flex;
+    gap: 16px;
+}
+
 .summary-pill {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 10px 20px;
-    border-radius: 15px;
+    padding: 10px 18px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     gap: 10px;
     border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
 }
 
-.summary-pill .label { color: var(--text-dim); font-size: 13px; }
-.summary-pill .value { font-weight: 700; color: var(--success); font-size: 18px; }
-.summary-pill .divider { color: var(--border); }
+.pill-label { font-size: 11px; font-weight: 700; color: var(--text-dim); }
+.pill-value { font-weight: 700; font-size: 17px; color: var(--success); }
+.pill-divider { color: var(--border); }
+.pill-unit { font-size: 12px; color: var(--text-dim); }
+
+.summary-pill.internal { border-left: 4px solid var(--accent); }
+.summary-pill.external { border-left: 4px solid var(--text-dim); }
 
 .icon-btn {
-    background: none;
-    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
     color: var(--text-main);
     cursor: pointer;
-    padding: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
+
+.icon-btn:hover { background: rgba(255, 255, 255, 0.1); }
 
 /* Main Content */
 .main-content {
     flex: 1;
     display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 20px;
-    min-height: 0; /* Importante para o scroll interno se necessário */
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    min-height: 0;
 }
 
 /* Sidebar */
 .sidebar {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
 .list-section {
     background: var(--card-bg);
     backdrop-filter: var(--blur);
-    padding: 20px;
-    border-radius: 20px;
+    padding: 24px;
+    border-radius: 24px;
     border: 1px solid var(--border);
     flex: 1;
 }
 
 .list-section h2 {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--accent);
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
+    letter-spacing: 1.2px;
+    margin-bottom: 18px;
+    font-weight: 700;
 }
 
 .compact-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .list-item {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
 }
 
-.list-item .name { font-weight: 500; }
+.list-item .name { font-weight: 600; font-size: 16px; }
 .list-item .value { color: var(--text-dim); font-size: 14px; }
 
 /* Dashboard Grid */
 .dashboard-grid {
     background: var(--card-bg);
     backdrop-filter: var(--blur);
-    padding: 25px;
-    border-radius: 20px;
+    padding: 28px;
+    border-radius: 24px;
     border: 1px solid var(--border);
     display: flex;
     flex-direction: column;
@@ -169,85 +200,88 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
-.meta-badge {
-    font-size: 12px;
+.section-title h2 { font-size: 22px; font-weight: 700; }
+
+.meta-info-badge {
+    font-size: 13px;
     background: var(--accent);
     color: white;
-    padding: 4px 12px;
-    border-radius: 10px;
+    padding: 6px 14px;
+    border-radius: 12px;
     font-weight: 600;
 }
 
 .cards-container {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 20px;
     flex: 1;
 }
 
 .goal-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 20px;
+    border-radius: 20px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    transition: transform 0.3s ease;
 }
+
+.goal-card:hover { transform: translateY(-4px); background: rgba(255, 255, 255, 0.05); }
 
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
-.card-name { font-size: 18px; font-weight: 700; }
+.card-name { font-size: 20px; font-weight: 700; }
 
 .badge {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-dim);
-    background: rgba(255,255,255,0.05);
-    padding: 4px 8px;
-    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
 }
 
-.badge.success {
-    background: var(--success);
-    color: white;
-    font-weight: 700;
-}
+.badge.success { background: var(--success); color: white; }
 
-.bar-container { margin-bottom: 12px; }
+.bar-container { margin-bottom: 16px; }
 .bar-info {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
-    margin-bottom: 6px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-weight: 500;
 }
 
 .bar-bg {
-    height: 8px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 4px;
+    height: 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 5px;
     overflow: hidden;
 }
 
 .bar-fill {
     height: 100%;
-    background: var(--accent);
-    border-radius: 4px;
-    transition: width 1s ease-out;
+    background: linear-gradient(90deg, var(--accent), #5AC8FA);
+    border-radius: 5px;
+    transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.bar-fill.done { background: var(--success); }
+.bar-fill.done { background: linear-gradient(90deg, var(--success), #32D74B); }
 
-@media (max-height: 700px) {
-    .tv-layout { padding: 10px; gap: 10px; }
-    .top-bar { padding: 10px 20px; }
-    .main-content { gap: 10px; }
-    .goal-card { padding: 15px; }
+@media (max-height: 800px) {
+    .tv-layout { padding: 16px; gap: 16px; }
+    .top-bar { padding: 12px 24px; }
+    .banner-wrapper { height: 60px; width: 100px; }
+    .goal-card { padding: 18px; }
 }
