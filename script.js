@@ -11,12 +11,13 @@ const CONFIG = {
 const consultoresInternos = [
     { nome: "Beatriz", valorAdesao: 0, qtdContas: 0 },
     { nome: "Michael", valorAdesao: 5399, qtdContas: 7 },
-    { nome: "Maria", valorAdesao: 0, qtdContas: 0 },
+    { nome: "Maria", valorAdesao: 800, qtdContas: 1 },
 ];
 
 const consultoresExternos = [
     { nome: "Nivaldo", valorAdesao: 5000, qtdContas: 3 },
     { nome: "Marco", valorAdesao: 1700, qtdContas: 6 }
+    { nome: "Kaly", valorAdesao: 1000, qtdContas: 1 }
 ];
 
 /**
