@@ -9,7 +9,7 @@ const CONFIG = {
  * DADOS DOS CONSULTORES
  */
 const consultoresInternos = [
-    { nome: "Beatriz", valorAdesao: 0, qtdContas: 0 },
+    { nome: "Beatriz", valorAdesao: 500, qtdContas: 1 },
     { nome: "Michael", valorAdesao: 5399, qtdContas: 7 },
     { nome: "Maria", valorAdesao: 800, qtdContas: 1 },
 ];
