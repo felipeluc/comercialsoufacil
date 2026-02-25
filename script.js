@@ -15,7 +15,7 @@ const consultoresInternos = [
 ];
 
 const consultoresExternos = [
-    { nome: "Nivaldo", valorAdesao: 8000, qtdContas: 6 },
+    { nome: "Nivaldo", valorAdesao: 11500, qtdContas: 9 },
     { nome: "Marco", valorAdesao: 2600, qtdContas: 8 },
     { nome: "Kaly", valorAdesao: 1000, qtdContas: 1 }
 ];
