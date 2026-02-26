@@ -11,7 +11,7 @@ const CONFIG = {
 const consultoresInternos = [
     { nome: "Beatriz", valorAdesao: 4500, qtdContas: 4 },
     { nome: "Michael", valorAdesao: 6000, qtdContas: 8 },
-    { nome: "Maria", valorAdesao: 2148, qtdContas: 3 },
+    { nome: "Maria", valorAdesao: 3348, qtdContas: 4 },
 ];
 
 const consultoresExternos = [
