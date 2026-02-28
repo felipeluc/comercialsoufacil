@@ -40,52 +40,41 @@
             </div>
         </header>
 
+        <!-- Conteúdo Principal: Agora em uma linha horizontal -->
         <div class="main-content">
-            <!-- Lateral: Listagem Rápida -->
-            <aside class="sidebar">
-                <section class="list-section">
-                    <h2>Internos</h2>
-                    <div id="internos-list" class="compact-list"></div>
-                </section>
-                <section class="list-section">
-                    <h2>Externos</h2>
-                    <div id="externos-list" class="compact-list"></div>
-                </section>
-            </aside>
-
-            <!-- Principal: Grid Central -->
-            <div class="center-content">
-                <!-- Seção de Metas -->
-                <section class="goals-section">
+            <section class="horizontal-section">
+                <div class="info-card-group">
+                    <div class="info-card-mini">
+                        <h2>Internos</h2>
+                        <div id="internos-list" class="compact-list"></div>
+                    </div>
+                    <div class="info-card-mini">
+                        <h2>Externos</h2>
+                        <div id="externos-list" class="compact-list"></div>
+                    </div>
+                </div>
+                
+                <div class="goals-section-horizontal">
                     <div class="section-title">
                         <h2>Metas de Performance (Internos)</h2>
                         <div class="meta-info-badge">Meta: R$ 5.000 + 5 Contas</div>
                     </div>
-                    <div id="goals-grid" class="cards-container"></div>
-                </section>
-
-                <!-- Seção de Tabela de Contratos -->
-                <section class="table-section">
-                    <div class="section-title">
-                        <h2>Últimos Contratos Fechados</h2>
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Empresa</th>
-                                    <th>Adesão</th>
-                                    <th>Vendedor</th>
-                                </tr>
-                            </thead>
-                            <tbody id="contratos-body">
-                                <!-- JS vai popular aqui -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-            </div>
+                    <div id="goals-grid" class="cards-container-horizontal"></div>
+                </div>
+            </section>
         </div>
+
+        <!-- Nova Seção: Carrossel de Fechamentos (Ticker) -->
+        <footer class="ticker-section">
+            <div class="ticker-header">
+                <h2>Fechamentos de Contas</h2>
+            </div>
+            <div class="ticker-viewport">
+                <div id="ticker-content" class="ticker-content">
+                    <!-- JS vai popular aqui -->
+                </div>
+            </div>
+        </footer>
     </div>
     <script src="script.js"></script>
 </body>
