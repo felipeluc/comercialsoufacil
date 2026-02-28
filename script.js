@@ -2,7 +2,8 @@
 const CONFIG = {
     metaValor: 5000,
     metaContas: 5,
-    comissaoPercentual: 0.15
+    comissaoPercentual: 0.15,
+    scrollSpeed: 30 // Segundos para uma volta completa (ajuste conforme necessário)
 };
 
 /**
@@ -21,23 +22,58 @@ const consultoresExternos = [
 ];
 
 /**
- * LISTA DE CONTRATOS FECHADOS (Conforme imagem enviada)
+ * DADOS DE FECHAMENTO DAS EMPRESAS (CARROSSEL)
+ * Altere aqui os dados das empresas que aparecem no rodapé
  */
-const contratosFechados = [
-    { empresa: "BM SHOP CELL", valor: 999, vendedor: "Michael - Interno" },
-    { empresa: "MAIS CASE CELULARES", valor: 0, vendedor: "Marco - Externo" },
-    { empresa: "ELETROMYX", valor: 3000, vendedor: "Nivaldo - Externo" },
-    { empresa: "CASA DO PISO", valor: 1000, vendedor: "Nivaldo - Externo" },
-    { empresa: "BAIANO MOVEIS", valor: 1000, vendedor: "Nivaldo - Externo" },
-    { empresa: "CONTINENTAL VARIEDADES", valor: 0, vendedor: "Marco - Externo" },
-    { empresa: "ELETROCELL CELULARES", valor: 0, vendedor: "Marco - Externo" },
-    { empresa: "PIMENTA CELL", valor: 0, vendedor: "Marco - Externo" },
-    { empresa: "MAISA CLOSET", valor: 550, vendedor: "Michael - Interno" },
-    { empresa: "GO CELL CELULARES", valor: 700, vendedor: "Marco - Externo" },
-    { empresa: "CICERO COLCHÕES", valor: 1150, vendedor: "Michael - Interno" },
-    { empresa: "JR BIKES", valor: 1000, vendedor: "Marco - Externo" },
-    { empresa: "VALENTE MOVEIS IRITUIA", valor: 675, vendedor: "Michael - Interno" },
-    { empresa: "VALENTE MOVEIS CAPITAO POCO", valor: 675, vendedor: "Michael - Interno" }
+const fechamentoEmpresas = [
+    { 
+        nome: "BM SHOP CELL", 
+        consultas: 120, 
+        aprovadas: 85, 
+        reprovadas: 35, 
+        vendas: 4500.50, 
+        data: "25/02/2026" 
+    },
+    { 
+        nome: "MAIS CASE CELULARES", 
+        consultas: 95, 
+        aprovadas: 60, 
+        reprovadas: 35, 
+        vendas: 2800.00, 
+        data: "26/02/2026" 
+    },
+    { 
+        nome: "ELETROMYX", 
+        consultas: 150, 
+        aprovadas: 110, 
+        reprovadas: 40, 
+        vendas: 7200.00, 
+        data: "27/02/2026" 
+    },
+    { 
+        nome: "CASA DO PISO", 
+        consultas: 80, 
+        aprovadas: 55, 
+        reprovadas: 25, 
+        vendas: 3100.00, 
+        data: "27/02/2026" 
+    },
+    { 
+        nome: "BAIANO MOVEIS", 
+        consultas: 200, 
+        aprovadas: 145, 
+        reprovadas: 55, 
+        vendas: 12500.00, 
+        data: "28/02/2026" 
+    },
+    { 
+        nome: "GO CELL CELULARES", 
+        consultas: 65, 
+        aprovadas: 40, 
+        reprovadas: 25, 
+        vendas: 1950.00, 
+        data: "28/02/2026" 
+    }
 ];
 
 // Ícones SVG
@@ -58,9 +94,9 @@ function renderDashboard() {
     const internosList = document.getElementById('internos-list');
     const externosList = document.getElementById('externos-list');
     const goalsGrid = document.getElementById('goals-grid');
-    const contratosTable = document.getElementById('contratos-body');
+    const tickerContent = document.getElementById('ticker-content');
 
-    // Listas Laterais
+    // Listas Laterais (Internos)
     internosList.innerHTML = consultoresInternos.map(c => `
         <div class="list-item">
             <div class="item-info">
@@ -71,6 +107,7 @@ function renderDashboard() {
         </div>
     `).join('');
 
+    // Listas Laterais (Externos)
     externosList.innerHTML = consultoresExternos.map(c => `
         <div class="list-item">
             <div class="item-info">
@@ -79,15 +116,6 @@ function renderDashboard() {
             </div>
             <span class="value">${formatCurrency(c.valorAdesao)}</span>
         </div>
-    `).join('');
-
-    // Tabela de Contratos
-    contratosTable.innerHTML = contratosFechados.map(c => `
-        <tr>
-            <td>${c.empresa}</td>
-            <td>${formatCurrency(c.valor)}</td>
-            <td><span class="vendedor-tag">${c.vendedor}</span></td>
-        </tr>
     `).join('');
 
     // Cards de Metas
@@ -119,7 +147,40 @@ function renderDashboard() {
         `;
     }).join('');
 
-    // Totais
+    // Renderizar Carrossel de Empresas
+    const companyCardsHTML = fechamentoEmpresas.map(emp => `
+        <div class="company-card">
+            <h3 class="company-name">${emp.nome}</h3>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-label">Consultas</span>
+                    <span class="stat-value consultas">${emp.consultas}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Aprovadas</span>
+                    <span class="stat-value aprovadas">${emp.aprovadas}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Reprovadas</span>
+                    <span class="stat-value reprovadas">${emp.reprovadas}</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Vendas</span>
+                    <span class="stat-value vendas">${formatCurrency(emp.vendas)}</span>
+                </div>
+            </div>
+            <div class="company-date">Fechado em: ${emp.data}</div>
+        </div>
+    `).join('');
+
+    // Duplicamos o conteúdo para criar um loop infinito suave
+    tickerContent.innerHTML = companyCardsHTML + companyCardsHTML;
+    
+    // Ajustar velocidade da animação baseada no número de empresas
+    const totalWidth = fechamentoEmpresas.length * 300; // 280px min-width + 20px gap
+    tickerContent.style.animation = `scroll ${CONFIG.scrollSpeed}s linear infinite`;
+
+    // Totais Superiores
     const totalInternoAdesao = consultoresInternos.reduce((acc, c) => acc + c.valorAdesao, 0);
     const totalInternoContas = consultoresInternos.reduce((acc, c) => acc + c.qtdContas, 0);
     const totalExternoAdesao = consultoresExternos.reduce((acc, c) => acc + c.valorAdesao, 0);
