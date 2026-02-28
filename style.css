@@ -6,6 +6,8 @@
     --text-dim: #AEAEB2;
     --accent: #0A84FF;
     --success: #30D158;
+    --danger: #FF453A;
+    --sales: #FFD60A;
     --border: rgba(255, 255, 255, 0.1);
     --blur: blur(30px);
 }
@@ -17,6 +19,8 @@
     --text-dim: #8E8E93;
     --accent: #007AFF;
     --success: #34C759;
+    --danger: #FF3B30;
+    --sales: #AF8B00;
     --border: rgba(0, 0, 0, 0.05);
 }
 
@@ -129,32 +133,40 @@ body {
     justify-content: center;
 }
 
-/* Main Content */
+/* Main Content Layout - Horizontal Row */
 .main-content {
     flex: 1;
-    display: grid;
-    grid-template-columns: 260px 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
     min-height: 0;
 }
 
-/* Sidebar */
-.sidebar {
+.horizontal-section {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+}
+
+.info-card-group {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 300px;
 }
 
-.list-section {
+.info-card-mini {
     background: var(--card-bg);
     backdrop-filter: var(--blur);
     padding: 20px;
     border-radius: 20px;
     border: 1px solid var(--border);
     flex: 1;
+    overflow-y: auto;
 }
 
-.list-section h2 {
+.info-card-mini h2 {
     font-size: 12px;
     color: var(--accent);
     text-transform: uppercase;
@@ -172,58 +184,37 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
 }
 
 .item-info {
     display: flex;
     flex-direction: column;
-    gap: 2px;
 }
 
-.list-item .name { font-weight: 600; font-size: 14px; color: var(--text-main); }
-.list-item .sub-value { font-size: 11px; color: var(--accent); font-weight: 500; }
+.list-item .name { font-weight: 600; font-size: 14px; }
+.list-item .sub-value { font-size: 11px; color: var(--accent); }
 .list-item .value { font-weight: 500; color: var(--text-dim); font-size: 13px; }
 
-/* Center Content */
-.center-content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    min-height: 0;
-}
-
-/* Goals Section */
-.goals-section {
+/* Goals Section Horizontal */
+.goals-section-horizontal {
+    flex: 1;
     background: var(--card-bg);
     backdrop-filter: var(--blur);
     padding: 20px;
     border-radius: 20px;
     border: 1px solid var(--border);
-}
-
-.section-title {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+    flex-direction: column;
 }
 
-.section-title h2 { font-size: 18px; font-weight: 700; }
-
-.meta-info-badge {
-    font-size: 11px;
-    background: var(--accent);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 8px;
-}
-
-.cards-container {
+.cards-container-horizontal {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
 .goal-card {
@@ -275,60 +266,116 @@ body {
 
 .bar-fill.done { background: var(--success); }
 
-/* Table Section */
-.table-section {
+/* Ticker Section */
+.ticker-section {
     background: var(--card-bg);
     backdrop-filter: var(--blur);
     padding: 20px;
     border-radius: 20px;
     border: 1px solid var(--border);
-    flex: 1;
-    min-height: 0;
+    height: 280px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
-.table-wrapper {
+.ticker-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--text-main);
+}
+
+.ticker-viewport {
     flex: 1;
-    overflow-y: auto;
-    padding-right: 5px;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.ticker-content {
+    display: flex;
+    gap: 20px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    will-change: transform;
+}
+
+/* Company Card in Ticker */
+.company-card {
+    min-width: 280px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease;
+}
+
+.company-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.company-name {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.stat-box {
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.stat-label {
+    display: block;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.stat-value.consultas { color: var(--accent); }
+.stat-value.aprovadas { color: var(--success); }
+.stat-value.reprovadas { color: var(--danger); }
+.stat-value.vendas { color: var(--sales); }
+
+.company-date {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: center;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+}
+
+/* Animations */
+@keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
 /* Custom Scrollbar */
-.table-wrapper::-webkit-scrollbar { width: 6px; }
-.table-wrapper::-webkit-scrollbar-track { background: transparent; }
-.table-wrapper::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-}
-
-thead th {
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    padding: 12px;
-    font-size: 12px;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    z-index: 1;
-}
-
-tbody td {
-    padding: 12px;
-    font-size: 14px;
-    border-bottom: 1px solid var(--border);
-}
-
-.vendedor-tag {
-    font-size: 11px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 4px 8px;
-    border-radius: 6px;
-    color: var(--text-dim);
-}
-
-tr:hover td { background: rgba(255, 255, 255, 0.02); }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
