@@ -7,7 +7,7 @@ const CONFIG = {
 };
 
 /**
- * DADOS DOS CONSULTORES
+ * DADOS DOS CONSULTORES INTERNOS
  */
 const consultoresInternos = [
     { nome: "Beatriz", valorAdesao: 5000, qtdContas: 5 },
@@ -15,6 +15,9 @@ const consultoresInternos = [
     { nome: "Maria", valorAdesao: 5048, qtdContas: 8 },
 ];
 
+/**
+ * DADOS DOS CONSULTORES EXTERNOS
+ */
 const consultoresExternos = [
     { nome: "Nivaldo", valorAdesao: 13500, qtdContas: 11 },
     { nome: "Marco", valorAdesao: 2600, qtdContas: 8 },
@@ -24,6 +27,7 @@ const consultoresExternos = [
 /**
  * DADOS DE FECHAMENTO DAS EMPRESAS (CARROSSEL)
  * Altere aqui os dados das empresas que aparecem no rodapé
+ * Formato da data: "DD/MM/YYYY" - o mês será extraído automaticamente
  */
 const fechamentoEmpresas = [
     { 
@@ -82,6 +86,25 @@ const icons = {
     moon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
 };
 
+// Mapeamento de meses
+const meses = {
+    '01': 'Janeiro',
+    '02': 'Fevereiro',
+    '03': 'Março',
+    '04': 'Abril',
+    '05': 'Maio',
+    '06': 'Junho',
+    '07': 'Julho',
+    '08': 'Agosto',
+    '09': 'Setembro',
+    '10': 'Outubro',
+    '11': 'Novembro',
+    '12': 'Dezembro'
+};
+
+// Estado do carrossel
+let isPlaying = true;
+
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 };
@@ -90,22 +113,17 @@ const calculateProgress = (current, target) => {
     return target === 0 ? 0 : Math.min((current / target) * 100, 100);
 };
 
+const extractMonth = (dateString) => {
+    // Formato: DD/MM/YYYY
+    const parts = dateString.split('/');
+    const monthNumber = parts[1];
+    return meses[monthNumber] || 'Desconhecido';
+};
+
 function renderDashboard() {
-    const internosList = document.getElementById('internos-list');
     const externosList = document.getElementById('externos-list');
     const goalsGrid = document.getElementById('goals-grid');
     const tickerContent = document.getElementById('ticker-content');
-
-    // Listas Laterais (Internos)
-    internosList.innerHTML = consultoresInternos.map(c => `
-        <div class="list-item">
-            <div class="item-info">
-                <span class="name">${c.nome}</span>
-                <span class="sub-value">${c.qtdContas} contas</span>
-            </div>
-            <span class="value">${formatCurrency(c.valorAdesao)}</span>
-        </div>
-    `).join('');
 
     // Listas Laterais (Externos)
     externosList.innerHTML = consultoresExternos.map(c => `
@@ -118,7 +136,7 @@ function renderDashboard() {
         </div>
     `).join('');
 
-    // Cards de Metas
+    // Cards de Metas (Internos)
     goalsGrid.innerHTML = consultoresInternos.map(c => {
         const progressoValor = calculateProgress(c.valorAdesao, CONFIG.metaValor);
         const progressoContas = calculateProgress(c.qtdContas, CONFIG.metaContas);
@@ -148,46 +166,45 @@ function renderDashboard() {
     }).join('');
 
     // Renderizar Carrossel de Empresas
-    const companyCardsHTML = fechamentoEmpresas.map(emp => `
-        <div class="company-card">
-            <h3 class="company-name">${emp.nome}</h3>
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <span class="stat-label">Consultas</span>
-                    <span class="stat-value consultas">${emp.consultas}</span>
+    const companyCardsHTML = fechamentoEmpresas.map(emp => {
+        const mes = extractMonth(emp.data);
+        return `
+            <div class="company-card">
+                <h3 class="company-name">${emp.nome}</h3>
+                <div class="company-month">${mes}</div>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">Consultas</span>
+                        <span class="stat-value consultas">${emp.consultas}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Aprovadas</span>
+                        <span class="stat-value aprovadas">${emp.aprovadas}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Reprovadas</span>
+                        <span class="stat-value reprovadas">${emp.reprovadas}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Vendas</span>
+                        <span class="stat-value vendas">${formatCurrency(emp.vendas)}</span>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <span class="stat-label">Aprovadas</span>
-                    <span class="stat-value aprovadas">${emp.aprovadas}</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Reprovadas</span>
-                    <span class="stat-value reprovadas">${emp.reprovadas}</span>
-                </div>
-                <div class="stat-box">
-                    <span class="stat-label">Vendas</span>
-                    <span class="stat-value vendas">${formatCurrency(emp.vendas)}</span>
-                </div>
+                <div class="company-date">Fechado em: ${emp.data}</div>
             </div>
-            <div class="company-date">Fechado em: ${emp.data}</div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     // Duplicamos o conteúdo para criar um loop infinito suave
     tickerContent.innerHTML = companyCardsHTML + companyCardsHTML;
     
     // Ajustar velocidade da animação baseada no número de empresas
-    const totalWidth = fechamentoEmpresas.length * 300; // 280px min-width + 20px gap
     tickerContent.style.animation = `scroll ${CONFIG.scrollSpeed}s linear infinite`;
 
     // Totais Superiores
-    const totalInternoAdesao = consultoresInternos.reduce((acc, c) => acc + c.valorAdesao, 0);
-    const totalInternoContas = consultoresInternos.reduce((acc, c) => acc + c.qtdContas, 0);
     const totalExternoAdesao = consultoresExternos.reduce((acc, c) => acc + c.valorAdesao, 0);
     const totalExternoContas = consultoresExternos.reduce((acc, c) => acc + c.qtdContas, 0);
 
-    document.getElementById('total-interno-adesao').textContent = formatCurrency(totalInternoAdesao);
-    document.getElementById('total-interno-contas').textContent = totalInternoContas;
     document.getElementById('total-externo-adesao').textContent = formatCurrency(totalExternoAdesao);
     document.getElementById('total-externo-contas').textContent = totalExternoContas;
 }
@@ -204,9 +221,58 @@ function toggleTheme() {
     }
 }
 
+function setupPlayPauseControls() {
+    const playBtn = document.getElementById('play-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const tickerContent = document.getElementById('ticker-content');
+
+    playBtn.addEventListener('click', () => {
+        isPlaying = true;
+        tickerContent.classList.remove('paused');
+        playBtn.classList.remove('active');
+        pauseBtn.classList.add('active');
+    });
+
+    pauseBtn.addEventListener('click', () => {
+        isPlaying = false;
+        tickerContent.classList.add('paused');
+        pauseBtn.classList.remove('active');
+        playBtn.classList.add('active');
+    });
+}
+
+function setupImageModal() {
+    const bannerTrigger = document.getElementById('banner-trigger');
+    const imageModal = document.getElementById('image-modal');
+    const modalImage = document.getElementById('modal-image');
+    const bannerImage = document.querySelector('.mini-banner');
+
+    // Abrir modal ao clicar na imagem
+    bannerTrigger.addEventListener('click', () => {
+        modalImage.src = bannerImage.src;
+        imageModal.classList.add('active');
+    });
+
+    // Fechar modal ao clicar fora da imagem
+    imageModal.addEventListener('click', (e) => {
+        if (e.target === imageModal) {
+            imageModal.classList.remove('active');
+        }
+    });
+
+    // Fechar modal ao pressionar ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+            imageModal.classList.remove('active');
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     document.getElementById('current-date').textContent = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
     document.getElementById('theme-toggle').innerHTML = icons.sun;
     renderDashboard();
+    setupPlayPauseControls();
+    setupImageModal();
 });
