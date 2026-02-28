@@ -27,7 +27,7 @@ const consultoresExternos = [
 /**
  * DADOS DE FECHAMENTO DAS EMPRESAS (CARROSSEL)
  * Altere aqui os dados das empresas que aparecem no rodapé
- * Formato da data: "DD/MM/YYYY" - o mês será extraído automaticamente
+ * Formato da data: "DD/MM/YYYY"
  */
 const fechamentoEmpresas = [
     { 
@@ -86,22 +86,6 @@ const icons = {
     moon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
 };
 
-// Mapeamento de meses
-const meses = {
-    '01': 'Janeiro',
-    '02': 'Fevereiro',
-    '03': 'Março',
-    '04': 'Abril',
-    '05': 'Maio',
-    '06': 'Junho',
-    '07': 'Julho',
-    '08': 'Agosto',
-    '09': 'Setembro',
-    '10': 'Outubro',
-    '11': 'Novembro',
-    '12': 'Dezembro'
-};
-
 // Estado do carrossel
 let isPlaying = true;
 
@@ -113,11 +97,10 @@ const calculateProgress = (current, target) => {
     return target === 0 ? 0 : Math.min((current / target) * 100, 100);
 };
 
-const extractMonth = (dateString) => {
-    // Formato: DD/MM/YYYY
+const extractDateDisplay = (dateString) => {
+    // Formato: DD/MM/YYYY -> retorna DD/MM
     const parts = dateString.split('/');
-    const monthNumber = parts[1];
-    return meses[monthNumber] || 'Desconhecido';
+    return `${parts[0]}/${parts[1]}`;
 };
 
 function renderDashboard() {
@@ -167,11 +150,11 @@ function renderDashboard() {
 
     // Renderizar Carrossel de Empresas
     const companyCardsHTML = fechamentoEmpresas.map(emp => {
-        const mes = extractMonth(emp.data);
+        const dateDisplay = extractDateDisplay(emp.data);
         return `
             <div class="company-card">
                 <h3 class="company-name">${emp.nome}</h3>
-                <div class="company-month">${mes}</div>
+                <div class="company-date-display">Data: ${dateDisplay}</div>
                 <div class="stats-grid">
                     <div class="stat-box">
                         <span class="stat-label">Consultas</span>
@@ -201,10 +184,16 @@ function renderDashboard() {
     // Ajustar velocidade da animação baseada no número de empresas
     tickerContent.style.animation = `scroll ${CONFIG.scrollSpeed}s linear infinite`;
 
-    // Totais Superiores
+    // Totais Superiores - INTERNOS
+    const totalInternoAdesao = consultoresInternos.reduce((acc, c) => acc + c.valorAdesao, 0);
+    const totalInternoContas = consultoresInternos.reduce((acc, c) => acc + c.qtdContas, 0);
+    
+    // Totais Superiores - EXTERNOS
     const totalExternoAdesao = consultoresExternos.reduce((acc, c) => acc + c.valorAdesao, 0);
     const totalExternoContas = consultoresExternos.reduce((acc, c) => acc + c.qtdContas, 0);
 
+    document.getElementById('total-interno-adesao').textContent = formatCurrency(totalInternoAdesao);
+    document.getElementById('total-interno-contas').textContent = totalInternoContas;
     document.getElementById('total-externo-adesao').textContent = formatCurrency(totalExternoAdesao);
     document.getElementById('total-externo-contas').textContent = totalExternoContas;
 }
