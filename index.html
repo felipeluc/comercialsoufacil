@@ -12,7 +12,7 @@
         <!-- Barra Superior -->
         <header class="top-bar">
             <div class="header-left">
-                <div class="banner-wrapper">
+                <div class="banner-wrapper" id="banner-trigger">
                     <img src="Captura de tela 2026-02-05 113326.png" class="mini-banner" alt="Logo">
                 </div>
                 <div class="header-text">
@@ -23,12 +23,6 @@
             
             <div class="header-right">
                 <div class="summary-group">
-                    <div class="summary-pill internal">
-                        <span class="pill-label">INTERNOS:</span>
-                        <span id="total-interno-adesao" class="pill-value">R$ 0,00</span>
-                        <span class="pill-divider">|</span>
-                        <span id="total-interno-contas" class="pill-value">0</span> <span class="pill-unit">Contas</span>
-                    </div>
                     <div class="summary-pill external">
                         <span class="pill-label">EXTERNOS:</span>
                         <span id="total-externo-adesao" class="pill-value">R$ 0,00</span>
@@ -40,14 +34,10 @@
             </div>
         </header>
 
-        <!-- Conteúdo Principal: Agora em uma linha horizontal -->
+        <!-- Conteúdo Principal: Apenas Externos e Metas -->
         <div class="main-content">
             <section class="horizontal-section">
                 <div class="info-card-group">
-                    <div class="info-card-mini">
-                        <h2>Internos</h2>
-                        <div id="internos-list" class="compact-list"></div>
-                    </div>
                     <div class="info-card-mini">
                         <h2>Externos</h2>
                         <div id="externos-list" class="compact-list"></div>
@@ -68,6 +58,14 @@
         <footer class="ticker-section">
             <div class="ticker-header">
                 <h2>Fechamentos de Contas</h2>
+                <div class="ticker-controls">
+                    <button id="play-btn" class="control-btn" title="Play">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </button>
+                    <button id="pause-btn" class="control-btn active" title="Pause">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                    </button>
+                </div>
             </div>
             <div class="ticker-viewport">
                 <div id="ticker-content" class="ticker-content">
@@ -76,6 +74,14 @@
             </div>
         </footer>
     </div>
+
+    <!-- Modal de Imagem -->
+    <div id="image-modal" class="image-modal">
+        <div class="modal-content">
+            <img id="modal-image" src="" alt="Imagem ampliada">
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
