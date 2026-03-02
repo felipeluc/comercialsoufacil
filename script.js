@@ -3,7 +3,7 @@ const CONFIG = {
     metaValor: 5000,
     metaContas: 5,
     comissaoPercentual: 0.15,
-    scrollSpeed: 35 // Segundos para uma volta completa (ajuste conforme necessário)
+    scrollSpeed: 40 // Segundos para uma volta completa (ajuste conforme necessário)
 };
 
 /**
