@@ -58,6 +58,7 @@ body {
     padding: 12px 24px;
     border-radius: 20px;
     border: 1px solid var(--border);
+    flex-shrink: 0;
 }
 
 .header-left {
@@ -160,6 +161,7 @@ body {
     flex-direction: column;
     gap: 20px;
     width: 300px;
+    flex-shrink: 0;
 }
 
 .info-card-mini {
@@ -213,11 +215,12 @@ body {
     border: 1px solid var(--border);
     display: flex;
     flex-direction: column;
+    min-width: 0; /* Permite que o flex-item encolha se necessário */
 }
 
 .cards-container-horizontal {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: 12px;
     overflow-y: auto;
     padding-right: 5px;
@@ -280,10 +283,11 @@ body {
     border-radius: 20px;
     border: 1px solid var(--border);
     height: auto;
-    min-height: 320px;
+    min-height: 280px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .ticker-header {
@@ -335,7 +339,7 @@ body {
     overflow: hidden;
     position: relative;
     width: 100%;
-    min-height: 250px;
+    min-height: 200px;
 }
 
 .ticker-content {
@@ -355,11 +359,11 @@ body {
 
 /* Company Card in Ticker */
 .company-card {
-    min-width: 260px;
+    min-width: 240px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 16px;
+    padding: 14px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -373,18 +377,18 @@ body {
 }
 
 .company-name {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     text-align: center;
     line-height: 1.2;
 }
 
 .company-date-display {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--accent);
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-weight: 600;
     text-transform: uppercase;
 }
@@ -393,11 +397,11 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .stat-box {
-    padding: 8px;
+    padding: 6px;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.02);
     text-align: center;
@@ -406,14 +410,14 @@ body {
 
 .stat-label {
     display: block;
-    font-size: 9px;
+    font-size: 8px;
     color: var(--text-dim);
-    margin-bottom: 3px;
+    margin-bottom: 2px;
     text-transform: uppercase;
 }
 
 .stat-value {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
 }
 
@@ -427,7 +431,7 @@ body {
     color: var(--text-dim);
     text-align: center;
     border-top: 1px solid var(--border);
-    padding-top: 8px;
+    padding-top: 6px;
 }
 
 /* Modal de Imagem */
@@ -450,8 +454,8 @@ body {
 }
 
 .modal-content {
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 90%;
+    max-height: 90%;
     border-radius: 20px;
     overflow: hidden;
     border: 1px solid var(--border);
@@ -468,6 +472,27 @@ body {
 @keyframes scroll {
     0% { transform: translateX(0); }
     100% { transform: translateX(-50%); }
+}
+
+/* Media Queries para Telas Maiores (TV) */
+@media screen and (min-width: 1921px) {
+    .tv-layout { padding: 40px; gap: 40px; }
+    .top-bar { padding: 24px 48px; border-radius: 30px; }
+    .header-text h1 { font-size: 32px; }
+    .summary-pill { padding: 12px 24px; border-radius: 20px; }
+    .pill-value { font-size: 20px; }
+    .info-card-group { width: 450px; gap: 40px; }
+    .info-card-mini { padding: 30px; border-radius: 30px; }
+    .info-card-mini h2 { font-size: 18px; }
+    .list-item .name { font-size: 20px; }
+    .list-item .value { font-size: 18px; }
+    .goals-section-horizontal { padding: 30px; border-radius: 30px; }
+    .goal-card { padding: 25px; border-radius: 24px; }
+    .card-name { font-size: 24px; }
+    .ticker-section { min-height: 400px; padding: 30px; border-radius: 30px; }
+    .company-card { min-width: 350px; padding: 24px; }
+    .company-name { font-size: 22px; }
+    .stat-value { font-size: 20px; }
 }
 
 /* Custom Scrollbar */
