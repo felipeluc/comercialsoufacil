@@ -3,7 +3,7 @@ const CONFIG = {
     metaValor: 5000,
     metaContas: 5,
     comissaoPercentual: 0.15,
-    scrollSpeed: 30 // Segundos para uma volta completa (ajuste conforme necessário)
+    scrollSpeed: 35 // Segundos para uma volta completa (ajuste conforme necessário)
 };
 
 /**
@@ -119,7 +119,7 @@ const fechamentoEmpresas = [
         data: "24/02/2026" 
     },
     { 
-        nome: "JMC BASILIO DISTRIBUICAO COMERCIO DE PRODUTOS E SERVICOS LTDA", 
+        nome: "JMC BASILIO", 
         consultas: 0, 
         aprovadas: 0, 
         reprovadas: 0, 
