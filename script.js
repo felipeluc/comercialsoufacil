@@ -32,51 +32,139 @@ const consultoresExternos = [
 const fechamentoEmpresas = [
     { 
         nome: "BM SHOP CELL", 
-        consultas: 120, 
-        aprovadas: 85, 
-        reprovadas: 35, 
-        vendas: 4500.50, 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 1500.00, 
+        data: "04/02/2026" 
+    },
+    { 
+        nome: "MAISA CLOSET", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "05/02/2026" 
+    },
+    { 
+        nome: "CICERO COLCHÕES", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "10/02/2026" 
+    },
+    { 
+        nome: "VALENTE MOVEIS", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "11/02/2026" 
+    },
+    { 
+        nome: "LA NA VALENTE", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "11/02/2026" 
+    },
+    { 
+        nome: "FÁBRICA DOS ÓCULOS", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "12/02/2026" 
+    },
+    { 
+        nome: "SILVA & GATO MOVÉIS", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "12/02/2026" 
+    },
+    { 
+        nome: "OTICAS SINAI", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "13/02/2026" 
+    },
+    { 
+        nome: "MUNDO PHONE", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "16/02/2026" 
+    },
+    { 
+        nome: "BTDS EMPREENDIMENTOS", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "20/02/2026" 
+    },
+    { 
+        nome: "OTICAS SINAI", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "24/02/2026" 
+    },
+    { 
+        nome: "JMC BASILIO DISTRIBUICAO COMERCIO DE PRODUTOS E SERVICOS LTDA", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
         data: "25/02/2026" 
     },
     { 
-        nome: "MAIS CASE CELULARES", 
-        consultas: 95, 
-        aprovadas: 60, 
-        reprovadas: 35, 
-        vendas: 2800.00, 
+        nome: "OPTICALIA CUIABÁ", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
         data: "26/02/2026" 
     },
     { 
-        nome: "ELETROMYX", 
-        consultas: 150, 
-        aprovadas: 110, 
-        reprovadas: 40, 
-        vendas: 7200.00, 
+        nome: "FABRICA DAS CARRETINHAS LTDA", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "25/02/2026" 
+    },
+    { 
+        nome: "DR.FABRICIO GODOY", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
+        data: "26/02/2026" 
+    },
+    { 
+        nome: "UNIQUE MODA MASCULINA", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 50.00, 
+        data: "20/02/2026" 
+    },
+    { 
+        nome: "MAJESTOSA MODA PLUS LTDA", 
+        consultas: 0, 
+        aprovadas: 0, 
+        reprovadas: 0, 
+        vendas: 0.00, 
         data: "27/02/2026" 
-    },
-    { 
-        nome: "CASA DO PISO", 
-        consultas: 80, 
-        aprovadas: 55, 
-        reprovadas: 25, 
-        vendas: 3100.00, 
-        data: "27/02/2026" 
-    },
-    { 
-        nome: "BAIANO MOVEIS", 
-        consultas: 200, 
-        aprovadas: 145, 
-        reprovadas: 55, 
-        vendas: 12500.00, 
-        data: "28/02/2026" 
-    },
-    { 
-        nome: "GO CELL CELULARES", 
-        consultas: 65, 
-        aprovadas: 40, 
-        reprovadas: 25, 
-        vendas: 1950.00, 
-        data: "28/02/2026" 
     }
 ];
 
