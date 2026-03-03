@@ -12,7 +12,7 @@
         <!-- Barra Superior -->
         <header class="top-bar">
             <div class="header-left">
-                <div class="banner-wrapper" id="banner-trigger">
+                <div class="banner-wrapper">
                     <img src="Captura de tela 2026-02-05 113326.png" class="mini-banner" alt="Logo">
                 </div>
                 <div class="header-text">
@@ -40,42 +40,31 @@
             </div>
         </header>
 
-        <!-- Conteúdo Principal -->
         <div class="main-content">
-            <section class="horizontal-section">
-                <!-- Sidebar com Consultores -->
-                <aside class="sidebar-info">
-                    <div class="info-card-mini">
-                        <h2>Consultores Internos</h2>
-                        <div id="internos-list" class="compact-list"></div>
-                    </div>
-                    <div class="info-card-mini">
-                        <h2>Consultores Externos</h2>
-                        <div id="externos-list" class="compact-list"></div>
-                    </div>
-                </aside>
-                
-                <!-- Grid de Metas de Performance -->
-                <div class="performance-section">
+            <!-- Lateral: Listagem Rápida -->
+            <aside class="sidebar">
+                <section class="list-section">
+                    <h2>Internos</h2>
+                    <div id="internos-list" class="compact-list"></div>
+                </section>
+                <section class="list-section">
+                    <h2>Externos</h2>
+                    <div id="externos-list" class="compact-list"></div>
+                </section>
+            </aside>
+
+            <!-- Principal: Grid Central -->
+            <div class="center-content">
+                <!-- Seção de Metas -->
+                <section class="goals-section">
                     <div class="section-title">
-                        <h2>META DO COMERCIAL – POR PRODUTO</h2>
-                        <div class="meta-legend">Comissão Progressiva: 15% | 17,5% | 20%</div>
+                        <h2>Metas de Performance (Internos)</h2>
                     </div>
-                    <div id="goals-grid" class="goals-container">
-                        <!-- JS vai popular aqui os cards por consultor e produto -->
-                    </div>
-                </div>
-            </section>
+                    <div id="goals-grid" class="cards-container"></div>
+                </section>
+            </div>
         </div>
     </div>
-
-    <!-- Modal de Imagem -->
-    <div id="image-modal" class="image-modal">
-        <div class="modal-content">
-            <img id="modal-image" src="" alt="Imagem ampliada">
-        </div>
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>
