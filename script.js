@@ -38,7 +38,7 @@ const consultoresInternos = [
         origem: "megazap",
         segmento: "Varejo",
         produtos: {
-            crediario: { valorAdesao: 10000, qtdContas: 15 },
+            crediario: { valorAdesao: 13000, qtdContas: 15 },
             soufacil: { valorAdesao: 3000, qtdContas: 3 },
             cobranca: { valorAdesao: 1200, qtdContas: 2 }
         }
