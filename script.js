@@ -1,4 +1,5 @@
 // Configurações e Dados do Dashboard
+
 const CONFIG = {
     produtos: {
         crediario: {
