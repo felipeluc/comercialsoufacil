@@ -1,28 +1,27 @@
 // Configurações e Dados do Dashboard
-
 const CONFIG = {
     produtos: {
         crediario: {
             nome: "Crediário Garantido",
             faixas: [
-                { id: 1, producao: 6000, contas: 6, comissao: 0.15, label: "Até R$ 6.000", cor: "#FFD60A" },
-                { id: 2, producao: 10000, contas: 10, comissao: 0.175, label: "Até R$ 10.000", cor: "#FF9500" },
+                { id: 1, producao: 6000, contas: 6, comissao: 0.15, label: "Até R$ 6.000", cor: "#0A84FF" },
+                { id: 2, producao: 10000, contas: 10, comissao: 0.175, label: "Até R$ 10.000", cor: "#9D4EDD" },
                 { id: 3, producao: 15000, contas: 10, comissao: 0.20, label: "A partir de R$ 15.000", cor: "#30D158" }
             ]
         },
         soufacil: {
             nome: "SouFácil Card",
             faixas: [
-                { id: 1, producao: 4000, contas: 4, comissao: 0.15, label: "R$ 4.000", cor: "#FFD60A" },
-                { id: 2, producao: 6000, contas: 6, comissao: 0.175, label: "R$ 6.000", cor: "#FF9500" },
+                { id: 1, producao: 4000, contas: 4, comissao: 0.15, label: "R$ 4.000", cor: "#0A84FF" },
+                { id: 2, producao: 6000, contas: 6, comissao: 0.175, label: "R$ 6.000", cor: "#9D4EDD" },
                 { id: 3, producao: 6000, contas: 6, comissao: 0.20, label: "Acima de 6 contas", cor: "#30D158" }
             ]
         },
         cobranca: {
             nome: "Cobrança Terceirizada",
             faixas: [
-                { id: 1, producao: 1500, contas: 3, comissao: 0.15, label: "3 contas", cor: "#FFD60A" },
-                { id: 2, producao: 2500, contas: 5, comissao: 0.175, label: "5 contas", cor: "#FF9500" },
+                { id: 1, producao: 1500, contas: 3, comissao: 0.15, label: "3 contas", cor: "#0A84FF" },
+                { id: 2, producao: 2500, contas: 5, comissao: 0.175, label: "5 contas", cor: "#9D4EDD" },
                 { id: 3, producao: 2500, contas: 5, comissao: 0.20, label: "Acima de 5 contas", cor: "#30D158" }
             ]
         }
@@ -35,6 +34,9 @@ const CONFIG = {
 const consultoresInternos = [
     { 
         nome: "Beatriz", 
+        uf: "SP",
+        origem: "megazap",
+        segmento: "Varejo",
         produtos: {
             crediario: { valorAdesao: 5000, qtdContas: 5 },
             soufacil: { valorAdesao: 3000, qtdContas: 3 },
@@ -43,6 +45,9 @@ const consultoresInternos = [
     },
     { 
         nome: "Michael", 
+        uf: "RJ",
+        origem: "williarts",
+        segmento: "Servicos",
         produtos: {
             crediario: { valorAdesao: 6000, qtdContas: 8 },
             soufacil: { valorAdesao: 5000, qtdContas: 6 },
@@ -51,6 +56,9 @@ const consultoresInternos = [
     },
     { 
         nome: "Maria", 
+        uf: "MG",
+        origem: "email",
+        segmento: "Industria",
         produtos: {
             crediario: { valorAdesao: 5048, qtdContas: 8 },
             soufacil: { valorAdesao: 4500, qtdContas: 5 },
@@ -62,6 +70,9 @@ const consultoresInternos = [
 const consultoresExternos = [
     { 
         nome: "Nivaldo", 
+        uf: "BA",
+        origem: "casa_dados",
+        segmento: "Comercio",
         produtos: {
             crediario: { valorAdesao: 13500, qtdContas: 11 },
             soufacil: { valorAdesao: 8000, qtdContas: 8 },
@@ -70,6 +81,9 @@ const consultoresExternos = [
     },
     { 
         nome: "Marco", 
+        uf: "SP",
+        origem: "megazap",
+        segmento: "Varejo",
         produtos: {
             crediario: { valorAdesao: 2600, qtdContas: 8 },
             soufacil: { valorAdesao: 2000, qtdContas: 4 },
@@ -78,6 +92,9 @@ const consultoresExternos = [
     },
     { 
         nome: "Kaly", 
+        uf: "RS",
+        origem: "email",
+        segmento: "Servicos",
         produtos: {
             crediario: { valorAdesao: 1000, qtdContas: 1 },
             soufacil: { valorAdesao: 500, qtdContas: 1 },
@@ -275,6 +292,57 @@ function renderConsultorCard(consultor) {
     `;
 }
 
+/**
+ * Calcula dados para gráfico de pizza por UF
+ */
+function getDataByUF() {
+    const allConsultores = [...consultoresInternos, ...consultoresExternos];
+    const ufData = {};
+    
+    allConsultores.forEach(c => {
+        if (!ufData[c.uf]) {
+            ufData[c.uf] = 0;
+        }
+        ufData[c.uf] += Object.values(c.produtos).reduce((sum, p) => sum + p.qtdContas, 0);
+    });
+    
+    return ufData;
+}
+
+/**
+ * Calcula dados para gráfico de pizza por origem
+ */
+function getDataByOrigem() {
+    const allConsultores = [...consultoresInternos, ...consultoresExternos];
+    const origemData = {};
+    
+    allConsultores.forEach(c => {
+        if (!origemData[c.origem]) {
+            origemData[c.origem] = 0;
+        }
+        origemData[c.origem] += Object.values(c.produtos).reduce((sum, p) => sum + p.qtdContas, 0);
+    });
+    
+    return origemData;
+}
+
+/**
+ * Calcula dados para lista por segmento
+ */
+function getDataBySegmento() {
+    const allConsultores = [...consultoresInternos, ...consultoresExternos];
+    const segmentoData = {};
+    
+    allConsultores.forEach(c => {
+        if (!segmentoData[c.segmento]) {
+            segmentoData[c.segmento] = 0;
+        }
+        segmentoData[c.segmento] += 1;
+    });
+    
+    return segmentoData;
+}
+
 function toggleTheme() {
     const body = document.body;
     const btn = document.getElementById('theme-toggle');
@@ -287,9 +355,128 @@ function toggleTheme() {
     }
 }
 
+/**
+ * Renderiza o card com gráficos de pizza e lista por segmento
+ */
+function renderAnalyticsCard() {
+    const centerContent = document.querySelector('.center-content');
+    
+    const ufData = getDataByUF();
+    const origemData = getDataByOrigem();
+    const segmentoData = getDataBySegmento();
+    
+    const ufLabels = Object.keys(ufData);
+    const ufValues = Object.values(ufData);
+    
+    const origemLabels = Object.keys(origemData);
+    const origemValues = Object.values(origemData);
+    
+    const segmentoLabels = Object.keys(segmentoData);
+    const segmentoValues = Object.values(segmentoData);
+    
+    const analyticsHTML = `
+        <section class="analytics-section">
+            <div class="section-title">
+                <h2>Análise de Contas Fechadas</h2>
+            </div>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>Por UF</h3>
+                    <canvas id="uf-chart"></canvas>
+                </div>
+                <div class="analytics-card">
+                    <h3>Por Origem</h3>
+                    <canvas id="origem-chart"></canvas>
+                </div>
+                <div class="analytics-card">
+                    <h3>Por Segmento</h3>
+                    <div id="segmento-list" class="segmento-list"></div>
+                </div>
+            </div>
+        </section>
+    `;
+    
+    centerContent.insertAdjacentHTML('beforeend', analyticsHTML);
+    
+    // Renderizar lista de segmentos
+    const segmentoList = document.getElementById('segmento-list');
+    segmentoList.innerHTML = segmentoLabels.map((seg, idx) => `
+        <div class="segmento-item">
+            <span class="segmento-name">${seg}</span>
+            <span class="segmento-count">${segmentoValues[idx]} empresa${segmentoValues[idx] > 1 ? 's' : ''}</span>
+        </div>
+    `).join('');
+    
+    // Renderizar gráficos com Chart.js
+    setTimeout(() => {
+        const chartColors = ['#0A84FF', '#9D4EDD', '#30D158', '#FF9500', '#FF3B30', '#5AC8FA'];
+        
+        // Gráfico UF
+        const ufCtx = document.getElementById('uf-chart')?.getContext('2d');
+        if (ufCtx) {
+            new Chart(ufCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ufLabels,
+                    datasets: [{
+                        data: ufValues,
+                        backgroundColor: chartColors.slice(0, ufLabels.length),
+                        borderColor: 'rgba(28, 28, 30, 0.85)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'var(--text-main)',
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Gráfico Origem
+        const origemCtx = document.getElementById('origem-chart')?.getContext('2d');
+        if (origemCtx) {
+            new Chart(origemCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: origemLabels,
+                    datasets: [{
+                        data: origemValues,
+                        backgroundColor: chartColors.slice(0, origemLabels.length),
+                        borderColor: 'rgba(28, 28, 30, 0.85)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'var(--text-main)',
+                                font: { size: 11 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }, 100);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     document.getElementById('current-date').textContent = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
     document.getElementById('theme-toggle').innerHTML = icons.sun;
     renderDashboard();
+    renderAnalyticsCard();
 });
