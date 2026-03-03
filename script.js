@@ -2,6 +2,7 @@
 const REGRAS_PRODUTOS = {
     crediario: {
         titulo: "Crediário Garantido",
+        cor: "#0A84FF", // Azul
         faixas: [
             { limiteValor: 6000, limiteContas: 6, comissao: 0.15 },
             { limiteValor: 10000, limiteContas: 10, comissao: 0.175 },
@@ -10,6 +11,7 @@ const REGRAS_PRODUTOS = {
     },
     soufacilCard: {
         titulo: "SouFácil Card",
+        cor: "#FFD60A", // Amarelo/Dourado
         faixas: [
             { limiteValor: 4000, limiteContas: 4, comissao: 0.15 },
             { limiteValor: 6000, limiteContas: 6, comissao: 0.175 },
@@ -18,6 +20,7 @@ const REGRAS_PRODUTOS = {
     },
     cobranca: {
         titulo: "Cobrança Terceirizada",
+        cor: "#30D158", // Verde
         faixas: [
             { limiteValor: 1500, limiteContas: 3, comissao: 0.15 },
             { limiteValor: 2500, limiteContas: 5, comissao: 0.175 },
@@ -32,19 +35,19 @@ const REGRAS_PRODUTOS = {
  */
 const consultoresInternos = [
     { 
+        nome: "Michael", 
+        producao: {
+            crediario: { valor: 8000, contas: 7 },
+            soufacilCard: { valor: 3500, contas: 3 },
+            cobranca: { valor: 1200, contas: 2 }
+        }
+    },
+    { 
         nome: "Beatriz", 
         producao: {
             crediario: { valor: 15500, contas: 12 },
             soufacilCard: { valor: 5000, contas: 5 },
             cobranca: { valor: 2000, contas: 4 }
-        }
-    },
-    { 
-        nome: "Michael", 
-        producao: {
-            crediario: { valor: 8000, contas: 7 },
-            soufacilCard: { valor: 7500, contas: 8 },
-            cobranca: { valor: 3000, contas: 6 }
         }
     },
     { 
@@ -76,51 +79,42 @@ const consultoresExternos = [
     }
 ];
 
-// Ícones SVG
-const icons = {
-    sun: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`,
-    moon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
-};
-
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 };
 
 /**
- * CÁLCULO DE COMISSÃO PROGRESSIVA
+ * CÁLCULO DE COMISSÃO PROGRESSIVA E "QUANTO FALTA"
  */
-function calcularComissaoProgressiva(valorProduzido, faixas) {
+function calcularPerformance(prod, regras) {
     let comissaoTotal = 0;
-    let valorRestante = valorProduzido;
+    let valorRestante = prod.valor;
     let detalhes = [];
+    let proximaMeta = null;
 
-    // Faixa 1
-    const v1 = Math.min(valorRestante, faixas[0].limiteValor);
-    if (v1 > 0) {
-        const c1 = v1 * faixas[0].comissao;
-        comissaoTotal += c1;
-        valorRestante -= v1;
-        detalhes.push({ valor: v1, taxa: faixas[0].comissao * 100 });
+    // Cálculo da comissão progressiva
+    for (let i = 0; i < regras.faixas.length; i++) {
+        const faixa = regras.faixas[i];
+        const faixaAnterior = i > 0 ? regras.faixas[i-1] : { limiteValor: 0, limiteContas: 0 };
+        const valorNaFaixa = Math.min(valorRestante, faixa.limiteValor - faixaAnterior.limiteValor);
+        
+        if (valorNaFaixa > 0) {
+            comissaoTotal += valorNaFaixa * faixa.comissao;
+            valorRestante -= valorNaFaixa;
+            detalhes.push({ valor: valorNaFaixa, taxa: faixa.comissao * 100 });
+        }
+
+        // Identificar a próxima meta não batida (seja por valor ou por contas)
+        if (!proximaMeta && (prod.valor < faixa.limiteValor || prod.contas < faixa.limiteContas) && faixa.limiteValor !== Infinity) {
+            proximaMeta = {
+                valorFaltante: Math.max(0, faixa.limiteValor - prod.valor),
+                contasFaltantes: Math.max(0, faixa.limiteContas - prod.contas),
+                taxaAlvo: faixa.comissao * 100
+            };
+        }
     }
 
-    // Faixa 2
-    if (valorRestante > 0) {
-        const v2 = Math.min(valorRestante, faixas[1].limiteValor - faixas[0].limiteValor);
-        const c2 = v2 * faixas[1].comissao;
-        comissaoTotal += c2;
-        valorRestante -= v2;
-        detalhes.push({ valor: v2, taxa: faixas[1].comissao * 100 });
-    }
-
-    // Faixa 3
-    if (valorRestante > 0) {
-        const v3 = valorRestante;
-        const c3 = v3 * faixas[2].comissao;
-        comissaoTotal += c3;
-        detalhes.push({ valor: v3, taxa: faixas[2].comissao * 100 });
-    }
-
-    return { total: comissaoTotal, detalhes };
+    return { comissaoTotal, detalhes, proximaMeta };
 }
 
 function renderDashboard() {
@@ -128,7 +122,7 @@ function renderDashboard() {
     const externosList = document.getElementById('externos-list');
     const goalsGrid = document.getElementById('goals-grid');
 
-    // Listas Laterais - Totais por Consultor
+    // Listas Laterais
     const renderConsultorItem = (c) => {
         const totalAdesao = Object.values(c.producao).reduce((acc, p) => acc + p.valor, 0);
         const totalContas = Object.values(c.producao).reduce((acc, p) => acc + p.contas, 0);
@@ -146,52 +140,54 @@ function renderDashboard() {
     internosList.innerHTML = consultoresInternos.map(renderConsultorItem).join('');
     externosList.innerHTML = consultoresExternos.map(renderConsultorItem).join('');
 
-    // Cards de Performance (Focando nos Internos conforme solicitado)
+    // Cards de Performance (3 Cards Principais: Michael, Beatriz, Maria)
     goalsGrid.innerHTML = consultoresInternos.map(c => {
-        let cardsHTML = '';
+        let produtosHTML = '';
+        let totalComissaoConsultor = 0;
         
-        for (const [key, produto] of Object.entries(REGRAS_PRODUTOS)) {
+        for (const [key, regras] of Object.entries(REGRAS_PRODUTOS)) {
             const prod = c.producao[key];
-            const result = calcularComissaoProgressiva(prod.valor, produto.faixas);
+            const perf = calcularPerformance(prod, regras);
+            totalComissaoConsultor += perf.comissaoTotal;
             
-            // Cálculo de progresso baseado na meta máxima (faixa 2 para visualização)
-            const metaMax = produto.faixas[1].limiteValor;
+            const metaMax = regras.faixas[1].limiteValor; // Referência visual para a barra
             const progresso = Math.min((prod.valor / metaMax) * 100, 100);
             
-            cardsHTML += `
-                <div class="goal-card product-card">
-                    <div class="card-header">
-                        <div class="header-main">
-                            <span class="consultor-name">${c.nome}</span>
-                            <span class="product-title">${produto.titulo}</span>
-                        </div>
-                        <div class="badge success">
-                            ${formatCurrency(result.total)}
-                        </div>
+            produtosHTML += `
+                <div class="product-item">
+                    <div class="product-header">
+                        <span class="product-name" style="color: ${regras.cor}">${regras.titulo}</span>
+                        <span class="product-value">${formatCurrency(prod.valor)}</span>
                     </div>
-                    <div class="progress-section">
-                        <div class="bar-container">
-                            <div class="bar-info">
-                                <span>Produção: ${formatCurrency(prod.valor)}</span>
-                                <span>${prod.contas} contas</span>
-                            </div>
-                            <div class="bar-bg">
-                                <div class="bar-fill" style="width: ${progresso}%"></div>
-                            </div>
-                        </div>
-                        <div class="commission-breakdown">
-                            ${result.detalhes.map(d => `
-                                <div class="breakdown-item">
-                                    <span class="dot"></span>
-                                    ${d.taxa}% sobre ${formatCurrency(d.valor)}
-                                </div>
-                            `).join('')}
-                        </div>
+                    <div class="product-bar-bg">
+                        <div class="product-bar-fill" style="width: ${progresso}%; background-color: ${regras.cor}"></div>
+                    </div>
+                    <div class="product-footer">
+                        <span class="contas-info">${prod.contas} contas</span>
+                        ${perf.proximaMeta ? `
+                            <span class="missing-info">
+                                Falta: <span class="missing-value">${formatCurrency(perf.proximaMeta.valorFaltante)}</span> | 
+                                <span class="missing-value">${perf.proximaMeta.contasFaltantes} contas</span>
+                            </span>
+                        ` : `<span class="meta-reached">Meta Máxima Batida!</span>`}
                     </div>
                 </div>
             `;
         }
-        return cardsHTML;
+
+        return `
+            <div class="consultor-card">
+                <div class="consultor-card-header">
+                    <span class="consultor-card-name">${c.nome}</span>
+                    <div class="total-commission-badge">
+                        Total: ${formatCurrency(totalComissaoConsultor)}
+                    </div>
+                </div>
+                <div class="consultor-products-list">
+                    ${produtosHTML}
+                </div>
+            </div>
+        `;
     }).join('');
 
     // Totais Superiores
@@ -217,35 +213,15 @@ function toggleTheme() {
     const btn = document.getElementById('theme-toggle');
     if (body.getAttribute('data-theme') === 'light') {
         body.setAttribute('data-theme', 'dark');
-        btn.innerHTML = icons.sun;
+        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
     } else {
         body.setAttribute('data-theme', 'light');
-        btn.innerHTML = icons.moon;
+        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
     }
-}
-
-function setupImageModal() {
-    const bannerTrigger = document.getElementById('banner-trigger');
-    const imageModal = document.getElementById('image-modal');
-    const modalImage = document.getElementById('modal-image');
-    const bannerImage = document.querySelector('.mini-banner');
-
-    if (bannerTrigger) {
-        bannerTrigger.addEventListener('click', () => {
-            modalImage.src = bannerImage.src;
-            imageModal.classList.add('active');
-        });
-    }
-
-    imageModal.addEventListener('click', (e) => {
-        if (e.target === imageModal) imageModal.classList.remove('active');
-    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     document.getElementById('current-date').textContent = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
-    document.getElementById('theme-toggle').innerHTML = icons.sun;
     renderDashboard();
-    setupImageModal();
 });
