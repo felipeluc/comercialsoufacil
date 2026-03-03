@@ -1,211 +1,293 @@
-// Configurações e Regras de Comissão por Produto
-const REGRAS_PRODUTOS = {
-    crediario: {
-        titulo: "Crediário Garantido",
-        cor: "#0A84FF", // Azul
-        faixas: [
-            { limiteValor: 6000, limiteContas: 6, comissao: 0.15 },
-            { limiteValor: 10000, limiteContas: 10, comissao: 0.175 },
-            { limiteValor: Infinity, limiteContas: 10, comissao: 0.20 }
-        ]
-    },
-    soufacilCard: {
-        titulo: "SouFácil Card",
-        cor: "#FFD60A", // Amarelo/Dourado
-        faixas: [
-            { limiteValor: 4000, limiteContas: 4, comissao: 0.15 },
-            { limiteValor: 6000, limiteContas: 6, comissao: 0.175 },
-            { limiteValor: Infinity, limiteContas: 6, comissao: 0.20 }
-        ]
-    },
-    cobranca: {
-        titulo: "Cobrança Terceirizada",
-        cor: "#30D158", // Verde
-        faixas: [
-            { limiteValor: 1500, limiteContas: 3, comissao: 0.15 },
-            { limiteValor: 2500, limiteContas: 5, comissao: 0.175 },
-            { limiteValor: Infinity, limiteContas: 5, comissao: 0.20 }
-        ]
+// Configurações e Dados do Dashboard
+const CONFIG = {
+    produtos: {
+        crediario: {
+            nome: "Crediário Garantido",
+            faixas: [
+                { producao: 6000, contas: 6, comissao: 0.15 },
+                { producao: 10000, contas: 10, comissao: 0.175 },
+                { producao: 15000, contas: 10, comissao: 0.20 }
+            ]
+        },
+        soufacil: {
+            nome: "SouFácil Card",
+            faixas: [
+                { producao: 4000, contas: 4, comissao: 0.15 },
+                { producao: 6000, contas: 6, comissao: 0.175 },
+                { producao: 6000, contas: 6, comissao: 0.20 }
+            ]
+        },
+        cobranca: {
+            nome: "Cobrança Terceirizada",
+            faixas: [
+                { producao: 1500, contas: 3, comissao: 0.15 },
+                { producao: 2500, contas: 5, comissao: 0.175 },
+                { producao: 2500, contas: 5, comissao: 0.20 }
+            ]
+        }
     }
 };
 
 /**
  * DADOS DOS CONSULTORES
- * Edite aqui os valores produzidos por cada consultor em cada produto
  */
 const consultoresInternos = [
     { 
-        nome: "Michael", 
-        producao: {
-            crediario: { valor: 8000, contas: 7 },
-            soufacilCard: { valor: 3500, contas: 3 },
-            cobranca: { valor: 1200, contas: 2 }
+        nome: "Beatriz", 
+        produtos: {
+            crediario: { valorAdesao: 5000, qtdContas: 5 },
+            soufacil: { valorAdesao: 3000, qtdContas: 3 },
+            cobranca: { valorAdesao: 1200, qtdContas: 2 }
         }
     },
     { 
-        nome: "Beatriz", 
-        producao: {
-            crediario: { valor: 15500, contas: 12 },
-            soufacilCard: { valor: 5000, contas: 5 },
-            cobranca: { valor: 2000, contas: 4 }
+        nome: "Michael", 
+        produtos: {
+            crediario: { valorAdesao: 6000, qtdContas: 8 },
+            soufacil: { valorAdesao: 5000, qtdContas: 6 },
+            cobranca: { valorAdesao: 2000, qtdContas: 4 }
         }
     },
     { 
         nome: "Maria", 
-        producao: {
-            crediario: { valor: 5000, contas: 4 },
-            soufacilCard: { valor: 3000, contas: 3 },
-            cobranca: { valor: 1000, contas: 2 }
+        produtos: {
+            crediario: { valorAdesao: 5048, qtdContas: 8 },
+            soufacil: { valorAdesao: 4500, qtdContas: 5 },
+            cobranca: { valorAdesao: 1800, qtdContas: 3 }
         }
-    }
+    },
 ];
 
 const consultoresExternos = [
     { 
         nome: "Nivaldo", 
-        producao: {
-            crediario: { valor: 20000, contas: 15 },
-            soufacilCard: { valor: 10000, contas: 10 },
-            cobranca: { valor: 5000, contas: 8 }
+        produtos: {
+            crediario: { valorAdesao: 13500, qtdContas: 11 },
+            soufacil: { valorAdesao: 8000, qtdContas: 8 },
+            cobranca: { valorAdesao: 3500, qtdContas: 6 }
         }
     },
     { 
         nome: "Marco", 
-        producao: {
-            crediario: { valor: 4000, contas: 3 },
-            soufacilCard: { valor: 2000, contas: 2 },
-            cobranca: { valor: 800, contas: 1 }
+        produtos: {
+            crediario: { valorAdesao: 2600, qtdContas: 8 },
+            soufacil: { valorAdesao: 2000, qtdContas: 4 },
+            cobranca: { valorAdesao: 1000, qtdContas: 2 }
+        }
+    },
+    { 
+        nome: "Kaly", 
+        produtos: {
+            crediario: { valorAdesao: 1000, qtdContas: 1 },
+            soufacil: { valorAdesao: 500, qtdContas: 1 },
+            cobranca: { valorAdesao: 300, qtdContas: 1 }
         }
     }
 ];
+
+// Ícones SVG
+const icons = {
+    sun: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`,
+    moon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
+};
 
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 };
 
-/**
- * CÁLCULO DE COMISSÃO PROGRESSIVA E "QUANTO FALTA"
- */
-function calcularPerformance(prod, regras) {
-    let comissaoTotal = 0;
-    let valorRestante = prod.valor;
-    let detalhes = [];
-    let proximaMeta = null;
+const calculateProgress = (current, target) => {
+    return target === 0 ? 0 : Math.min((current / target) * 100, 100);
+};
 
-    // Cálculo da comissão progressiva
-    for (let i = 0; i < regras.faixas.length; i++) {
-        const faixa = regras.faixas[i];
-        const faixaAnterior = i > 0 ? regras.faixas[i-1] : { limiteValor: 0, limiteContas: 0 };
-        const valorNaFaixa = Math.min(valorRestante, faixa.limiteValor - faixaAnterior.limiteValor);
+/**
+ * Calcula a comissão progressiva de um produto
+ */
+const calculateComissao = (valor, qtdContas, produtoKey) => {
+    const faixas = CONFIG.produtos[produtoKey].faixas;
+    let comissao = 0;
+    let valorProcessado = 0;
+
+    for (let i = 0; i < faixas.length; i++) {
+        const faixa = faixas[i];
         
-        if (valorNaFaixa > 0) {
-            comissaoTotal += valorNaFaixa * faixa.comissao;
-            valorRestante -= valorNaFaixa;
-            detalhes.push({ valor: valorNaFaixa, taxa: faixa.comissao * 100 });
+        // Verifica se atinge a quantidade de contas
+        if (qtdContas < faixa.contas) {
+            break;
         }
 
-        // Identificar a próxima meta não batida (seja por valor ou por contas)
-        if (!proximaMeta && (prod.valor < faixa.limiteValor || prod.contas < faixa.limiteContas) && faixa.limiteValor !== Infinity) {
-            proximaMeta = {
-                valorFaltante: Math.max(0, faixa.limiteValor - prod.valor),
-                contasFaltantes: Math.max(0, faixa.limiteContas - prod.contas),
-                taxaAlvo: faixa.comissao * 100
-            };
+        // Calcula a comissão para esta faixa
+        if (i === faixas.length - 1) {
+            // Última faixa: tudo que passar da faixa anterior
+            if (valor > valorProcessado) {
+                comissao += (valor - valorProcessado) * faixa.comissao;
+            }
+        } else {
+            // Faixas intermediárias
+            const proximaFaixa = faixas[i + 1];
+            const limiteAtual = faixa.producao;
+            const proximoLimite = proximaFaixa.producao;
+
+            if (valor >= proximoLimite) {
+                comissao += (proximoLimite - limiteAtual) * faixa.comissao;
+                valorProcessado = proximoLimite;
+            } else if (valor > limiteAtual) {
+                comissao += (valor - limiteAtual) * faixa.comissao;
+                break;
+            }
         }
     }
 
-    return { comissaoTotal, detalhes, proximaMeta };
-}
+    return comissao;
+};
+
+/**
+ * Verifica se atingiu a meta de uma faixa
+ */
+const verificaMeta = (valor, qtdContas, produtoKey) => {
+    const faixas = CONFIG.produtos[produtoKey].faixas;
+    
+    for (let faixa of faixas) {
+        if (valor >= faixa.producao && qtdContas >= faixa.contas) {
+            return true;
+        }
+    }
+    return false;
+};
+
+/**
+ * Obtém a próxima meta a ser atingida
+ */
+const getProximaMeta = (valor, qtdContas, produtoKey) => {
+    const faixas = CONFIG.produtos[produtoKey].faixas;
+    
+    for (let faixa of faixas) {
+        if (valor < faixa.producao || qtdContas < faixa.contas) {
+            return faixa;
+        }
+    }
+    return faixas[faixas.length - 1];
+};
 
 function renderDashboard() {
     const internosList = document.getElementById('internos-list');
     const externosList = document.getElementById('externos-list');
     const goalsGrid = document.getElementById('goals-grid');
 
-    // Listas Laterais
-    const renderConsultorItem = (c) => {
-        const totalAdesao = Object.values(c.producao).reduce((acc, p) => acc + p.valor, 0);
-        const totalContas = Object.values(c.producao).reduce((acc, p) => acc + p.contas, 0);
+    // Listas Laterais - Totalizando todos os produtos
+    internosList.innerHTML = consultoresInternos.map(c => {
+        const totalValor = Object.values(c.produtos).reduce((acc, p) => acc + p.valorAdesao, 0);
+        const totalContas = Object.values(c.produtos).reduce((acc, p) => acc + p.qtdContas, 0);
         return `
             <div class="list-item">
                 <div class="item-info">
                     <span class="name">${c.nome}</span>
-                    <span class="sub-value">${totalContas} contas total</span>
+                    <span class="sub-value">${totalContas} contas</span>
                 </div>
-                <span class="value">${formatCurrency(totalAdesao)}</span>
+                <span class="value">${formatCurrency(totalValor)}</span>
             </div>
         `;
-    };
+    }).join('');
 
-    internosList.innerHTML = consultoresInternos.map(renderConsultorItem).join('');
-    externosList.innerHTML = consultoresExternos.map(renderConsultorItem).join('');
-
-    // Cards de Performance (3 Cards Principais: Michael, Beatriz, Maria)
-    goalsGrid.innerHTML = consultoresInternos.map(c => {
-        let produtosHTML = '';
-        let totalComissaoConsultor = 0;
-        
-        for (const [key, regras] of Object.entries(REGRAS_PRODUTOS)) {
-            const prod = c.producao[key];
-            const perf = calcularPerformance(prod, regras);
-            totalComissaoConsultor += perf.comissaoTotal;
-            
-            const metaMax = regras.faixas[1].limiteValor; // Referência visual para a barra
-            const progresso = Math.min((prod.valor / metaMax) * 100, 100);
-            
-            produtosHTML += `
-                <div class="product-item">
-                    <div class="product-header">
-                        <span class="product-name" style="color: ${regras.cor}">${regras.titulo}</span>
-                        <span class="product-value">${formatCurrency(prod.valor)}</span>
-                    </div>
-                    <div class="product-bar-bg">
-                        <div class="product-bar-fill" style="width: ${progresso}%; background-color: ${regras.cor}"></div>
-                    </div>
-                    <div class="product-footer">
-                        <span class="contas-info">${prod.contas} contas</span>
-                        ${perf.proximaMeta ? `
-                            <span class="missing-info">
-                                Falta: <span class="missing-value">${formatCurrency(perf.proximaMeta.valorFaltante)}</span> | 
-                                <span class="missing-value">${perf.proximaMeta.contasFaltantes} contas</span>
-                            </span>
-                        ` : `<span class="meta-reached">Meta Máxima Batida!</span>`}
-                    </div>
+    externosList.innerHTML = consultoresExternos.map(c => {
+        const totalValor = Object.values(c.produtos).reduce((acc, p) => acc + p.valorAdesao, 0);
+        const totalContas = Object.values(c.produtos).reduce((acc, p) => acc + p.qtdContas, 0);
+        return `
+            <div class="list-item">
+                <div class="item-info">
+                    <span class="name">${c.nome}</span>
+                    <span class="sub-value">${totalContas} contas</span>
                 </div>
-            `;
-        }
+                <span class="value">${formatCurrency(totalValor)}</span>
+            </div>
+        `;
+    }).join('');
+
+    // Cards de Metas - Internos
+    goalsGrid.innerHTML = consultoresInternos.map(consultor => {
+        return renderConsultorCard(consultor);
+    }).join('');
+
+    // Totais
+    const totalInternoAdesao = consultoresInternos.reduce((acc, c) => 
+        acc + Object.values(c.produtos).reduce((sum, p) => sum + p.valorAdesao, 0), 0);
+    const totalInternoContas = consultoresInternos.reduce((acc, c) => 
+        acc + Object.values(c.produtos).reduce((sum, p) => sum + p.qtdContas, 0), 0);
+    const totalExternoAdesao = consultoresExternos.reduce((acc, c) => 
+        acc + Object.values(c.produtos).reduce((sum, p) => sum + p.valorAdesao, 0), 0);
+    const totalExternoContas = consultoresExternos.reduce((acc, c) => 
+        acc + Object.values(c.produtos).reduce((sum, p) => sum + p.qtdContas, 0), 0);
+
+    document.getElementById('total-interno-adesao').textContent = formatCurrency(totalInternoAdesao);
+    document.getElementById('total-interno-contas').textContent = totalInternoContas;
+    document.getElementById('total-externo-adesao').textContent = formatCurrency(totalExternoAdesao);
+    document.getElementById('total-externo-contas').textContent = totalExternoContas;
+}
+
+/**
+ * Renderiza o card de um consultor com suas 3 metas
+ */
+function renderConsultorCard(consultor) {
+    const produtosKeys = ['crediario', 'soufacil', 'cobranca'];
+    
+    // Calcula comissão total
+    let comissaoTotal = 0;
+    const produtosHtml = produtosKeys.map(produtoKey => {
+        const dados = consultor.produtos[produtoKey];
+        const comissao = calculateComissao(dados.valorAdesao, dados.qtdContas, produtoKey);
+        const atingiuMeta = verificaMeta(dados.valorAdesao, dados.qtdContas, produtoKey);
+        const proximaMeta = getProximaMeta(dados.valorAdesao, dados.qtdContas, produtoKey);
+        
+        comissaoTotal += comissao;
+
+        const faltaValor = Math.max(0, proximaMeta.producao - dados.valorAdesao);
+        const faltaContas = Math.max(0, proximaMeta.contas - dados.qtdContas);
+        const progressoValor = calculateProgress(dados.valorAdesao, proximaMeta.producao);
+        const progressoContas = calculateProgress(dados.qtdContas, proximaMeta.contas);
+
+        const statusValor = atingiuMeta ? 'meta-atingida' : 'meta-nao-atingida';
+        const statusContas = atingiuMeta ? 'meta-atingida' : 'meta-nao-atingida';
 
         return `
-            <div class="consultor-card">
-                <div class="consultor-card-header">
-                    <span class="consultor-card-name">${c.nome}</span>
-                    <div class="total-commission-badge">
-                        Total: ${formatCurrency(totalComissaoConsultor)}
-                    </div>
+            <div class="produto-meta">
+                <div class="produto-header">
+                    <span class="produto-nome">${CONFIG.produtos[produtoKey].nome}</span>
+                    <span class="comissao-badge ${statusValor}">${formatCurrency(comissao)}</span>
                 </div>
-                <div class="consultor-products-list">
-                    ${produtosHTML}
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <span>Faturamento</span>
+                        <span class="meta-valores">${formatCurrency(dados.valorAdesao)} / ${formatCurrency(proximaMeta.producao)}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${statusValor}" style="width: ${progressoValor}%"></div>
+                    </div>
+                    <span class="meta-falta ${statusValor}">Faltam ${formatCurrency(faltaValor)}</span>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">
+                        <span>Contas</span>
+                        <span class="meta-valores">${dados.qtdContas} / ${proximaMeta.contas}</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${statusContas}" style="width: ${progressoContas}%"></div>
+                    </div>
+                    <span class="meta-falta ${statusContas}">Faltam ${faltaContas} contas</span>
                 </div>
             </div>
         `;
     }).join('');
 
-    // Totais Superiores
-    const calcularTotais = (lista) => {
-        return lista.reduce((acc, c) => {
-            acc.valor += Object.values(c.producao).reduce((a, p) => a + p.valor, 0);
-            acc.contas += Object.values(c.producao).reduce((a, p) => a + p.contas, 0);
-            return acc;
-        }, { valor: 0, contas: 0 });
-    };
-
-    const totaisInternos = calcularTotais(consultoresInternos);
-    const totaisExternos = calcularTotais(consultoresExternos);
-
-    document.getElementById('total-interno-adesao').textContent = formatCurrency(totaisInternos.valor);
-    document.getElementById('total-interno-contas').textContent = totaisInternos.contas;
-    document.getElementById('total-externo-adesao').textContent = formatCurrency(totaisExternos.valor);
-    document.getElementById('total-externo-contas').textContent = totaisExternos.contas;
+    return `
+        <div class="goal-card">
+            <div class="card-header">
+                <span class="card-name">${consultor.nome}</span>
+                <div class="comissao-total">${formatCurrency(comissaoTotal)}</div>
+            </div>
+            <div class="produtos-container">
+                ${produtosHtml}
+            </div>
+        </div>
+    `;
 }
 
 function toggleTheme() {
@@ -213,15 +295,16 @@ function toggleTheme() {
     const btn = document.getElementById('theme-toggle');
     if (body.getAttribute('data-theme') === 'light') {
         body.setAttribute('data-theme', 'dark');
-        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+        btn.innerHTML = icons.sun;
     } else {
         body.setAttribute('data-theme', 'light');
-        btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+        btn.innerHTML = icons.moon;
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     document.getElementById('current-date').textContent = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    document.getElementById('theme-toggle').innerHTML = icons.sun;
     renderDashboard();
 });
