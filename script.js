@@ -293,7 +293,7 @@ function renderConsultorCard(consultor) {
 }
 
 /**
- * Calcula dados para gráfico de pizza por UF
+ * Calcula dados para lista por UF
  */
 function getDataByUF() {
     const allConsultores = [...consultoresInternos, ...consultoresExternos];
@@ -310,7 +310,7 @@ function getDataByUF() {
 }
 
 /**
- * Calcula dados para gráfico de pizza por origem
+ * Calcula dados para lista por origem
  */
 function getDataByOrigem() {
     const allConsultores = [...consultoresInternos, ...consultoresExternos];
@@ -356,7 +356,7 @@ function toggleTheme() {
 }
 
 /**
- * Renderiza o card com gráficos de pizza e lista por segmento
+ * Renderiza o card com listas coloridas por UF, Origem e Segmento
  */
 function renderAnalyticsCard() {
     const centerContent = document.querySelector('.center-content');
@@ -374,23 +374,26 @@ function renderAnalyticsCard() {
     const segmentoLabels = Object.keys(segmentoData);
     const segmentoValues = Object.values(segmentoData);
     
+    // Cores vibrantes para os itens
+    const listColors = ['#0A84FF', '#9D4EDD', '#30D158', '#FF9500', '#FF3B30', '#5AC8FA', '#00C7BE', '#FFD60A', '#FF453A', '#64B5F6'];
+    
     const analyticsHTML = `
         <section class="analytics-section">
             <div class="section-title">
-                <h2>Análise de Contas Fechadas</h2>
+                <h2>Analise de Contas Fechadas</h2>
             </div>
             <div class="analytics-grid">
                 <div class="analytics-card">
                     <h3>Por UF</h3>
-                    <canvas id="uf-chart"></canvas>
+                    <div id="uf-list" class="colored-list"></div>
                 </div>
                 <div class="analytics-card">
                     <h3>Por Origem</h3>
-                    <canvas id="origem-chart"></canvas>
+                    <div id="origem-list" class="colored-list"></div>
                 </div>
                 <div class="analytics-card">
                     <h3>Por Segmento</h3>
-                    <div id="segmento-list" class="segmento-list"></div>
+                    <div id="segmento-list" class="colored-list"></div>
                 </div>
             </div>
         </section>
@@ -398,79 +401,41 @@ function renderAnalyticsCard() {
     
     centerContent.insertAdjacentHTML('beforeend', analyticsHTML);
     
-    // Renderizar lista de segmentos
-    const segmentoList = document.getElementById('segmento-list');
-    segmentoList.innerHTML = segmentoLabels.map((seg, idx) => `
-        <div class="segmento-item">
-            <span class="segmento-name">${seg}</span>
-            <span class="segmento-count">${segmentoValues[idx]} empresa${segmentoValues[idx] > 1 ? 's' : ''}</span>
+    // Renderizar lista de UF
+    const ufList = document.getElementById('uf-list');
+    ufList.innerHTML = ufLabels.map((uf, idx) => `
+        <div class="colored-item" style="--item-color: ${listColors[idx % listColors.length]}">
+            <div class="item-color-bar"></div>
+            <div class="item-content">
+                <span class="item-label">${uf}</span>
+                <span class="item-value">${ufValues[idx]} conta${ufValues[idx] > 1 ? 's' : ''}</span>
+            </div>
         </div>
     `).join('');
     
-    // Renderizar gráficos com Chart.js
-    setTimeout(() => {
-        const chartColors = ['#0A84FF', '#9D4EDD', '#30D158', '#FF9500', '#FF3B30', '#5AC8FA'];
-        
-        // Gráfico UF
-        const ufCtx = document.getElementById('uf-chart')?.getContext('2d');
-        if (ufCtx) {
-            new Chart(ufCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ufLabels,
-                    datasets: [{
-                        data: ufValues,
-                        backgroundColor: chartColors.slice(0, ufLabels.length),
-                        borderColor: 'rgba(28, 28, 30, 0.85)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: 'var(--text-main)',
-                                font: { size: 11 }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Gráfico Origem
-        const origemCtx = document.getElementById('origem-chart')?.getContext('2d');
-        if (origemCtx) {
-            new Chart(origemCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: origemLabels,
-                    datasets: [{
-                        data: origemValues,
-                        backgroundColor: chartColors.slice(0, origemLabels.length),
-                        borderColor: 'rgba(28, 28, 30, 0.85)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: 'var(--text-main)',
-                                font: { size: 11 }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    }, 100);
+    // Renderizar lista de Origem
+    const origemListEl = document.getElementById('origem-list');
+    origemListEl.innerHTML = origemLabels.map((origem, idx) => `
+        <div class="colored-item" style="--item-color: ${listColors[(idx + 3) % listColors.length]}">
+            <div class="item-color-bar"></div>
+            <div class="item-content">
+                <span class="item-label">${origem.replace(/_/g, ' ')}</span>
+                <span class="item-value">${origemValues[idx]} conta${origemValues[idx] > 1 ? 's' : ''}</span>
+            </div>
+        </div>
+    `).join('');
+    
+    // Renderizar lista de Segmento
+    const segmentoList = document.getElementById('segmento-list');
+    segmentoList.innerHTML = segmentoLabels.map((seg, idx) => `
+        <div class="colored-item" style="--item-color: ${listColors[(idx + 6) % listColors.length]}">
+            <div class="item-color-bar"></div>
+            <div class="item-content">
+                <span class="item-label">${seg}</span>
+                <span class="item-value">${segmentoValues[idx]} empresa${segmentoValues[idx] > 1 ? 's' : ''}</span>
+            </div>
+        </div>
+    `).join('');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
