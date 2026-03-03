@@ -228,7 +228,7 @@ body {
 
 .cards-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: 16px;
     flex: 1;
     overflow-y: auto;
@@ -239,6 +239,7 @@ body {
 .cards-container::-webkit-scrollbar-track { background: transparent; }
 .cards-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
+/* Goal Card */
 .goal-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
@@ -265,12 +266,13 @@ body {
 .comissao-total {
     font-size: 16px;
     font-weight: 700;
-    color: var(--success);
-    background: rgba(48, 209, 88, 0.1);
-    padding: 6px 12px;
+    color: white;
+    background: var(--success);
+    padding: 8px 14px;
     border-radius: 8px;
 }
 
+/* Produtos Container */
 .produtos-container {
     display: flex;
     flex-direction: column;
@@ -288,52 +290,97 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .produto-nome {
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.comissao-badge {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 8px;
+.comissao-produto {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--success);
+    background: rgba(48, 209, 88, 0.15);
+    padding: 4px 10px;
     border-radius: 6px;
+}
+
+/* Faixas Container */
+.faixas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.faixa-item {
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 10px;
     transition: all 0.3s ease;
 }
 
-.comissao-badge.meta-nao-atingida {
-    background: rgba(255, 214, 10, 0.2);
-    color: var(--warning);
+.faixa-item.faixa-atingida {
+    border-color: rgba(48, 209, 88, 0.3);
+    background: rgba(48, 209, 88, 0.08);
 }
 
-.comissao-badge.meta-atingida {
-    background: rgba(48, 209, 88, 0.2);
+.faixa-item.faixa-nao-atingida {
+    border-color: rgba(255, 214, 10, 0.3);
+    background: rgba(255, 214, 10, 0.08);
+}
+
+.faixa-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.faixa-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.faixa-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.faixa-percentual {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--accent);
+}
+
+.faixa-comissao {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.faixa-item.faixa-atingida .faixa-comissao {
     color: var(--success);
 }
 
-.meta-item {
-    margin-bottom: 10px;
+.faixa-item.faixa-nao-atingida .faixa-comissao {
+    color: var(--warning);
 }
 
-.meta-item:last-child {
-    margin-bottom: 0;
-}
-
-.meta-label {
-    display: flex;
-    justify-content: space-between;
-    font-size: 11px;
-    margin-bottom: 6px;
-    color: var(--text-dim);
-}
-
-.meta-valores {
-    font-weight: 600;
-    color: var(--text-main);
+/* Progress Bar */
+.faixa-progress {
+    margin-bottom: 8px;
 }
 
 .progress-bar {
@@ -341,7 +388,7 @@ body {
     background: rgba(255, 255, 255, 0.08);
     border-radius: 3px;
     overflow: hidden;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .progress-fill {
@@ -350,26 +397,55 @@ body {
     border-radius: 3px;
 }
 
-.progress-fill.meta-nao-atingida {
-    background: var(--warning);
-}
-
-.progress-fill.meta-atingida {
+.progress-fill.faixa-atingida {
     background: var(--success);
 }
 
-.meta-falta {
-    display: block;
-    font-size: 10px;
-    font-weight: 500;
-    margin-top: 4px;
-    transition: color 0.3s ease;
+.progress-fill.faixa-nao-atingida {
+    background: var(--warning);
 }
 
-.meta-falta.meta-nao-atingida {
+.faixa-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--text-dim);
+}
+
+.faixa-valor {
+    font-weight: 500;
+}
+
+.faixa-contas {
+    font-weight: 500;
+}
+
+/* Faixa Falta */
+.faixa-falta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 10px;
+    margin-top: 6px;
+}
+
+.falta-valor,
+.falta-contas {
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.faixa-item.faixa-nao-atingida .falta-valor,
+.faixa-item.faixa-nao-atingida .falta-contas {
+    background: rgba(255, 214, 10, 0.2);
     color: var(--warning);
 }
 
-.meta-falta.meta-atingida {
+.meta-completa {
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: rgba(48, 209, 88, 0.2);
     color: var(--success);
+    font-weight: 600;
 }
