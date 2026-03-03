@@ -4,25 +4,25 @@ const CONFIG = {
         crediario: {
             nome: "Crediário Garantido",
             faixas: [
-                { producao: 6000, contas: 6, comissao: 0.15 },
-                { producao: 10000, contas: 10, comissao: 0.175 },
-                { producao: 15000, contas: 10, comissao: 0.20 }
+                { id: 1, producao: 6000, contas: 6, comissao: 0.15, label: "Até R$ 6.000" },
+                { id: 2, producao: 10000, contas: 10, comissao: 0.175, label: "Até R$ 10.000" },
+                { id: 3, producao: 15000, contas: 10, comissao: 0.20, label: "A partir de R$ 15.000" }
             ]
         },
         soufacil: {
             nome: "SouFácil Card",
             faixas: [
-                { producao: 4000, contas: 4, comissao: 0.15 },
-                { producao: 6000, contas: 6, comissao: 0.175 },
-                { producao: 6000, contas: 6, comissao: 0.20 }
+                { id: 1, producao: 4000, contas: 4, comissao: 0.15, label: "R$ 4.000" },
+                { id: 2, producao: 6000, contas: 6, comissao: 0.175, label: "R$ 6.000" },
+                { id: 3, producao: 6000, contas: 6, comissao: 0.20, label: "Acima de 6 contas" }
             ]
         },
         cobranca: {
             nome: "Cobrança Terceirizada",
             faixas: [
-                { producao: 1500, contas: 3, comissao: 0.15 },
-                { producao: 2500, contas: 5, comissao: 0.175 },
-                { producao: 2500, contas: 5, comissao: 0.20 }
+                { id: 1, producao: 1500, contas: 3, comissao: 0.15, label: "3 contas" },
+                { id: 2, producao: 2500, contas: 5, comissao: 0.175, label: "5 contas" },
+                { id: 3, producao: 2500, contas: 5, comissao: 0.20, label: "Acima de 5 contas" }
             ]
         }
     }
@@ -100,72 +100,74 @@ const calculateProgress = (current, target) => {
 };
 
 /**
- * Calcula a comissão progressiva de um produto
+ * Calcula as comissões por faixa de um produto
+ * Retorna um array com as informações de cada faixa
  */
-const calculateComissao = (valor, qtdContas, produtoKey) => {
+const calculateFaixasComissao = (valor, qtdContas, produtoKey) => {
     const faixas = CONFIG.produtos[produtoKey].faixas;
-    let comissao = 0;
-    let valorProcessado = 0;
+    const resultado = [];
+    let valorAnterior = 0;
+    let comissaoAcumulada = 0;
 
     for (let i = 0; i < faixas.length; i++) {
         const faixa = faixas[i];
+        const faixaAnterior = i > 0 ? faixas[i - 1] : null;
         
-        // Verifica se atinge a quantidade de contas
-        if (qtdContas < faixa.contas) {
-            break;
+        // Determina o intervalo de valores para esta faixa
+        const limiteInferior = faixaAnterior ? faixaAnterior.producao : 0;
+        const limiteSuperior = faixa.producao;
+        
+        // Verifica se atingiu a meta de contas para esta faixa
+        const atingiuMetaContas = qtdContas >= faixa.contas;
+        
+        // Calcula quanto de valor está nesta faixa
+        let valorNaFaixa = 0;
+        let comissaoNaFaixa = 0;
+        let atingiuMeta = false;
+
+        if (valor >= limiteSuperior && atingiuMetaContas) {
+            // Atingiu completamente esta faixa
+            valorNaFaixa = limiteSuperior - limiteInferior;
+            comissaoNaFaixa = valorNaFaixa * faixa.comissao;
+            atingiuMeta = true;
+        } else if (valor > limiteInferior && atingiuMetaContas) {
+            // Atingiu parcialmente esta faixa
+            valorNaFaixa = valor - limiteInferior;
+            comissaoNaFaixa = valorNaFaixa * faixa.comissao;
+            atingiuMeta = false;
+        } else if (valor >= limiteSuperior && !atingiuMetaContas) {
+            // Tem valor mas não tem contas
+            valorNaFaixa = limiteSuperior - limiteInferior;
+            comissaoNaFaixa = 0;
+            atingiuMeta = false;
         }
 
-        // Calcula a comissão para esta faixa
-        if (i === faixas.length - 1) {
-            // Última faixa: tudo que passar da faixa anterior
-            if (valor > valorProcessado) {
-                comissao += (valor - valorProcessado) * faixa.comissao;
-            }
-        } else {
-            // Faixas intermediárias
-            const proximaFaixa = faixas[i + 1];
-            const limiteAtual = faixa.producao;
-            const proximoLimite = proximaFaixa.producao;
+        comissaoAcumulada += comissaoNaFaixa;
 
-            if (valor >= proximoLimite) {
-                comissao += (proximoLimite - limiteAtual) * faixa.comissao;
-                valorProcessado = proximoLimite;
-            } else if (valor > limiteAtual) {
-                comissao += (valor - limiteAtual) * faixa.comissao;
-                break;
-            }
-        }
+        resultado.push({
+            id: faixa.id,
+            label: faixa.label,
+            comissaoPercentual: (faixa.comissao * 100).toFixed(1),
+            limiteInferior: limiteInferior,
+            limiteSuperior: limiteSuperior,
+            valorNaFaixa: valorNaFaixa,
+            comissaoNaFaixa: comissaoNaFaixa,
+            atingiuMeta: atingiuMeta,
+            atingiuMetaContas: atingiuMetaContas,
+            metaContas: faixa.contas,
+            qtdContasAtual: qtdContas,
+            progresso: calculateProgress(valor, limiteSuperior),
+            faltaValor: Math.max(0, limiteSuperior - valor),
+            faltaContas: Math.max(0, faixa.contas - qtdContas)
+        });
     }
 
-    return comissao;
-};
-
-/**
- * Verifica se atingiu a meta de uma faixa
- */
-const verificaMeta = (valor, qtdContas, produtoKey) => {
-    const faixas = CONFIG.produtos[produtoKey].faixas;
-    
-    for (let faixa of faixas) {
-        if (valor >= faixa.producao && qtdContas >= faixa.contas) {
-            return true;
-        }
-    }
-    return false;
-};
-
-/**
- * Obtém a próxima meta a ser atingida
- */
-const getProximaMeta = (valor, qtdContas, produtoKey) => {
-    const faixas = CONFIG.produtos[produtoKey].faixas;
-    
-    for (let faixa of faixas) {
-        if (valor < faixa.producao || qtdContas < faixa.contas) {
-            return faixa;
-        }
-    }
-    return faixas[faixas.length - 1];
+    return {
+        faixas: resultado,
+        comissaoTotal: comissaoAcumulada,
+        valorTotal: valor,
+        qtdContasTotal: qtdContas
+    };
 };
 
 function renderDashboard() {
@@ -224,54 +226,61 @@ function renderDashboard() {
 }
 
 /**
- * Renderiza o card de um consultor com suas 3 metas
+ * Renderiza o card de um consultor com suas 3 metas e faixas de comissão
  */
 function renderConsultorCard(consultor) {
     const produtosKeys = ['crediario', 'soufacil', 'cobranca'];
     
     // Calcula comissão total
-    let comissaoTotal = 0;
+    let comissaoTotalGeral = 0;
     const produtosHtml = produtosKeys.map(produtoKey => {
         const dados = consultor.produtos[produtoKey];
-        const comissao = calculateComissao(dados.valorAdesao, dados.qtdContas, produtoKey);
-        const atingiuMeta = verificaMeta(dados.valorAdesao, dados.qtdContas, produtoKey);
-        const proximaMeta = getProximaMeta(dados.valorAdesao, dados.qtdContas, produtoKey);
+        const faixasInfo = calculateFaixasComissao(dados.valorAdesao, dados.qtdContas, produtoKey);
         
-        comissaoTotal += comissao;
+        comissaoTotalGeral += faixasInfo.comissaoTotal;
 
-        const faltaValor = Math.max(0, proximaMeta.producao - dados.valorAdesao);
-        const faltaContas = Math.max(0, proximaMeta.contas - dados.qtdContas);
-        const progressoValor = calculateProgress(dados.valorAdesao, proximaMeta.producao);
-        const progressoContas = calculateProgress(dados.qtdContas, proximaMeta.contas);
-
-        const statusValor = atingiuMeta ? 'meta-atingida' : 'meta-nao-atingida';
-        const statusContas = atingiuMeta ? 'meta-atingida' : 'meta-nao-atingida';
+        const faixasHtml = faixasInfo.faixas.map(faixa => {
+            const statusClass = faixa.atingiuMeta ? 'faixa-atingida' : 'faixa-nao-atingida';
+            const progressoValor = calculateProgress(dados.valorAdesao, faixa.limiteSuperior);
+            
+            return `
+                <div class="faixa-item ${statusClass}">
+                    <div class="faixa-header">
+                        <div class="faixa-info">
+                            <span class="faixa-label">${faixa.label}</span>
+                            <span class="faixa-percentual">${faixa.comissaoPercentual}%</span>
+                        </div>
+                        <span class="faixa-comissao">${formatCurrency(faixa.comissaoNaFaixa)}</span>
+                    </div>
+                    <div class="faixa-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill ${statusClass}" style="width: ${progressoValor}%"></div>
+                        </div>
+                        <div class="faixa-details">
+                            <span class="faixa-valor">${formatCurrency(faixa.valorNaFaixa)} / ${formatCurrency(faixa.limiteSuperior - faixa.limiteInferior)}</span>
+                            <span class="faixa-contas">${faixa.qtdContasAtual} / ${faixa.metaContas} contas</span>
+                        </div>
+                    </div>
+                    <div class="faixa-falta">
+                        ${!faixa.atingiuMeta ? `
+                            <span class="falta-valor">Faltam ${formatCurrency(faixa.faltaValor)}</span>
+                            ${faixa.faltaContas > 0 ? `<span class="falta-contas">+ ${faixa.faltaContas} contas</span>` : ''}
+                        ` : `
+                            <span class="meta-completa">Meta atingida</span>
+                        `}
+                    </div>
+                </div>
+            `;
+        }).join('');
 
         return `
             <div class="produto-meta">
                 <div class="produto-header">
                     <span class="produto-nome">${CONFIG.produtos[produtoKey].nome}</span>
-                    <span class="comissao-badge ${statusValor}">${formatCurrency(comissao)}</span>
+                    <span class="comissao-produto">${formatCurrency(faixasInfo.comissaoTotal)}</span>
                 </div>
-                <div class="meta-item">
-                    <div class="meta-label">
-                        <span>Faturamento</span>
-                        <span class="meta-valores">${formatCurrency(dados.valorAdesao)} / ${formatCurrency(proximaMeta.producao)}</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill ${statusValor}" style="width: ${progressoValor}%"></div>
-                    </div>
-                    <span class="meta-falta ${statusValor}">Faltam ${formatCurrency(faltaValor)}</span>
-                </div>
-                <div class="meta-item">
-                    <div class="meta-label">
-                        <span>Contas</span>
-                        <span class="meta-valores">${dados.qtdContas} / ${proximaMeta.contas}</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill ${statusContas}" style="width: ${progressoContas}%"></div>
-                    </div>
-                    <span class="meta-falta ${statusContas}">Faltam ${faltaContas} contas</span>
+                <div class="faixas-container">
+                    ${faixasHtml}
                 </div>
             </div>
         `;
@@ -281,7 +290,7 @@ function renderConsultorCard(consultor) {
         <div class="goal-card">
             <div class="card-header">
                 <span class="card-name">${consultor.nome}</span>
-                <div class="comissao-total">${formatCurrency(comissaoTotal)}</div>
+                <div class="comissao-total">${formatCurrency(comissaoTotalGeral)}</div>
             </div>
             <div class="produtos-container">
                 ${produtosHtml}
