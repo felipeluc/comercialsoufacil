@@ -1,70 +1,294 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV Dashboard Premium | Caçadores de Contratos</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body data-theme="dark">
-    <div class="tv-layout">
-        <!-- Barra Superior -->
-        <header class="top-bar">
-            <div class="header-left">
-                <div class="banner-wrapper">
-                    <img src="Captura de tela 2026-02-05 113326.png" class="mini-banner" alt="Logo">
+// Configurações e Dados do Dashboard
+const CONFIG = {
+    produtos: {
+        crediario: {
+            nome: "Crediário Garantido",
+            faixas: [
+                { id: 1, producao: 6000, contas: 6, comissao: 0.15, label: "Até R$ 6.000", cor: "#FFD60A" },
+                { id: 2, producao: 10000, contas: 10, comissao: 0.175, label: "Até R$ 10.000", cor: "#FF9500" },
+                { id: 3, producao: 15000, contas: 10, comissao: 0.20, label: "A partir de R$ 15.000", cor: "#30D158" }
+            ]
+        },
+        soufacil: {
+            nome: "SouFácil Card",
+            faixas: [
+                { id: 1, producao: 4000, contas: 4, comissao: 0.15, label: "R$ 4.000", cor: "#FFD60A" },
+                { id: 2, producao: 6000, contas: 6, comissao: 0.175, label: "R$ 6.000", cor: "#FF9500" },
+                { id: 3, producao: 6000, contas: 6, comissao: 0.20, label: "Acima de 6 contas", cor: "#30D158" }
+            ]
+        },
+        cobranca: {
+            nome: "Cobrança Terceirizada",
+            faixas: [
+                { id: 1, producao: 1500, contas: 3, comissao: 0.15, label: "3 contas", cor: "#FFD60A" },
+                { id: 2, producao: 2500, contas: 5, comissao: 0.175, label: "5 contas", cor: "#FF9500" },
+                { id: 3, producao: 2500, contas: 5, comissao: 0.20, label: "Acima de 5 contas", cor: "#30D158" }
+            ]
+        }
+    }
+};
+
+/**
+ * DADOS DOS CONSULTORES
+ */
+const consultoresInternos = [
+    { 
+        nome: "Beatriz", 
+        produtos: {
+            crediario: { valorAdesao: 5000, qtdContas: 5 },
+            soufacil: { valorAdesao: 3000, qtdContas: 3 },
+            cobranca: { valorAdesao: 1200, qtdContas: 2 }
+        }
+    },
+    { 
+        nome: "Michael", 
+        produtos: {
+            crediario: { valorAdesao: 6000, qtdContas: 8 },
+            soufacil: { valorAdesao: 5000, qtdContas: 6 },
+            cobranca: { valorAdesao: 2000, qtdContas: 4 }
+        }
+    },
+    { 
+        nome: "Maria", 
+        produtos: {
+            crediario: { valorAdesao: 5048, qtdContas: 8 },
+            soufacil: { valorAdesao: 4500, qtdContas: 5 },
+            cobranca: { valorAdesao: 1800, qtdContas: 3 }
+        }
+    },
+];
+
+const consultoresExternos = [
+    { 
+        nome: "Nivaldo", 
+        produtos: {
+            crediario: { valorAdesao: 13500, qtdContas: 11 },
+            soufacil: { valorAdesao: 8000, qtdContas: 8 },
+            cobranca: { valorAdesao: 3500, qtdContas: 6 }
+        }
+    },
+    { 
+        nome: "Marco", 
+        produtos: {
+            crediario: { valorAdesao: 2600, qtdContas: 8 },
+            soufacil: { valorAdesao: 2000, qtdContas: 4 },
+            cobranca: { valorAdesao: 1000, qtdContas: 2 }
+        }
+    },
+    { 
+        nome: "Kaly", 
+        produtos: {
+            crediario: { valorAdesao: 1000, qtdContas: 1 },
+            soufacil: { valorAdesao: 500, qtdContas: 1 },
+            cobranca: { valorAdesao: 300, qtdContas: 1 }
+        }
+    }
+];
+
+// Ícones SVG
+const icons = {
+    sun: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`,
+    moon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
+};
+
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+};
+
+/**
+ * Calcula a comissão progressiva de um produto
+ */
+const calculateComissao = (valor, qtdContas, produtoKey) => {
+    const faixas = CONFIG.produtos[produtoKey].faixas;
+    let comissao = 0;
+    let valorAnterior = 0;
+
+    for (let i = 0; i < faixas.length; i++) {
+        const faixa = faixas[i];
+        const faixaAnterior = i > 0 ? faixas[i - 1] : null;
+        const limiteInferior = faixaAnterior ? faixaAnterior.producao : 0;
+        const limiteSuperior = faixa.producao;
+
+        if (qtdContas >= faixa.contas) {
+            if (valor >= limiteSuperior) {
+                // Atingiu completamente esta faixa
+                comissao += (limiteSuperior - limiteInferior) * faixa.comissao;
+            } else if (valor > limiteInferior) {
+                // Atingiu parcialmente
+                comissao += (valor - limiteInferior) * faixa.comissao;
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+
+    return comissao;
+};
+
+/**
+ * Retorna o status de cada faixa (atingida, parcial, não atingida)
+ */
+const getFaixasStatus = (valor, qtdContas, produtoKey) => {
+    const faixas = CONFIG.produtos[produtoKey].faixas;
+    const status = [];
+
+    for (let i = 0; i < faixas.length; i++) {
+        const faixa = faixas[i];
+        const faixaAnterior = i > 0 ? faixas[i - 1] : null;
+        const limiteInferior = faixaAnterior ? faixaAnterior.producao : 0;
+        const limiteSuperior = faixa.producao;
+
+        let estado = "nao-atingida";
+        
+        if (qtdContas >= faixa.contas) {
+            if (valor >= limiteSuperior) {
+                estado = "atingida";
+            } else if (valor > limiteInferior) {
+                estado = "parcial";
+            }
+        }
+
+        status.push({
+            id: faixa.id,
+            cor: faixa.cor,
+            estado: estado
+        });
+    }
+
+    return status;
+};
+
+function renderDashboard() {
+    const internosList = document.getElementById('internos-list');
+    const externosList = document.getElementById('externos-list');
+    const goalsGrid = document.getElementById('goals-grid');
+
+    // Listas Laterais
+    internosList.innerHTML = consultoresInternos.map(c => {
+        const totalValor = Object.values(c.produtos).reduce((acc, p) => acc + p.valorAdesao, 0);
+        const totalContas = Object.values(c.produtos).reduce((acc, p) => acc + p.qtdContas, 0);
+        return `
+            <div class="list-item">
+                <div class="item-info">
+                    <span class="name">${c.nome}</span>
+                    <span class="sub-value">${totalContas} contas</span>
                 </div>
-                <div class="header-text">
-                    <h1>Caçadores de Contratos</h1>
-                    <span id="current-date"></span>
+                <span class="value">${formatCurrency(totalValor)}</span>
+            </div>
+        `;
+    }).join('');
+
+    externosList.innerHTML = consultoresExternos.map(c => {
+        const totalValor = Object.values(c.produtos).reduce((acc, p) => acc + p.valorAdesao, 0);
+        const totalContas = Object.values(c.produtos).reduce((acc, p) => acc + p.qtdContas, 0);
+        return `
+            <div class="list-item">
+                <div class="item-info">
+                    <span class="name">${c.nome}</span>
+                    <span class="sub-value">${totalContas} contas</span>
+                </div>
+                <span class="value">${formatCurrency(totalValor)}</span>
+            </div>
+        `;
+    }).join('');
+
+    // Cards de Metas
+    goalsGrid.innerHTML = consultoresInternos.map(consultor => {
+        return renderConsultorCard(consultor);
+    }).join('');
+
+    // Totais
+    const totalInternoAdesao = consultoresInternos.reduce((acc, c) => 
+        acc + Object.values(c.produtos).reduce((sum, p) => sum + p.valorAdesao, 0), 0);
+    const totalInternoContas = consultoresInternos.reduce((acc, c) => 
+        acc + Object.values(c.produtos).reduce((sum, p) => sum + p.qtdContas, 0), 0);
+    const totalExternoAdesao = consultoresExternos.reduce((acc, c) => 
+        acc + Object.values(c.produtos).reduce((sum, p) => sum + p.valorAdesao, 0), 0);
+    const totalExternoContas = consultoresExternos.reduce((acc, c) => 
+        acc + Object.values(c.produtos).reduce((sum, p) => sum + p.qtdContas, 0), 0);
+
+    document.getElementById('total-interno-adesao').textContent = formatCurrency(totalInternoAdesao);
+    document.getElementById('total-interno-contas').textContent = totalInternoContas;
+    document.getElementById('total-externo-adesao').textContent = formatCurrency(totalExternoAdesao);
+    document.getElementById('total-externo-contas').textContent = totalExternoContas;
+}
+
+/**
+ * Renderiza o card de um consultor
+ */
+function renderConsultorCard(consultor) {
+    const produtosKeys = ['crediario', 'soufacil', 'cobranca'];
+    let comissaoTotalGeral = 0;
+
+    const produtosHtml = produtosKeys.map(produtoKey => {
+        const dados = consultor.produtos[produtoKey];
+        const comissao = calculateComissao(dados.valorAdesao, dados.qtdContas, produtoKey);
+        const faixasStatus = getFaixasStatus(dados.valorAdesao, dados.qtdContas, produtoKey);
+
+        comissaoTotalGeral += comissao;
+
+        // Renderiza a barra segmentada
+        const barraSegmentada = faixasStatus.map(faixa => {
+            let bgColor = '#333333';
+            let opacity = '0.3';
+
+            if (faixa.estado === 'atingida') {
+                bgColor = faixa.cor;
+                opacity = '1';
+            } else if (faixa.estado === 'parcial') {
+                bgColor = faixa.cor;
+                opacity = '0.7';
+            }
+
+            return `<div class="segmento" style="background-color: ${bgColor}; opacity: ${opacity};"></div>`;
+        }).join('');
+
+        return `
+            <div class="produto-item">
+                <div class="produto-header">
+                    <span class="produto-nome">${CONFIG.produtos[produtoKey].nome}</span>
+                    <span class="comissao-produto">${formatCurrency(comissao)}</span>
+                </div>
+                <div class="produto-info">
+                    <span class="info-valor">${formatCurrency(dados.valorAdesao)}</span>
+                    <span class="info-contas">${dados.qtdContas} contas</span>
+                </div>
+                <div class="barra-segmentada">
+                    ${barraSegmentada}
                 </div>
             </div>
-            
-            <div class="header-right">
-                <div class="summary-group">
-                    <div class="summary-pill internal">
-                        <span class="pill-label">INTERNOS:</span>
-                        <span id="total-interno-adesao" class="pill-value">R$ 0,00</span>
-                        <span class="pill-divider">|</span>
-                        <span id="total-interno-contas" class="pill-value">0</span> <span class="pill-unit">Contas</span>
-                    </div>
-                    <div class="summary-pill external">
-                        <span class="pill-label">EXTERNOS:</span>
-                        <span id="total-externo-adesao" class="pill-value">R$ 0,00</span>
-                        <span class="pill-divider">|</span>
-                        <span id="total-externo-contas" class="pill-value">0</span> <span class="pill-unit">Contas</span>
-                    </div>
-                </div>
-                <button id="theme-toggle" onclick="toggleTheme()" class="icon-btn"></button>
+        `;
+    }).join('');
+
+    return `
+        <div class="goal-card">
+            <div class="card-header">
+                <span class="card-name">${consultor.nome}</span>
+                <div class="comissao-total">${formatCurrency(comissaoTotalGeral)}</div>
             </div>
-        </header>
-
-        <div class="main-content">
-            <!-- Lateral: Listagem Rápida -->
-            <aside class="sidebar">
-                <section class="list-section">
-                    <h2>Internos</h2>
-                    <div id="internos-list" class="compact-list"></div>
-                </section>
-                <section class="list-section">
-                    <h2>Externos</h2>
-                    <div id="externos-list" class="compact-list"></div>
-                </section>
-            </aside>
-
-            <!-- Principal: Grid Central -->
-            <div class="center-content">
-                <!-- Seção de Metas -->
-                <section class="goals-section">
-                    <div class="section-title">
-                        <h2>Metas de Performance (Internos)</h2>
-                    </div>
-                    <div id="goals-grid" class="cards-container"></div>
-                </section>
+            <div class="produtos-container">
+                ${produtosHtml}
             </div>
         </div>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+    `;
+}
+
+function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('theme-toggle');
+    if (body.getAttribute('data-theme') === 'light') {
+        body.setAttribute('data-theme', 'dark');
+        btn.innerHTML = icons.sun;
+    } else {
+        body.setAttribute('data-theme', 'light');
+        btn.innerHTML = icons.moon;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const now = new Date();
+    document.getElementById('current-date').textContent = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    document.getElementById('theme-toggle').innerHTML = icons.sun;
+    renderDashboard();
+});
