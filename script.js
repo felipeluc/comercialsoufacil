@@ -1,170 +1,78 @@
-// Configurações e Dados do Dashboard
-const CONFIG = {
-    metaValor: 5000,
-    metaContas: 5,
-    comissaoPercentual: 0.15,
-    scrollSpeed: 55 // Segundos para uma volta completa (ajuste conforme necessário)
+// Configurações e Regras de Comissão por Produto
+const REGRAS_PRODUTOS = {
+    crediario: {
+        titulo: "Crediário Garantido",
+        faixas: [
+            { limiteValor: 6000, limiteContas: 6, comissao: 0.15 },
+            { limiteValor: 10000, limiteContas: 10, comissao: 0.175 },
+            { limiteValor: Infinity, limiteContas: 10, comissao: 0.20 }
+        ]
+    },
+    soufacilCard: {
+        titulo: "SouFácil Card",
+        faixas: [
+            { limiteValor: 4000, limiteContas: 4, comissao: 0.15 },
+            { limiteValor: 6000, limiteContas: 6, comissao: 0.175 },
+            { limiteValor: Infinity, limiteContas: 6, comissao: 0.20 }
+        ]
+    },
+    cobranca: {
+        titulo: "Cobrança Terceirizada",
+        faixas: [
+            { limiteValor: 1500, limiteContas: 3, comissao: 0.15 },
+            { limiteValor: 2500, limiteContas: 5, comissao: 0.175 },
+            { limiteValor: Infinity, limiteContas: 5, comissao: 0.20 }
+        ]
+    }
 };
 
 /**
- * DADOS DOS CONSULTORES INTERNOS
+ * DADOS DOS CONSULTORES
+ * Edite aqui os valores produzidos por cada consultor em cada produto
  */
 const consultoresInternos = [
-    { nome: "Beatriz", valorAdesao: 5000, qtdContas: 5 },
-    { nome: "Michael", valorAdesao: 6000, qtdContas: 8 },
-    { nome: "Maria", valorAdesao: 5048, qtdContas: 8 },
+    { 
+        nome: "Beatriz", 
+        producao: {
+            crediario: { valor: 15500, contas: 12 },
+            soufacilCard: { valor: 5000, contas: 5 },
+            cobranca: { valor: 2000, contas: 4 }
+        }
+    },
+    { 
+        nome: "Michael", 
+        producao: {
+            crediario: { valor: 8000, contas: 7 },
+            soufacilCard: { valor: 7500, contas: 8 },
+            cobranca: { valor: 3000, contas: 6 }
+        }
+    },
+    { 
+        nome: "Maria", 
+        producao: {
+            crediario: { valor: 5000, contas: 4 },
+            soufacilCard: { valor: 3000, contas: 3 },
+            cobranca: { valor: 1000, contas: 2 }
+        }
+    }
 ];
 
-/**
- * DADOS DOS CONSULTORES EXTERNOS
- */
 const consultoresExternos = [
-    { nome: "Nivaldo", valorAdesao: 13500, qtdContas: 11 },
-    { nome: "Marco", valorAdesao: 2600, qtdContas: 8 },
-    { nome: "Kaly", valorAdesao: 1000, qtdContas: 1 }
-];
-
-/**
- * DADOS DE FECHAMENTO DAS EMPRESAS (CARROSSEL)
- * Altere aqui os dados das empresas que aparecem no rodapé
- * Formato da data: "DD/MM/YYYY"
- */
-const fechamentoEmpresas = [
     { 
-        nome: "BM SHOP CELL", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 1500.00, 
-        data: "04/02/2026" 
+        nome: "Nivaldo", 
+        producao: {
+            crediario: { valor: 20000, contas: 15 },
+            soufacilCard: { valor: 10000, contas: 10 },
+            cobranca: { valor: 5000, contas: 8 }
+        }
     },
     { 
-        nome: "MAISA CLOSET", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "05/02/2026" 
-    },
-    { 
-        nome: "CICERO COLCHÕES", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "10/02/2026" 
-    },
-    { 
-        nome: "VALENTE MOVEIS", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "11/02/2026" 
-    },
-    { 
-        nome: "LA NA VALENTE", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "11/02/2026" 
-    },
-    { 
-        nome: "FÁBRICA DOS ÓCULOS", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "12/02/2026" 
-    },
-    { 
-        nome: "SILVA & GATO MOVÉIS", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "12/02/2026" 
-    },
-    { 
-        nome: "OTICAS SINAI", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "13/02/2026" 
-    },
-    { 
-        nome: "MUNDO PHONE", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "16/02/2026" 
-    },
-    { 
-        nome: "BTDS EMPREENDIMENTOS", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "20/02/2026" 
-    },
-    { 
-        nome: "OTICAS SINAI", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "24/02/2026" 
-    },
-    { 
-        nome: "JMC BASILIO", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "25/02/2026" 
-    },
-    { 
-        nome: "OPTICALIA CUIABÁ", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "26/02/2026" 
-    },
-    { 
-        nome: "FABRICA DAS CARRETINHAS LTDA", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "25/02/2026" 
-    },
-    { 
-        nome: "DR.FABRICIO GODOY", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "26/02/2026" 
-    },
-    { 
-        nome: "UNIQUE MODA MASCULINA", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 50.00, 
-        data: "20/02/2026" 
-    },
-    { 
-        nome: "MAJESTOSA MODA PLUS LTDA", 
-        consultas: 0, 
-        aprovadas: 0, 
-        reprovadas: 0, 
-        vendas: 0.00, 
-        data: "27/02/2026" 
+        nome: "Marco", 
+        producao: {
+            crediario: { valor: 4000, contas: 3 },
+            soufacilCard: { valor: 2000, contas: 2 },
+            cobranca: { valor: 800, contas: 1 }
+        }
     }
 ];
 
@@ -174,116 +82,134 @@ const icons = {
     moon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
 };
 
-// Estado do carrossel
-let isPlaying = true;
-
 const formatCurrency = (value) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 };
 
-const calculateProgress = (current, target) => {
-    return target === 0 ? 0 : Math.min((current / target) * 100, 100);
-};
+/**
+ * CÁLCULO DE COMISSÃO PROGRESSIVA
+ */
+function calcularComissaoProgressiva(valorProduzido, faixas) {
+    let comissaoTotal = 0;
+    let valorRestante = valorProduzido;
+    let detalhes = [];
 
-const extractDateDisplay = (dateString) => {
-    // Formato: DD/MM/YYYY -> retorna DD/MM
-    const parts = dateString.split('/');
-    return `${parts[0]}/${parts[1]}`;
-};
+    // Faixa 1
+    const v1 = Math.min(valorRestante, faixas[0].limiteValor);
+    if (v1 > 0) {
+        const c1 = v1 * faixas[0].comissao;
+        comissaoTotal += c1;
+        valorRestante -= v1;
+        detalhes.push({ valor: v1, taxa: faixas[0].comissao * 100 });
+    }
+
+    // Faixa 2
+    if (valorRestante > 0) {
+        const v2 = Math.min(valorRestante, faixas[1].limiteValor - faixas[0].limiteValor);
+        const c2 = v2 * faixas[1].comissao;
+        comissaoTotal += c2;
+        valorRestante -= v2;
+        detalhes.push({ valor: v2, taxa: faixas[1].comissao * 100 });
+    }
+
+    // Faixa 3
+    if (valorRestante > 0) {
+        const v3 = valorRestante;
+        const c3 = v3 * faixas[2].comissao;
+        comissaoTotal += c3;
+        detalhes.push({ valor: v3, taxa: faixas[2].comissao * 100 });
+    }
+
+    return { total: comissaoTotal, detalhes };
+}
 
 function renderDashboard() {
+    const internosList = document.getElementById('internos-list');
     const externosList = document.getElementById('externos-list');
     const goalsGrid = document.getElementById('goals-grid');
-    const tickerContent = document.getElementById('ticker-content');
 
-    // Listas Laterais (Externos)
-    externosList.innerHTML = consultoresExternos.map(c => `
-        <div class="list-item">
-            <div class="item-info">
-                <span class="name">${c.nome}</span>
-                <span class="sub-value">${c.qtdContas} contas</span>
+    // Listas Laterais - Totais por Consultor
+    const renderConsultorItem = (c) => {
+        const totalAdesao = Object.values(c.producao).reduce((acc, p) => acc + p.valor, 0);
+        const totalContas = Object.values(c.producao).reduce((acc, p) => acc + p.contas, 0);
+        return `
+            <div class="list-item">
+                <div class="item-info">
+                    <span class="name">${c.nome}</span>
+                    <span class="sub-value">${totalContas} contas total</span>
+                </div>
+                <span class="value">${formatCurrency(totalAdesao)}</span>
             </div>
-            <span class="value">${formatCurrency(c.valorAdesao)}</span>
-        </div>
-    `).join('');
+        `;
+    };
 
-    // Cards de Metas (Internos)
+    internosList.innerHTML = consultoresInternos.map(renderConsultorItem).join('');
+    externosList.innerHTML = consultoresExternos.map(renderConsultorItem).join('');
+
+    // Cards de Performance (Focando nos Internos conforme solicitado)
     goalsGrid.innerHTML = consultoresInternos.map(c => {
-        const progressoValor = calculateProgress(c.valorAdesao, CONFIG.metaValor);
-        const progressoContas = calculateProgress(c.qtdContas, CONFIG.metaContas);
-        const bateuMeta = c.valorAdesao >= CONFIG.metaValor && c.qtdContas >= CONFIG.metaContas;
-        const comissao = bateuMeta ? c.valorAdesao * CONFIG.comissaoPercentual : 0;
-
-        return `
-            <div class="goal-card">
-                <div class="card-header">
-                    <span class="card-name">${c.nome}</span>
-                    <div class="badge ${bateuMeta ? 'success' : ''}">
-                        ${bateuMeta ? formatCurrency(comissao) : 'Em progresso'}
+        let cardsHTML = '';
+        
+        for (const [key, produto] of Object.entries(REGRAS_PRODUTOS)) {
+            const prod = c.producao[key];
+            const result = calcularComissaoProgressiva(prod.valor, produto.faixas);
+            
+            // Cálculo de progresso baseado na meta máxima (faixa 2 para visualização)
+            const metaMax = produto.faixas[1].limiteValor;
+            const progresso = Math.min((prod.valor / metaMax) * 100, 100);
+            
+            cardsHTML += `
+                <div class="goal-card product-card">
+                    <div class="card-header">
+                        <div class="header-main">
+                            <span class="consultor-name">${c.nome}</span>
+                            <span class="product-title">${produto.titulo}</span>
+                        </div>
+                        <div class="badge success">
+                            ${formatCurrency(result.total)}
+                        </div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="bar-container">
+                            <div class="bar-info">
+                                <span>Produção: ${formatCurrency(prod.valor)}</span>
+                                <span>${prod.contas} contas</span>
+                            </div>
+                            <div class="bar-bg">
+                                <div class="bar-fill" style="width: ${progresso}%"></div>
+                            </div>
+                        </div>
+                        <div class="commission-breakdown">
+                            ${result.detalhes.map(d => `
+                                <div class="breakdown-item">
+                                    <span class="dot"></span>
+                                    ${d.taxa}% sobre ${formatCurrency(d.valor)}
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
-                <div class="progress-section">
-                    <div class="bar-container">
-                        <div class="bar-info"><span>Adesão</span> <span>${formatCurrency(c.valorAdesao)}</span></div>
-                        <div class="bar-bg"><div class="bar-fill ${progressoValor >= 100 ? 'done' : ''}" style="width: ${progressoValor}%"></div></div>
-                    </div>
-                    <div class="bar-container">
-                        <div class="bar-info"><span>Contas</span> <span>${c.qtdContas} / ${CONFIG.metaContas}</span></div>
-                        <div class="bar-bg"><div class="bar-fill ${progressoContas >= 100 ? 'done' : ''}" style="width: ${progressoContas}%"></div></div>
-                    </div>
-                </div>
-            </div>
-        `;
+            `;
+        }
+        return cardsHTML;
     }).join('');
 
-    // Renderizar Carrossel de Empresas
-    const companyCardsHTML = fechamentoEmpresas.map(emp => {
-        const dateDisplay = extractDateDisplay(emp.data);
-        return `
-            <div class="company-card">
-                <h3 class="company-name">${emp.nome}</h3>
-                <div class="company-date-display">Data: ${dateDisplay}</div>
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <span class="stat-label">Consultas</span>
-                        <span class="stat-value consultas">${emp.consultas}</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">Aprovadas</span>
-                        <span class="stat-value aprovadas">${emp.aprovadas}</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">Reprovadas</span>
-                        <span class="stat-value reprovadas">${emp.reprovadas}</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">Vendas</span>
-                        <span class="stat-value vendas">${formatCurrency(emp.vendas)}</span>
-                    </div>
-                </div>
-                <div class="company-date">Fechado em: ${emp.data}</div>
-            </div>
-        `;
-    }).join('');
+    // Totais Superiores
+    const calcularTotais = (lista) => {
+        return lista.reduce((acc, c) => {
+            acc.valor += Object.values(c.producao).reduce((a, p) => a + p.valor, 0);
+            acc.contas += Object.values(c.producao).reduce((a, p) => a + p.contas, 0);
+            return acc;
+        }, { valor: 0, contas: 0 });
+    };
 
-    // Duplicamos o conteúdo para criar um loop infinito suave
-    tickerContent.innerHTML = companyCardsHTML + companyCardsHTML;
-    
-    // Ajustar velocidade da animação baseada no número de empresas
-    tickerContent.style.animation = `scroll ${CONFIG.scrollSpeed}s linear infinite`;
+    const totaisInternos = calcularTotais(consultoresInternos);
+    const totaisExternos = calcularTotais(consultoresExternos);
 
-    // Totais Superiores - INTERNOS
-    const totalInternoAdesao = consultoresInternos.reduce((acc, c) => acc + c.valorAdesao, 0);
-    const totalInternoContas = consultoresInternos.reduce((acc, c) => acc + c.qtdContas, 0);
-    
-    // Totais Superiores - EXTERNOS
-    const totalExternoAdesao = consultoresExternos.reduce((acc, c) => acc + c.valorAdesao, 0);
-    const totalExternoContas = consultoresExternos.reduce((acc, c) => acc + c.qtdContas, 0);
-
-    document.getElementById('total-interno-adesao').textContent = formatCurrency(totalInternoAdesao);
-    document.getElementById('total-interno-contas').textContent = totalInternoContas;
-    document.getElementById('total-externo-adesao').textContent = formatCurrency(totalExternoAdesao);
-    document.getElementById('total-externo-contas').textContent = totalExternoContas;
+    document.getElementById('total-interno-adesao').textContent = formatCurrency(totaisInternos.valor);
+    document.getElementById('total-interno-contas').textContent = totaisInternos.contas;
+    document.getElementById('total-externo-adesao').textContent = formatCurrency(totaisExternos.valor);
+    document.getElementById('total-externo-contas').textContent = totaisExternos.contas;
 }
 
 function toggleTheme() {
@@ -298,50 +224,21 @@ function toggleTheme() {
     }
 }
 
-function setupPlayPauseControls() {
-    const playBtn = document.getElementById('play-btn');
-    const pauseBtn = document.getElementById('pause-btn');
-    const tickerContent = document.getElementById('ticker-content');
-
-    playBtn.addEventListener('click', () => {
-        isPlaying = true;
-        tickerContent.classList.remove('paused');
-        playBtn.classList.remove('active');
-        pauseBtn.classList.add('active');
-    });
-
-    pauseBtn.addEventListener('click', () => {
-        isPlaying = false;
-        tickerContent.classList.add('paused');
-        pauseBtn.classList.remove('active');
-        playBtn.classList.add('active');
-    });
-}
-
 function setupImageModal() {
     const bannerTrigger = document.getElementById('banner-trigger');
     const imageModal = document.getElementById('image-modal');
     const modalImage = document.getElementById('modal-image');
     const bannerImage = document.querySelector('.mini-banner');
 
-    // Abrir modal ao clicar na imagem
-    bannerTrigger.addEventListener('click', () => {
-        modalImage.src = bannerImage.src;
-        imageModal.classList.add('active');
-    });
+    if (bannerTrigger) {
+        bannerTrigger.addEventListener('click', () => {
+            modalImage.src = bannerImage.src;
+            imageModal.classList.add('active');
+        });
+    }
 
-    // Fechar modal ao clicar fora da imagem
     imageModal.addEventListener('click', (e) => {
-        if (e.target === imageModal) {
-            imageModal.classList.remove('active');
-        }
-    });
-
-    // Fechar modal ao pressionar ESC
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && imageModal.classList.contains('active')) {
-            imageModal.classList.remove('active');
-        }
+        if (e.target === imageModal) imageModal.classList.remove('active');
     });
 }
 
@@ -350,6 +247,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('current-date').textContent = now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
     document.getElementById('theme-toggle').innerHTML = icons.sun;
     renderDashboard();
-    setupPlayPauseControls();
     setupImageModal();
 });
