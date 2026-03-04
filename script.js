@@ -34,35 +34,35 @@ const CONFIG = {
 const consultoresInternos = [
     { 
         nome: "Beatriz", 
-        uf: "SP",
-        origem: "megazap",
-        segmento: "Varejo",
+        uf: "",
+        origem: "",
+        segmento: "",
         produtos: {
-            crediario: { valorAdesao: 13000, qtdContas: 15 },
-            soufacil: { valorAdesao: 3000, qtdContas: 3 },
-            cobranca: { valorAdesao: 1200, qtdContas: 2 }
+            crediario: { valorAdesao: 0, qtdContas: 0 },
+            soufacil: { valorAdesao: 0, qtdContas: 0 },
+            cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
     },
     { 
         nome: "Michael", 
-        uf: "RJ",
-        origem: "williarts",
-        segmento: "Servicos",
+        uf: "",
+        origem: "",
+        segmento: "",
         produtos: {
-            crediario: { valorAdesao: 6000, qtdContas: 8 },
-            soufacil: { valorAdesao: 5000, qtdContas: 6 },
-            cobranca: { valorAdesao: 2000, qtdContas: 4 }
+            crediario: { valorAdesao: 0, qtdContas: 0 },
+            soufacil: { valorAdesao: 0, qtdContas: 0 },
+            cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
     },
     { 
         nome: "Maria", 
-        uf: "MG",
-        origem: "email",
-        segmento: "Industria",
+        uf: "",
+        origem: "",
+        segmento: "",
         produtos: {
-            crediario: { valorAdesao: 5048, qtdContas: 8 },
-            soufacil: { valorAdesao: 4500, qtdContas: 5 },
-            cobranca: { valorAdesao: 1800, qtdContas: 3 }
+            crediario: { valorAdesao: 0, qtdContas: 0 },
+            soufacil: { valorAdesao: 0, qtdContas: 0 },
+            cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
     },
 ];
@@ -70,35 +70,35 @@ const consultoresInternos = [
 const consultoresExternos = [
     { 
         nome: "Nivaldo", 
-        uf: "BA",
-        origem: "casa_dados",
-        segmento: "Comercio",
+        uf: "",
+        origem: "",
+        segmento: "",
         produtos: {
-            crediario: { valorAdesao: 13500, qtdContas: 11 },
-            soufacil: { valorAdesao: 8000, qtdContas: 8 },
-            cobranca: { valorAdesao: 3500, qtdContas: 6 }
+            crediario: { valorAdesao: 0, qtdContas: 0 },
+            soufacil: { valorAdesao: 0, qtdContas: 0 },
+            cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
     },
     { 
         nome: "Marco", 
-        uf: "SP",
-        origem: "megazap",
-        segmento: "Varejo",
+        uf: "",
+        origem: "",
+        segmento: "",
         produtos: {
-            crediario: { valorAdesao: 2600, qtdContas: 8 },
-            soufacil: { valorAdesao: 2000, qtdContas: 4 },
-            cobranca: { valorAdesao: 1000, qtdContas: 2 }
+            crediario: { valorAdesao: 0, qtdContas: 0 },
+            soufacil: { valorAdesao: 0, qtdContas: 0 },
+            cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
     },
     { 
         nome: "Kaly", 
-        uf: "RS",
-        origem: "email",
-        segmento: "Servicos",
+        uf: "",
+        origem: "",
+        segmento: "",
         produtos: {
-            crediario: { valorAdesao: 1000, qtdContas: 1 },
-            soufacil: { valorAdesao: 500, qtdContas: 1 },
-            cobranca: { valorAdesao: 300, qtdContas: 1 }
+            crediario: { valorAdesao: 0, qtdContas: 0 },
+            soufacil: { valorAdesao: 0, qtdContas: 0 },
+            cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
     }
 ];
