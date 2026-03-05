@@ -45,11 +45,11 @@ const consultoresInternos = [
     },
     { 
         nome: "Michael", 
-        uf: "",
-        origem: "",
-        segmento: "",
+        uf: "PR",
+        origem: "Sarandi",
+        segmento: "Moveis",
         produtos: {
-            crediario: { valorAdesao: 0, qtdContas: 0 },
+            crediario: { valorAdesao: 650, qtdContas: 1 },
             soufacil: { valorAdesao: 0, qtdContas: 0 },
             cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
