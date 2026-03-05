@@ -49,7 +49,7 @@ const consultoresInternos = [
         origem: "CASA DOS DADOS",
         segmento: "Moveis",
         produtos: {
-            crediario: { valorAdesao: 650, qtdContas: 1 },
+            crediario: { valorAdesao: 5900, qtdContas: 6 },
             soufacil: { valorAdesao: 0, qtdContas: 0 },
             cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
