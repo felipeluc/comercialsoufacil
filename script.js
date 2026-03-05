@@ -46,7 +46,7 @@ const consultoresInternos = [
     { 
         nome: "Michael", 
         uf: "PR",
-        origem: "Sarandi",
+        origem: "CASA DOS DADOS",
         segmento: "Moveis",
         produtos: {
             crediario: { valorAdesao: 650, qtdContas: 1 },
