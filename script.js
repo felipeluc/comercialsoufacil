@@ -56,11 +56,11 @@ const consultoresInternos = [
     },
     { 
         nome: "Maria", 
-        uf: "",
-        origem: "",
-        segmento: "",
+        uf: "SP",
+        origem: "MegaZap",
+        segmento: "Construção",
         produtos: {
-            crediario: { valorAdesao: 0, qtdContas: 0 },
+            crediario: { valorAdesao: 1398, qtdContas: 1 },
             soufacil: { valorAdesao: 0, qtdContas: 0 },
             cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
