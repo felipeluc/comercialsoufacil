@@ -45,11 +45,11 @@ const consultoresInternos = [
     },
     { 
         nome: "Michael", 
-        uf: "PR",
-        origem: "CASA DOS DADOS",
+        uf: "PR" "SP",
+        origem: "CASA DOS DADOS" "INDICAÇÃO DU",
         segmento: "Moveis",
         produtos: {
-            crediario: { valorAdesao: 650, qtdContas: 1 },
+            crediario: { valorAdesao: 1150, qtdContas: 2 },
             soufacil: { valorAdesao: 0, qtdContas: 0 },
             cobranca: { valorAdesao: 0, qtdContas: 0 }
         }
