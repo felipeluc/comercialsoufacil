@@ -45,8 +45,8 @@ const consultoresInternos = [
     },
     { 
         nome: "Michael", 
-        uf: "PR", "SP",
-        origem: "CASA DOS DADOS", "INDICAÇÃO DU",
+        uf: "PR",
+        origem: "CASA DOS DADOS", 
         segmento: "Moveis",
         produtos: {
             crediario: { valorAdesao: 1150, qtdContas: 2 },
